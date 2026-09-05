@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choisir son ETF</title>
+<style>
+  :root {
+    color-scheme: light;
+    --ink:            #142521;
+    --ink-secondary:  #4b5d58;
+    --ink-faint:      #7c8b86;
+    --paper:          #f3f5f0;
+    --surface:        #ffffff;
+    --border:         #dde2da;
+    --border-strong:  #c4ccc1;
+    --accent:         #2a78d6;
+    --accent-ink:     #ffffff;
+    --gain:           #eb6834;
+    --good:           #0ca30c;
+    --warn:           #eda100;
+    --bad:            #d03b3b;
+    --aqua:           #1baf7a;
+    --yellow:         #eda100;
+    --shadow:         0 1px 2px rgba(20,37,33,.04), 0 8px 24px -12px rgba(20,37,33,.15);
+    --focus:          0 0 0 3px rgba(42,120,214,.35);
+    --tier-splus:     #f2a6a0;
+    --tier-s:         #f5c98a;
+    --tier-a:         #f6e08a;
+    --tier-b:         #eef0a0;
+    --tier-c:         #cfe8a8;
+    --tier-d:         #a9e0ad;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ink:            #f2f4f0;
+      --ink-secondary:  #b9c4bd;
+      --ink-faint:      #7d8a83;
+      --paper:          #101512;
+      --surface:        #171d19;
+      --border:         #2a322c;
+      --border-strong:  #3a453d;
+      --accent:         #3987e5;
+      --accent-ink:     #061020;
+      --gain:           #d95926;
+      --good:           #1cbf1c;
+      --warn:           #c98500;
+      --bad:            #e66767;
+      --aqua:           #199e70;
+      --yellow:         #c98500;
+      --shadow:         0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+      --focus:          0 0 0 3px rgba(57,135,229,.4);
+      --tier-splus:     #6e2e2a; --tier-s:#6b5326; --tier-a:#5c5626; --tier-b:#43481f; --tier-c:#33481f; --tier-d:#1f4a29;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ink:            #f2f4f0;
+    --ink-secondary:  #b9c4bd;
+    --ink-faint:      #7d8a83;
+    --paper:          #101512;
+    --surface:        #171d19;
+    --border:         #2a322c;
+    --border-strong:  #3a453d;
+    --accent:         #3987e5;
+    --accent-ink:     #061020;
+    --gain:           #d95926;
+    --good:           #1cbf1c;
+    --warn:           #c98500;
+    --bad:            #e66767;
+    --aqua:           #199e70;
+    --yellow:         #c98500;
+    --shadow:         0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+    --focus:          0 0 0 3px rgba(57,135,229,.4);
+    --tier-splus:     #6e2e2a; --tier-s:#6b5326; --tier-a:#5c5626; --tier-b:#43481f; --tier-c:#33481f; --tier-d:#1f4a29;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+  .num { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  h1, h2, h3, .display { font-family: "Fraunces", Georgia, serif; text-wrap: balance; }
+  a { color: inherit; }
+
+  .shell { max-width: 1080px; margin: 0 auto; padding: 0 24px 96px; }
+
+  nav.topbar { border-bottom: 1px solid var(--border); background: var(--paper); position: sticky; top: 0; z-index: 20; }
+  .topbar-inner { max-width: 1080px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: 8px; font-size: 14px; color: var(--ink-faint); letter-spacing: .04em; text-transform: uppercase; }
+  .brand strong { color: var(--ink); font-weight: 600; letter-spacing: 0; text-transform: none; font-size: 15px; }
+  .site-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+  .site-nav a.item, .site-nav span.item { font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid transparent; color: var(--ink-secondary); white-space: nowrap; text-decoration: none; }
+  .site-nav a.item:hover { color: var(--ink); }
+  .site-nav .item.active { background: var(--surface); border-color: var(--border-strong); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
+  .site-nav .item.soon { color: var(--ink-faint); border: 1px dashed var(--border-strong); display: flex; gap: 6px; align-items: center; }
+  .site-nav .item.soon .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-faint); }
+
+  header.hero { padding: 48px 0 28px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 10px; }
+  header.hero h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 600; margin: 0 0 12px; line-height: 1.12; }
+  header.hero p { font-size: 16px; color: var(--ink-secondary); max-width: 62ch; margin: 0; line-height: 1.55; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+
+  section.block { margin-top: 38px; }
+  section.block h2 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+  section.block .block-sub { font-size: 13.5px; color: var(--ink-secondary); margin: 0 0 18px; max-width: 68ch; line-height: 1.5; }
+
+  /* ---------- intro ---------- */
+  .analogy { padding: 20px 22px; display: flex; gap: 14px; align-items: flex-start; }
+  .analogy .icon { font-size: 22px; }
+  .analogy p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink-secondary); }
+  .analogy strong { color: var(--ink); }
+  .perk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }
+  @media (max-width: 700px) { .perk-grid { grid-template-columns: 1fr; } }
+  .perk { padding: 14px 16px; display: flex; gap: 10px; align-items: flex-start; }
+  .perk .tick { color: var(--good); font-weight: 700; flex-shrink: 0; }
+  .perk .t { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .perk .d { font-size: 12px; color: var(--ink-faint); margin-top: 2px; line-height: 1.4; }
+
+  /* ---------- checklist ---------- */
+  .checklist { display: flex; flex-direction: column; gap: 10px; }
+  .check-card { padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; }
+  .check-card input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+  .check-card .cc-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .check-card .cc-title { font-size: 14px; font-weight: 600; }
+  .check-card .cc-target { font-size: 11px; padding: 3px 9px; border-radius: 999px; background: var(--paper); border: 1px solid var(--border-strong); color: var(--ink-secondary); font-weight: 600; }
+  .check-card .cc-desc { font-size: 13px; color: var(--ink-secondary); margin-top: 5px; line-height: 1.5; }
+  .check-card.checked { border-color: var(--good); }
+  .checklist-progress { display: flex; align-items: center; gap: 12px; margin-top: 16px; font-size: 13px; color: var(--ink-secondary); }
+  .progress-track { flex: 1; height: 6px; border-radius: 999px; background: var(--border); overflow: hidden; max-width: 240px; }
+  .progress-fill { height: 100%; background: var(--good); border-radius: 999px; transition: width .2s ease; width: 0%; }
+
+  /* ---------- comparison tables ---------- */
+  .wrapper-table { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow); }
+  table.compare { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
+  table.compare th { text-align: left; padding: 12px 18px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-faint); font-weight: 600; border-bottom: 1px solid var(--border); }
+  table.compare td { padding: 12px 18px; border-bottom: 1px solid var(--border); }
+  table.compare tr:last-child td { border-bottom: none; }
+  table.compare td.crit { color: var(--ink-secondary); font-weight: 500; white-space: nowrap; }
+  table.compare td.yes { color: var(--good); font-weight: 600; }
+  table.compare td.no { color: var(--bad); font-weight: 600; }
+  table.compare td.neutral { color: var(--ink); font-weight: 600; }
+
+  table.etf-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 700px; }
+  table.etf-table th { text-align: left; padding: 12px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-faint); font-weight: 600; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  table.etf-table th.note-th { cursor: help; }
+  table.etf-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.etf-table tr:last-child td { border-bottom: none; }
+  table.etf-table tr.dim { opacity: .4; }
+  table.etf-table td.etf-name { font-weight: 600; }
+  table.etf-table td.etf-name .sub { display: block; font-weight: 400; font-size: 11.5px; color: var(--ink-faint); margin-top: 2px; }
+  .acc-tag { font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 600; }
+  .acc-tag.acc { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
+  .acc-tag.dist { background: color-mix(in srgb, var(--gain) 16%, transparent); color: var(--gain); }
+
+  .note-cell { display: flex; align-items: center; gap: 8px; cursor: help; }
+  .note-badge { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-family: "Fraunces", serif; font-weight: 700; font-size: 12.5px; color: #14201c; flex-shrink: 0; }
+  .note-badge.splus { background: var(--tier-splus); } .note-badge.s { background: var(--tier-s); }
+  .note-badge.a { background: var(--tier-a); } .note-badge.b { background: var(--tier-b); }
+  .note-badge.c { background: var(--tier-c); } .note-badge.d { background: var(--tier-d); }
+  :root:not([data-theme="light"]) .note-badge, :root[data-theme="dark"] .note-badge { color: #eef2ea; }
+  .note-score { font-size: 11px; color: var(--ink-faint); }
+
+  .segmented { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+  .segmented button { border: none; background: var(--surface); color: var(--ink-secondary); font-size: 13px; font-weight: 500; padding: 8px 14px; cursor: pointer; font-family: inherit; }
+  .segmented button + button { border-left: 1px solid var(--border-strong); }
+  .segmented button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .segmented button:focus-visible { outline: none; box-shadow: var(--focus); position: relative; z-index: 1; }
+  .table-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .table-toolbar .filter-label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); font-weight: 600; margin-right: 10px; }
+  .avail-note { font-size: 12px; color: var(--ink-faint); margin-top: 12px; }
+  .sync-badge { font-size: 11.5px; color: var(--ink-faint); display: flex; align-items: center; gap: 6px; }
+  .sync-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-faint); flex-shrink: 0; }
+  .sync-badge.live { color: var(--ink-secondary); }
+  .sync-badge.live .dot { background: var(--good); }
+
+  /* ---------- Acc vs Dist decision ---------- */
+  .decision-card { padding: 22px; }
+  .decision-q { font-size: 14px; font-weight: 600; margin: 0 0 14px; }
+  .reco-result { margin-top: 18px; padding: 16px 18px; border-radius: 10px; background: var(--paper); border: 1px solid var(--border-strong); display: none; }
+  .reco-result.show { display: block; }
+  .reco-result .rr-badge { font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .reco-result p { margin: 10px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--ink-secondary); }
+  .reco-result strong { color: var(--ink); }
+
+  /* ---------- composition bars ---------- */
+  .compo-card { padding: 20px 22px; }
+  .compo-title { font-size: 13.5px; font-weight: 600; margin: 0 0 12px; }
+  .compo-bar { display: flex; width: 100%; height: 34px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .compo-seg { display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600; color: #0c1210; white-space: nowrap; overflow: hidden; }
+  .compo-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 12.5px; color: var(--ink-secondary); }
+  .compo-legend .item { display: flex; align-items: center; gap: 6px; }
+  .compo-legend .sw { width: 10px; height: 10px; border-radius: 2px; }
+  .compo-note { font-size: 12.5px; color: var(--ink-faint); margin-top: 12px; line-height: 1.5; }
+
+  footer.disclaimer { margin-top: 36px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; font-size: 12px; color: var(--ink-faint); line-height: 1.6; background: var(--surface); }
+  footer.disclaimer strong { color: var(--ink-secondary); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+</head>
+<body>
+<nav class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">plateforme investissement <strong>· édition de travail</strong></div>
+    <div class="site-nav">
+      <a class="item" href="/">Quiz</a>
+      <a class="item" href="/simulateur.html">Simulateur</a>
+      <a class="item" href="/broker.html">Broker</a>
+      <span class="item active">ETF</span>
+      <span class="item soon"><span class="dot"></span>Mes finances</span>
+    </div>
+  </div>
+</nav>
+
+<div class="shell">
+  <header class="hero">
+    <p class="eyebrow">Incrément 3 — Choisir son ETF</p>
+    <h1>Quel ETF choisir&nbsp;? (et pourquoi un seul suffit souvent)</h1>
+    <p>Un ETF, c'est un panier qui contient des centaines d'entreprises en une seule part. Vérifie 5 points avant d'en acheter un — puis regarde la sélection ci-dessous.</p>
+  </header>
+
+  <section class="block" style="margin-top:0">
+    <div class="card analogy">
+      <span class="icon">🧺</span>
+      <p><strong>L'analogie simple&nbsp;:</strong> imagine un panier qui contient 500 actions différentes en même temps — Apple, Amazon, Microsoft, Nvidia... En achetant une seule part de ce panier, tu es investi dans toutes ces entreprises à la fois.</p>
+    </div>
+    <div class="perk-grid">
+      <div class="card perk"><span class="tick">✓</span><div><div class="t">Une seule transaction = des centaines d'entreprises</div><div class="d">Pas besoin d'acheter Apple, puis Amazon, puis Nvidia une par une.</div></div></div>
+      <div class="card perk"><span class="tick">✓</span><div><div class="t">Frais très faibles</div><div class="d">0,03 % à 0,20 %/an — un fonds géré par un humain coûte 10 à 20x plus.</div></div></div>
+      <div class="card perk"><span class="tick">✓</span><div><div class="t">Personne ne « gère » — il suit un indice</div><div class="d">L'ETF S&amp;P 500 suit les 500 plus grandes entreprises américaines, automatiquement.</div></div></div>
+      <div class="card perk"><span class="tick">✓</span><div><div class="t">Ça s'achète comme une action</div><div class="d">Sur Degiro, Trade Republic ou IBKR — en quelques secondes.</div></div></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Les 5 points à vérifier, dans l'ordre</h2>
+    <p class="block-sub">Coche-les au fur et à mesure que tu regardes la fiche d'un ETF qui t'intéresse.</p>
+    <div class="checklist" id="checklist">
+      <label class="card check-card" data-item="ter">
+        <input type="checkbox">
+        <div>
+          <div class="cc-head"><span class="cc-title">Les frais annuels (TER)</span><span class="cc-target">objectif : &lt; 0,20 %/an</span></div>
+          <div class="cc-desc">Le coût réel que tu paies chaque année. Plus c'est bas, mieux c'est.</div>
+        </div>
+      </label>
+      <label class="card check-card" data-item="aum">
+        <input type="checkbox">
+        <div>
+          <div class="cc-head"><span class="cc-title">La taille du fonds (AUM)</span><span class="cc-target">objectif : min. 500 M€</span></div>
+          <div class="cc-desc">Un fonds trop petit peut être fermé. Il faut un minimum de solidité.</div>
+        </div>
+      </label>
+      <label class="card check-card" data-item="rep">
+        <input type="checkbox">
+        <div>
+          <div class="cc-head"><span class="cc-title">Réplication physique ou synthétique</span><span class="cc-target">préfère la physique</span></div>
+          <div class="cc-desc">Physique = il achète vraiment les actions. Synthétique = il utilise des contrats dérivés (swap).</div>
+        </div>
+      </label>
+      <label class="card check-card" data-item="accdist">
+        <input type="checkbox">
+        <div>
+          <div class="cc-head"><span class="cc-title">Capitalisant (Acc) ou Distribuant (Dist)</span><span class="cc-target">Acc pour construire, Dist pour un revenu</span></div>
+          <div class="cc-desc">Acc = les dividendes sont réinvestis automatiquement. Dist = tu les reçois en cash.</div>
+        </div>
+      </label>
+      <label class="card check-card" data-item="indice">
+        <input type="checkbox">
+        <div>
+          <div class="cc-head"><span class="cc-title">L'indice suivi</span><span class="cc-target">comprends ce qu'il contient</span></div>
+          <div class="cc-desc">S&amp;P 500, MSCI World, FTSE All-World — c'est ce qui définit ce que tu achètes réellement.</div>
+        </div>
+      </label>
+    </div>
+    <div class="checklist-progress">
+      <span id="progressLabel">0/5 vérifiés</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Réplication : physique ou synthétique&nbsp;?</h2>
+    <p class="block-sub">C'est la méthode que l'ETF utilise pour suivre son indice — deux approches très différentes.</p>
+    <div class="wrapper-table">
+      <table class="compare">
+        <thead><tr><th>Critère</th><th>Physique (réplication complète)</th><th>Synthétique (swap)</th></tr></thead>
+        <tbody>
+          <tr><td class="crit">Tu possèdes les actions</td><td class="yes">Oui</td><td class="no">Non</td></tr>
+          <tr><td class="crit">Risque de contrepartie</td><td class="yes">Aucun</td><td class="neutral">Limité à 10 %</td></tr>
+          <tr><td class="crit">Retenue sur dividendes US</td><td class="no">15–30 %</td><td class="yes">Évitée</td></tr>
+          <tr><td class="crit">Pour débutant</td><td class="yes">Recommandé</td><td class="neutral">À comprendre d'abord</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="avail-note">Ce que tu retiens : commence toujours par la réplication physique — VWCE, SXR8, IWDA. Le swap devient intéressant quand ton portefeuille grandit et que tu cherches à optimiser la fiscalité sur les dividendes.</p>
+  </section>
+
+  <section class="block">
+    <h2>Les ETF recommandés</h2>
+    <p class="block-sub">Filtre par capitalisant/distribuant selon ce que tu cherches — voir la section suivante si tu hésites entre les deux.</p>
+    <div class="table-toolbar">
+      <div><span class="filter-label">Afficher</span>
+        <div class="segmented" id="etfFilter">
+          <button type="button" data-f="all" aria-pressed="true">Tous</button>
+          <button type="button" data-f="acc" aria-pressed="false">Acc</button>
+          <button type="button" data-f="dist" aria-pressed="false">Dist</button>
+        </div>
+      </div>
+      <span class="sync-badge" id="syncBadge"><span class="dot"></span>Chiffres indicatifs (non synchronisés)</span>
+    </div>
+    <div class="wrapper-table">
+      <table class="etf-table">
+        <thead><tr><th>ETF</th><th>Indice</th><th>TER</th><th>AUM</th><th>Réplication</th><th class="note-th" title="TER (frais) : 50% de la note — plus c'est bas, mieux c'est. Encours (AUM) : 30% — un fonds plus gros est plus solide. Réplication : 20% — la physique est mieux notée que la synthétique.">Note ⓘ</th><th>Pour qui</th></tr></thead>
+        <tbody id="etfBody"></tbody>
+      </table>
+    </div>
+    <p class="avail-note">Disponibles sur DEGIRO, Trade Republic et Interactive Brokers. TER et AUM synchronisés depuis justETF quand la connexion aux données live est disponible — sinon dernières valeurs connues affichées.</p>
+    <p class="avail-note">La note est calculée automatiquement, pas choisie à la main : 50% sur le TER (le critère le plus important — moins de frais, mieux c'est), 30% sur l'encours (AUM — un fonds solide, difficile à fermer), 20% sur la méthode de réplication (physique préférée à synthétique). Elle se recalcule toute seule à chaque synchronisation justETF. Survole le badge ou l'en-tête « Note » pour le détail.</p>
+  </section>
+
+  <section class="block">
+    <h2>Capitalisant ou distribuant&nbsp;?</h2>
+    <p class="block-sub">La question que tout débutant se pose — réponds à la question ci-dessous pour voir la recommandation.</p>
+    <div class="card decision-card">
+      <p class="decision-q">Qu'est-ce qui te correspond le mieux, là maintenant&nbsp;?</p>
+      <div class="segmented" id="goalGroup">
+        <button type="button" data-goal="construire" aria-pressed="false">Je construis mon patrimoine</button>
+        <button type="button" data-goal="revenu" aria-pressed="false">Je veux un revenu régulier</button>
+      </div>
+      <div class="reco-result" id="goalReco">
+        <span class="rr-badge" id="rrBadge"></span>
+        <p id="rrText"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Un seul ETF, ça suffit&nbsp;?</h2>
+    <p class="block-sub">La réponse courte : oui, souvent. La sur-diversification est un mythe — acheter 10 ETF différents ne te protège pas plus, ça t'expose juste à plus de frais et de complexité.</p>
+
+    <div class="card compo-card">
+      <p class="compo-title">🏆 Le portefeuille le plus simple — VWCE 100 %</p>
+      <div class="compo-bar" id="compoBar1"></div>
+      <div class="compo-legend" id="compoLegend1"></div>
+      <p class="compo-note">Contient 3 500+ entreprises dans 50+ pays — Amérique du Nord, Europe, Asie, marchés émergents. Tu n'as littéralement besoin de rien d'autre.</p>
+    </div>
+
+    <div class="card compo-card" style="margin-top:14px">
+      <p class="compo-title">Version 2 — si tu veux doser les émergents toi-même</p>
+      <div class="compo-bar" id="compoBar2"></div>
+      <div class="compo-legend" id="compoLegend2"></div>
+      <p class="compo-note">IWDA (pays développés) + EMIM (marchés émergents) — tu contrôles la proportion selon ta conviction, plutôt que de subir celle de VWCE.</p>
+    </div>
+  </section>
+
+  <footer class="disclaimer">
+    <strong>À garder en tête :</strong> les frais, encours et compositions ci-dessus sont indicatifs et évoluent avec le temps — vérifie les chiffres à jour sur la fiche officielle de l'ETF (KIID/DICI) avant d'investir. Ce guide est pédagogique et ne constitue pas un conseil en investissement.
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var ETFS = [
+    { id: "sxr8", isin: "IE00B5BMR087", name: "SXR8", sub: "iShares · Acc", index: "S&P 500", ter: 0.07, aum: 134000, replication: "full", who: "Focus US · moins cher", type: "acc" },
+    { id: "vusa", isin: "IE00B3XXRP09", name: "VUSA", sub: "Vanguard · Dist", index: "S&P 500", ter: 0.07, aum: 46000, replication: "full", who: "Toujours US, mais si tu veux des dividendes", type: "dist" },
+    { id: "vwce", isin: "IE00BK5BQT80", name: "VWCE", sub: "Vanguard · Acc", index: "FTSE All-World", ter: 0.14, aum: 50000, replication: "optimized", who: "1 seul ETF · monde entier", type: "acc" },
+    { id: "iwda", isin: "IE00B4L5Y983", name: "IWDA / EUNL", sub: "iShares · Acc", index: "MSCI World", ter: 0.20, aum: 128000, replication: "optimized", who: "Pays développés", type: "acc" }
+  ];
+
+  // ---- live sync (justETF, via ce propre stockage `db` de la page) ----
+  var REP_LABELS = { full: "Réplication complète", optimized: "Physique (échantillonnage optimisé)", synthetic: "Synthétique (swap)" };
+  var etfLive = {};       // id -> { ter, aum, replication, syncedAt, ... } quand dispo
+  var currentFilter = "all";
+  var syncBadge = document.getElementById("syncBadge");
+
+  function fmtTer(t) { return Number(t).toFixed(2).replace(".", ",") + " %"; }
+  function fmtAum(m) { return m >= 1000 ? "≈" + Math.round(m / 1000) + " Md€" : "≈" + Math.round(m) + " M€"; }
+  function fmtDate(iso) {
+    try { var d = new Date(iso); return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }); }
+    catch (e) { return ""; }
+  }
+
+  // ---- note automatique : TER 50% (moins de frais = mieux), AUM 30% (plus solide), réplication 20% (physique > synthétique) ----
+  var GRADES = [
+    { min: 90, key: "splus", label: "S+" },
+    { min: 80, key: "s", label: "S" },
+    { min: 65, key: "a", label: "A" },
+    { min: 50, key: "b", label: "B" },
+    { min: 35, key: "c", label: "C" },
+    { min: 0, key: "d", label: "D" }
+  ];
+  function terScoreOf(ter) { return Math.max(0, Math.min(100, 100 - (ter / 0.50) * 100)); }
+  function aumScoreOf(aum) { return aum >= 10000 ? 100 : aum >= 1000 ? 80 : aum >= 500 ? 60 : 30; }
+  function repScoreOf(replication) { return replication === "full" ? 100 : replication === "optimized" ? 85 : replication === "synthetic" ? 60 : 70; }
+  function computeScore(ter, aum, replication) {
+    return Math.round((0.5 * terScoreOf(ter) + 0.3 * aumScoreOf(aum) + 0.2 * repScoreOf(replication)) * 10) / 10;
+  }
+  function gradeFor(score) {
+    for (var i = 0; i < GRADES.length; i++) if (score >= GRADES[i].min) return GRADES[i];
+    return GRADES[GRADES.length - 1];
+  }
+
+  var etfBody = document.getElementById("etfBody");
+  function renderEtf(filter) {
+    currentFilter = filter;
+    etfBody.innerHTML = ETFS.map(function (e) {
+      var dim = (filter !== "all" && e.type !== filter) ? " dim" : "";
+      var live = etfLive[e.id];
+      var ter = live && typeof live.ter === "number" ? live.ter : e.ter;
+      var aum = live && typeof live.aum === "number" ? live.aum : e.aum;
+      var replication = live && REP_LABELS[live.replication] ? live.replication : e.replication;
+      var score = computeScore(ter, aum, replication);
+      var grade = gradeFor(score);
+      var noteTitle = "Note " + score + "/100 — TER " + fmtTer(ter) + " (50%), encours " + fmtAum(aum) + " (30%), réplication " + (REP_LABELS[replication] || replication) + " (20%)";
+      return "<tr class=\"" + dim.trim() + "\">" +
+        "<td class=\"etf-name\">" + e.name + "<span class=\"sub\">" + e.sub + "</span></td>" +
+        "<td>" + e.index + "</td><td class=\"num\">" + fmtTer(ter) + "</td><td class=\"num\">" + fmtAum(aum) + "</td>" +
+        "<td>" + (REP_LABELS[replication] || replication) + "</td>" +
+        "<td><div class=\"note-cell\" title=\"" + noteTitle.replace(/"/g, "&quot;") + "\"><span class=\"note-badge " + grade.key + "\">" + grade.label + "</span><span class=\"note-score num\">" + score.toFixed(1) + "</span></div></td>" +
+        "<td>" + e.who + "</td></tr>";
+    }).join("");
+  }
+  renderEtf("all");
+  document.getElementById("etfFilter").querySelectorAll("button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      this.parentElement.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+      btn.setAttribute("aria-pressed", "true");
+      renderEtf(btn.getAttribute("data-f"));
+    });
+  });
+
+  function updateSyncBadge() {
+    var dates = Object.keys(etfLive).map(function (k) { return etfLive[k] && etfLive[k].syncedAt; }).filter(Boolean).sort();
+    if (dates.length) {
+      syncBadge.classList.add("live");
+      syncBadge.innerHTML = '<span class="dot"></span>Synchronisé le ' + fmtDate(dates[dates.length - 1]) + " (justETF)";
+    } else {
+      syncBadge.classList.remove("live");
+      syncBadge.innerHTML = '<span class="dot"></span>Chiffres indicatifs (non synchronisés)';
+    }
+  }
+
+  (async function initLiveSync() {
+    try {
+      if (!window.claude || typeof window.claude.use !== "function") return;
+      var db = await window.claude.use("db");
+      if (!db) return; // pas de vue db pour ce viewer : on garde les valeurs statiques
+      function applySnapshot(qs) {
+        var next = {};
+        qs.docs.forEach(function (d) { if (d.exists) next[d.id] = d.data(); });
+        etfLive = next;
+        renderEtf(currentFilter);
+        updateSyncBadge();
+      }
+      var snap = await db.collection("etf_sync").get();
+      applySnapshot(snap);
+      db.collection("etf_sync").onSnapshot(applySnapshot, function () { /* silencieux : on garde le dernier état connu */ });
+    } catch (e) { /* silencieux : la page reste utilisable avec les valeurs statiques */ }
+  })();
+
+  // checklist
+  var checklistItems = document.querySelectorAll(".check-card");
+  var progressLabel = document.getElementById("progressLabel");
+  var progressFill = document.getElementById("progressFill");
+  function updateProgress() {
+    var total = checklistItems.length, done = 0;
+    checklistItems.forEach(function (card) {
+      var box = card.querySelector("input[type=checkbox]");
+      card.classList.toggle("checked", box.checked);
+      if (box.checked) done++;
+    });
+    progressLabel.textContent = done + "/" + total + " vérifiés";
+    progressFill.style.width = (done / total * 100) + "%";
+  }
+  checklistItems.forEach(function (card) {
+    card.querySelector("input[type=checkbox]").addEventListener("change", updateProgress);
+  });
+  updateProgress();
+
+  // Acc vs Dist decision
+  var GOAL_RECO = {
+    construire: { badge: "Prends du Capitalisant (Acc)", color: "var(--good)", text: "Tu n'as pas besoin de l'argent maintenant — laisse-le se multiplier. Les dividendes sont réinvestis automatiquement, sans fiscalité à gérer chaque année, pour un effet de compounding maximal." },
+    revenu: { badge: "Prends du Distribuant (Dist)", color: "var(--gain)", text: "Tu reçois les dividendes en cash sur ton compte. Sache que chaque versement de dividende est soumis à la flat tax de 30 % — c'est moins efficace fiscalement en phase de construction, mais ça te donne un revenu réel et régulier." }
+  };
+  var goalReco = document.getElementById("goalReco"), rrBadge = document.getElementById("rrBadge"), rrText = document.getElementById("rrText");
+  document.getElementById("goalGroup").querySelectorAll("button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      this.parentElement.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+      btn.setAttribute("aria-pressed", "true");
+      var r = GOAL_RECO[btn.getAttribute("data-goal")];
+      rrBadge.textContent = r.badge;
+      rrBadge.style.background = "color-mix(in srgb, " + r.color + " 18%, transparent)";
+      rrBadge.style.color = r.color;
+      rrText.innerHTML = r.text;
+      goalReco.classList.add("show");
+    });
+  });
+
+  // pré-remplissage depuis le quiz (?goal=construire|revenu)
+  try {
+    var qGoal = new URLSearchParams(location.search).get("goal");
+    if (GOAL_RECO[qGoal]) {
+      var goalBtn = document.querySelector('#goalGroup button[data-goal="' + qGoal + '"]');
+      if (goalBtn) goalBtn.click();
+    }
+  } catch (e) { /* pas de query string valide : pas de pré-sélection */ }
+
+  // composition bars
+  function renderCompo(elBarId, elLegendId, segments) {
+    var bar = document.getElementById(elBarId), legend = document.getElementById(elLegendId);
+    bar.innerHTML = segments.map(function (s) {
+      return '<div class="compo-seg" style="width:' + s.pct + '%;background:' + s.color + '" title="' + s.label + ' — ' + s.pct + '%">' + (s.pct >= 8 ? s.pct + "%" : "") + "</div>";
+    }).join("");
+    legend.innerHTML = segments.map(function (s) {
+      return '<span class="item"><span class="sw" style="background:' + s.color + '"></span>' + s.label + " (" + s.pct + "%)</span>";
+    }).join("");
+  }
+  renderCompo("compoBar1", "compoLegend1", [
+    { label: "USA", pct: 61, color: "var(--accent)" },
+    { label: "Europe", pct: 12, color: "var(--gain)" },
+    { label: "Japon", pct: 8, color: "var(--aqua)" },
+    { label: "Émergents", pct: 10, color: "var(--yellow)" },
+    { label: "Autres pays développés", pct: 9, color: "var(--border-strong)" }
+  ]);
+  renderCompo("compoBar2", "compoLegend2", [
+    { label: "IWDA · pays développés", pct: 80, color: "var(--accent)" },
+    { label: "EMIM · marchés émergents", pct: 20, color: "var(--aqua)" }
+  ]);
+})();
+</script>
+</body>
+</html>

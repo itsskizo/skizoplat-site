@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choisir son Broker</title>
+<style>
+  :root {
+    color-scheme: light;
+    --ink:            #142521;
+    --ink-secondary:  #4b5d58;
+    --ink-faint:      #7c8b86;
+    --paper:          #f3f5f0;
+    --surface:        #ffffff;
+    --border:         #dde2da;
+    --border-strong:  #c4ccc1;
+    --accent:         #2a78d6;
+    --accent-ink:     #ffffff;
+    --gain:           #eb6834;
+    --good:           #0ca30c;
+    --warn:           #eda100;
+    --bad:            #d03b3b;
+    --shadow:         0 1px 2px rgba(20,37,33,.04), 0 8px 24px -12px rgba(20,37,33,.15);
+    --focus:          0 0 0 3px rgba(42,120,214,.35);
+    --tier-splus:     #f2a6a0;
+    --tier-s:         #f5c98a;
+    --tier-a:         #f6e08a;
+    --tier-b:         #eef0a0;
+    --tier-c:         #cfe8a8;
+    --tier-d:         #a9e0ad;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ink:            #f2f4f0;
+      --ink-secondary:  #b9c4bd;
+      --ink-faint:      #7d8a83;
+      --paper:          #101512;
+      --surface:        #171d19;
+      --border:         #2a322c;
+      --border-strong:  #3a453d;
+      --accent:         #3987e5;
+      --accent-ink:     #061020;
+      --gain:           #d95926;
+      --good:           #1cbf1c;
+      --warn:           #c98500;
+      --bad:            #e66767;
+      --shadow:         0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+      --focus:          0 0 0 3px rgba(57,135,229,.4);
+      --tier-splus:     #6e2e2a; --tier-s:#6b5326; --tier-a:#5c5626; --tier-b:#43481f; --tier-c:#33481f; --tier-d:#1f4a29;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ink:            #f2f4f0;
+    --ink-secondary:  #b9c4bd;
+    --ink-faint:      #7d8a83;
+    --paper:          #101512;
+    --surface:        #171d19;
+    --border:         #2a322c;
+    --border-strong:  #3a453d;
+    --accent:         #3987e5;
+    --accent-ink:     #061020;
+    --gain:           #d95926;
+    --good:           #1cbf1c;
+    --warn:           #c98500;
+    --bad:            #e66767;
+    --shadow:         0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+    --focus:          0 0 0 3px rgba(57,135,229,.4);
+    --tier-splus:     #6e2e2a; --tier-s:#6b5326; --tier-a:#5c5626; --tier-b:#43481f; --tier-c:#33481f; --tier-d:#1f4a29;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+  .num { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  h1, h2, h3, .display { font-family: "Fraunces", Georgia, serif; text-wrap: balance; }
+  a { color: inherit; }
+
+  .shell { max-width: 1080px; margin: 0 auto; padding: 0 24px 96px; }
+
+  nav.topbar { border-bottom: 1px solid var(--border); background: var(--paper); position: sticky; top: 0; z-index: 20; }
+  .topbar-inner { max-width: 1080px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: 8px; font-size: 14px; color: var(--ink-faint); letter-spacing: .04em; text-transform: uppercase; }
+  .brand strong { color: var(--ink); font-weight: 600; letter-spacing: 0; text-transform: none; font-size: 15px; }
+  .site-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+  .site-nav a.item, .site-nav span.item { font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid transparent; color: var(--ink-secondary); white-space: nowrap; text-decoration: none; }
+  .site-nav a.item:hover { color: var(--ink); }
+  .site-nav .item.active { background: var(--surface); border-color: var(--border-strong); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
+  .site-nav .item.soon { color: var(--ink-faint); border: 1px dashed var(--border-strong); display: flex; gap: 6px; align-items: center; }
+  .site-nav .item.soon .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-faint); }
+
+  header.hero { padding: 48px 0 28px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 10px; }
+  header.hero h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 600; margin: 0 0 12px; line-height: 1.12; }
+  header.hero p { font-size: 16px; color: var(--ink-secondary); max-width: 62ch; margin: 0; line-height: 1.55; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+
+  /* ---------- filter bar ---------- */
+  .filterbar { display: flex; flex-wrap: wrap; gap: 22px; padding: 18px 22px; margin-bottom: 24px; align-items: flex-end; }
+  .filter-group { display: flex; flex-direction: column; gap: 8px; }
+  .filter-label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); font-weight: 600; }
+  .segmented { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+  .segmented button { border: none; background: var(--surface); color: var(--ink-secondary); font-size: 13px; font-weight: 500; padding: 8px 14px; cursor: pointer; font-family: inherit; }
+  .segmented button + button { border-left: 1px solid var(--border-strong); }
+  .segmented button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .segmented button:focus-visible { outline: none; box-shadow: var(--focus); position: relative; z-index: 1; }
+
+  section.block { margin-top: 34px; }
+  section.block h2 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+  section.block .block-sub { font-size: 13.5px; color: var(--ink-secondary); margin: 0 0 18px; max-width: 68ch; line-height: 1.5; }
+
+  /* ---------- recommendation banner ---------- */
+  .reco { padding: 22px 24px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border-strong); box-shadow: var(--shadow); display: flex; gap: 16px; align-items: flex-start; }
+  .reco .icon { font-size: 22px; line-height: 1; margin-top: 2px; }
+  .reco .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--accent); font-weight: 700; margin: 0 0 6px; }
+  .reco p { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .reco strong { font-weight: 600; }
+
+  /* ---------- CTO vs PEA ---------- */
+  .wrapper-table { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow); }
+  table.compare { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
+  table.compare th { text-align: left; padding: 12px 18px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-faint); font-weight: 600; border-bottom: 1px solid var(--border); }
+  table.compare td { padding: 12px 18px; border-bottom: 1px solid var(--border); }
+  table.compare tr:last-child td { border-bottom: none; }
+  table.compare td.crit { color: var(--ink-secondary); font-weight: 500; white-space: nowrap; }
+  table.compare td.yes { color: var(--good); font-weight: 600; }
+  table.compare td.no { color: var(--bad); font-weight: 600; }
+  table.compare td.neutral { color: var(--ink); font-weight: 600; }
+  .pea-note { margin-top: 14px; padding: 14px 18px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border-strong); font-size: 13px; color: var(--ink-secondary); line-height: 1.55; display: none; }
+  .pea-note.show { display: block; }
+  .pea-note strong { color: var(--ink); }
+
+  /* ---------- tier list ---------- */
+  .tier-grid { display: flex; flex-direction: column; gap: 2px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .tier-row { display: grid; grid-template-columns: 64px 1fr; background: var(--surface); }
+  .tier-badge { display: flex; align-items: center; justify-content: center; font-family: "Fraunces", serif; font-weight: 700; font-size: 18px; color: #14201c; }
+  .tier-badge.splus { background: var(--tier-splus); } .tier-badge.s { background: var(--tier-s); }
+  .tier-badge.a { background: var(--tier-a); } .tier-badge.b { background: var(--tier-b); }
+  .tier-badge.c { background: var(--tier-c); } .tier-badge.d { background: var(--tier-d); }
+  :root:not([data-theme="light"]) .tier-badge, :root[data-theme="dark"] .tier-badge { color: #eef2ea; }
+  .tier-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 14px; align-items: center; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 9px; background: var(--paper); border: 1px solid var(--border); font-size: 13px; font-weight: 500; transition: opacity .15s ease; }
+  .chip .name { color: var(--ink); }
+  .chip .tag { color: var(--ink-faint); font-size: 11.5px; }
+  .chip .avail { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .chip .avail.yes { background: var(--good); }
+  .chip .avail.no { background: var(--bad); }
+  .chip .avail.unknown { background: var(--warn); }
+  .chip.dim { opacity: .38; }
+  .chip[title] { cursor: help; }
+
+  .legend-row { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; font-size: 12px; color: var(--ink-faint); }
+  .legend-row .item { display: flex; align-items: center; gap: 6px; }
+  .legend-row .avail { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* ---------- comparison cards ---------- */
+  .compare-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 800px) { .compare-grid { grid-template-columns: 1fr; } }
+  .broker-card { padding: 20px; display: flex; flex-direction: column; gap: 14px; position: relative; }
+  .broker-card.dim { opacity: .45; }
+  .broker-card .bc-head { display: flex; align-items: center; justify-content: space-between; }
+  .broker-card .bc-name { font-size: 16px; font-weight: 600; }
+  .broker-card .bc-tier { font-size: 11px; padding: 3px 8px; border-radius: 999px; font-weight: 700; }
+  .bc-row .bc-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-faint); font-weight: 600; margin-bottom: 4px; }
+  .bc-row .bc-val { font-size: 13px; color: var(--ink-secondary); line-height: 1.5; }
+  .bc-avail { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; padding-top: 10px; border-top: 1px dashed var(--border); }
+  .bc-avail .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  footer.disclaimer { margin-top: 36px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; font-size: 12px; color: var(--ink-faint); line-height: 1.6; background: var(--surface); }
+  footer.disclaimer strong { color: var(--ink-secondary); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+</head>
+<body>
+<nav class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">plateforme investissement <strong>· édition de travail</strong></div>
+    <div class="site-nav">
+      <a class="item" href="/">Quiz</a>
+      <a class="item" id="navSimulateur" href="/simulateur.html">Simulateur</a>
+      <span class="item active">Broker</span>
+      <a class="item" href="/etf.html">ETF</a>
+      <span class="item soon"><span class="dot"></span>Mes finances</span>
+    </div>
+  </div>
+</nav>
+
+<div class="shell">
+  <header class="hero">
+    <p class="eyebrow">Incrément 2 — Choisir son broker</p>
+    <h1>Quel broker choisir, où que tu sois&nbsp;?</h1>
+    <p>Règle ton pays de résidence et ton profil — le classement, la disponibilité et la recommandation s'ajustent. Basé sur ta tier list et ton comparatif, complétés par une vérification de disponibilité par pays.</p>
+  </header>
+
+  <div class="card filterbar">
+    <div class="filter-group">
+      <span class="filter-label">Pays de résidence</span>
+      <div class="segmented" role="group" aria-label="Pays de résidence" id="countryGroup">
+        <button type="button" data-country="FR" aria-pressed="true">France</button>
+        <button type="button" data-country="LU" aria-pressed="false">Luxembourg</button>
+        <button type="button" data-country="MA" aria-pressed="false">Maroc</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Profil</span>
+      <div class="segmented" role="group" aria-label="Profil investisseur" id="profileGroup">
+        <button type="button" data-profile="debutant" aria-pressed="true">Débutant</button>
+        <button type="button" data-profile="actif" aria-pressed="false">Actif</button>
+        <button type="button" data-profile="gros" aria-pressed="false">Gros capital</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="reco" id="recoBox">
+    <span class="icon">🧭</span>
+    <div>
+      <p class="label">Recommandation</p>
+      <p id="recoText"></p>
+    </div>
+  </div>
+
+  <section class="block">
+    <h2>D'abord, l'enveloppe : CTO ou PEA&nbsp;?</h2>
+    <p class="block-sub">Avant de choisir un broker, il faut choisir le compte qui va porter tes investissements. Le PEA est fiscalement avantageux après 5 ans, mais réservé aux résidents fiscaux français.</p>
+    <div class="wrapper-table">
+      <table class="compare">
+        <thead><tr><th>Critère</th><th>CTO</th><th>PEA</th></tr></thead>
+        <tbody>
+          <tr><td class="crit">Marchés accessibles</td><td class="yes">Monde entier</td><td class="no">Europe uniquement</td></tr>
+          <tr><td class="crit">Amazon, Nvidia, Meta...</td><td class="yes">Oui</td><td class="no">Non</td></tr>
+          <tr><td class="crit">Options &amp; produits dérivés</td><td class="yes">Oui</td><td class="no">Non</td></tr>
+          <tr><td class="crit">Plafond de versement</td><td class="yes">Illimité</td><td class="neutral">150 000 €</td></tr>
+          <tr><td class="crit">Accessible hors France</td><td class="yes">Oui</td><td class="no">Non-résidents exclus</td></tr>
+          <tr><td class="crit">Fiscalité sur les plus-values</td><td class="neutral">30 % (flat tax)</td><td class="yes">17,2 % après 5 ans</td></tr>
+          <tr><td class="crit">Délai d'optimisation fiscale</td><td class="yes">Immédiat</td><td class="neutral">5 ans minimum</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pea-note" id="peaNote">
+      <strong>Pour toi&nbsp;:</strong> <span id="peaNoteText"></span>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Classement des brokers</h2>
+    <p class="block-sub">Le classement (qualité, coûts, sérieux) est indépendant du pays. Le point vert/rouge/orange indique si le broker est ouvert aux résidents du pays sélectionné.</p>
+    <div class="tier-grid" id="tierGrid"></div>
+    <div class="legend-row">
+      <span class="item"><span class="avail" style="background:var(--good)"></span>Disponible</span>
+      <span class="item"><span class="avail" style="background:var(--bad)"></span>Non disponible</span>
+      <span class="item"><span class="avail" style="background:var(--warn)"></span>À vérifier directement</span>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Le trio à comparer de près</h2>
+    <p class="block-sub">Les trois brokers les plus cités pour démarrer sérieusement — vue détaillée pour trancher selon ton profil.</p>
+    <div class="compare-grid" id="compareGrid"></div>
+  </section>
+
+  <footer class="disclaimer">
+    <strong>Avant d'ouvrir un compte :</strong> les conditions d'éligibilité par pays changent régulièrement et varient parfois selon ta nationalité, ton lieu de naissance ou ta situation fiscale précise (au-delà de ton seul pays de résidence). Les informations de disponibilité ci-dessus viennent de recherches faites le 31/08/2026 et peuvent être incomplètes — vérifie toujours directement sur le site du broker avant d'ouvrir un compte ou de transférer des fonds. Ce guide est pédagogique et ne constitue pas un conseil en investissement.
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // avail: true = disponible, false = non disponible, null = à vérifier
+  var BROKERS = [
+    { id: "ibkr", name: "Interactive Brokers", tier: "splus", tierLabel: "S+", tag: "Investisseur confirmé",
+      fr: true, lu: true, ma: true, note: "Disponible dans les 3 pays d'après la liste officielle IBKR.",
+      fees: "0,005 $/action US (le plus bas) · 0,05 % EU · min. 1,25 $", markets: "135+ marchés · actions, ETF, options, futures, forex, obligations",
+      perks: "4 %+ USD / 2 %+ EUR sur le cash non investi, sans PFOF", profileFit: "Investisseur confirmé — capital > 10-15k€, trading actif, marchés exotiques" },
+    { id: "saxo", name: "Saxo Banque", tier: "s", tierLabel: "S", tag: "Multi-actifs",
+      fr: true, lu: true, ma: true, note: "Broker multi-juridictions, ouvert aux résidents marocains d'après nos recherches — vérifie le dépôt minimum selon ton pays.",
+      fees: "Variable selon plan et volume", markets: "Actions, ETF, obligations, forex, futures — large gamme", perks: "Plateforme SaxoTraderGO, recherche & outils avancés", profileFit: "Investisseur qui veut une gamme large avec une seule interface" },
+    { id: "traderepublic", name: "Trade Republic", tier: "s", tierLabel: "S", tag: "Débutant / passif",
+      fr: true, lu: true, ma: false, note: "Licence bancaire européenne (UE/EEE uniquement) — non disponible pour les résidents marocains.",
+      fees: "1 € fixe/ordre · plans programmés gratuits", markets: "17 pays, 8 500+ titres · actions & ETF uniquement (pas d'options/futures)",
+      perks: "2,75 %/an sur le cash · PEA disponible depuis janvier 2025", profileFit: "Débutant / investisseur passif qui veut la simplicité" },
+    { id: "xtb", name: "XTB", tier: "a", tierLabel: "A", tag: "Actions & ETF",
+      fr: true, lu: true, ma: true, note: "Cité parmi les brokers disponibles pour les résidents marocains.",
+      fees: "0 commission jusqu'à 100k€/mois de volume (au-delà 0,2%)", markets: "Actions & ETF sur les principales places mondiales",
+      perks: "Interface simple, bon service client", profileFit: "Débutant à intermédiaire" },
+    { id: "shares", name: "Shares", tier: "a", tierLabel: "A", tag: "Ordres simplifiés",
+      fr: null, lu: null, ma: null, note: "Application encore peu répandue — disponibilité par pays non confirmée, à vérifier directement.",
+      fees: "À vérifier", markets: "Actions & ETF", perks: "Application mobile simple", profileFit: "Débutant qui veut une app mobile épurée" },
+    { id: "degiro", name: "DEGIRO", tier: "a", tierLabel: "A", tag: "Multi-marchés",
+      fr: true, lu: null, ma: false, note: "Non disponible pour les résidents marocains d'après nos recherches. Disponibilité au Luxembourg non confirmée avec certitude — à vérifier.",
+      fees: "1 € fixe/ordre · sélection ETF gratuite (+1 € gestion) · hors sélection 2 €", markets: "50+ bourses · actions, ETF, options, futures, warrants",
+      perks: "Aucun intérêt versé sur le cash · prêt de titres par défaut", profileFit: "Stock picker qui veut un accès mondial à prix serré" },
+    { id: "fortuneo", name: "Fortuneo", tier: "b", tierLabel: "B", tag: "PEA / CTO classique",
+      fr: true, lu: false, ma: false, note: "PEA réservé aux résidents fiscaux français. Le CTO est en général réservé aux ressortissants français, même expatriés — pas d'ouverture standard pour un non-résident non-français.",
+      fees: "Faibles sur les valeurs françaises/européennes", markets: "Actions, ETF, PEA, PEA-PME", perks: "Banque en ligne établie", profileFit: "Résident fiscal français qui veut un PEA" },
+    { id: "boursorama", name: "Boursorama", tier: "b", tierLabel: "B", tag: "Banque en ligne",
+      fr: true, lu: false, ma: false, note: "Pour un résident fiscal étranger, l'ouverture passe par un circuit spécifique (service commercial) — pas un parcours standard en ligne.",
+      fees: "Faibles sur les valeurs françaises/européennes", markets: "Actions, ETF, PEA", perks: "Grande banque en ligne, offre bancaire complète", profileFit: "Résident fiscal français qui veut tout chez le même acteur" },
+    { id: "boursedirect", name: "Bourse Direct", tier: "b", tierLabel: "B", tag: "Courtier traditionnel FR",
+      fr: true, lu: false, ma: false, note: "Courtier français traditionnel — conditions de résidence similaires aux autres acteurs français, à confirmer directement.",
+      fees: "Grille tarifaire par palier", markets: "Actions, ETF, PEA", perks: "Courtier historique, service client réputé", profileFit: "Résident fiscal français qui investit activement" },
+    { id: "revolut", name: "Revolut", tier: "c", tierLabel: "C", tag: "Généraliste",
+      fr: true, lu: true, ma: null, note: "L'app bancaire n'est pas confirmée disponible pour l'ouverture de compte au Maroc — à vérifier avant de compter dessus.",
+      fees: "Gratuit avec limites selon le forfait, puis commission", markets: "Actions & ETF, sélection plus restreinte", perks: "Intégré à l'app bancaire du quotidien", profileFit: "Qui veut investir depuis une app déjà utilisée au quotidien" },
+    { id: "trading212", name: "Trading 212", tier: "c", tierLabel: "C", tag: "Débutant",
+      fr: true, lu: true, ma: false, note: "Le Maroc fait partie des pays où Trading 212 n'est pas disponible.",
+      fees: "0 commission sur actions/ETF", markets: "Actions & ETF, CFD séparés", perks: "Interface très simple, versements programmés", profileFit: "Débutant qui veut du 0 commission" },
+    { id: "etoro", name: "eToro", tier: "d", tierLabel: "D", tag: "Social trading",
+      fr: true, lu: true, ma: false, note: "N'accepte plus de nouvelles inscriptions depuis le Maroc (2026).", fees: "Spreads plus larges, 0 commission actions",
+      markets: "Actions, ETF, crypto, copy trading", perks: "Fonction de copie de portefeuille", profileFit: "Débutant curieux du copy trading (frais à surveiller)" }
+  ];
+
+  var TIER_ORDER = ["splus", "s", "a", "b", "c", "d"];
+
+  var RECO = {
+    FR: "En France, démarre avec <strong>Trade Republic</strong> (simplicité, PEA depuis 2025) ou <strong>DEGIRO</strong> (accès multi-marchés). Passe à <strong>Interactive Brokers</strong> au-delà de 10-15k€, pour des marchés hors Europe, ou des produits plus avancés. Le PEA t'est accessible en tant que résident fiscal français.",
+    LU: "Au Luxembourg, <strong>Trade Republic</strong> est disponible et reste le plus simple pour démarrer. <strong>DEGIRO</strong> aussi, sous réserve de vérifier ton éligibilité exacte au moment de l'ouverture. Pas de PEA depuis le Luxembourg — tu ouvres directement un CTO. Pour un accès mondial complet ou un gros capital, <strong>Interactive Brokers</strong>.",
+    MA: "Au Maroc, <strong>Trade Republic</strong>, <strong>DEGIRO</strong> et <strong>Trading 212</strong> ne sont pas disponibles. Les options les plus solides et confirmées sont <strong>Interactive Brokers</strong>, <strong>XTB</strong> et <strong>Saxo Banque</strong> — tous ouverts aux résidents marocains d'après nos recherches. Pas de PEA (réservé aux résidents fiscaux français) : tu passes par un compte-titres (CTO) équivalent."
+  };
+
+  var PEA_NOTES = {
+    FR: "Résident fiscal français, tu peux ouvrir un PEA (plafonné à 150 000 €, Europe uniquement) en plus d'un CTO.",
+    LU: "Le PEA est réservé aux résidents fiscaux français — depuis le Luxembourg, tu investis via un CTO classique, sans limite de plafond ni de marché.",
+    MA: "Le PEA est réservé aux résidents fiscaux français — depuis le Maroc, tu investis via un CTO classique, qui te donne accès au monde entier sans plafond."
+  };
+
+  var els = {
+    countryGroup: document.getElementById("countryGroup"),
+    profileGroup: document.getElementById("profileGroup"),
+    recoText: document.getElementById("recoText"),
+    peaNote: document.getElementById("peaNote"),
+    peaNoteText: document.getElementById("peaNoteText"),
+    tierGrid: document.getElementById("tierGrid"),
+    compareGrid: document.getElementById("compareGrid")
+  };
+
+  var state = { country: "FR", profile: "debutant" };
+
+  function countryKey() { return state.country.toLowerCase(); }
+
+  function availOf(broker) {
+    var v = broker[countryKey()];
+    if (v === true) return "yes";
+    if (v === false) return "no";
+    return "unknown";
+  }
+  function availLabel(status) {
+    return status === "yes" ? "Disponible" : status === "no" ? "Non disponible" : "À vérifier";
+  }
+
+  function renderTier() {
+    var byTier = {};
+    TIER_ORDER.forEach(function (t) { byTier[t] = []; });
+    BROKERS.forEach(function (b) { byTier[b.tier].push(b); });
+
+    var html = "";
+    TIER_ORDER.forEach(function (t) {
+      var list = byTier[t];
+      if (!list.length) return;
+      html += '<div class="tier-row"><div class="tier-badge ' + t + '">' + list[0].tierLabel + '</div><div class="tier-chips">';
+      list.forEach(function (b) {
+        var status = availOf(b);
+        var dim = status === "no" ? " dim" : "";
+        html += '<span class="chip' + dim + '" title="' + b.note.replace(/"/g, "&quot;") + '">' +
+          '<span class="avail ' + status + '"></span>' +
+          '<span class="name">' + b.name + '</span>' +
+          '<span class="tag">' + b.tag + '</span>' +
+          '</span>';
+      });
+      html += "</div></div>";
+    });
+    els.tierGrid.innerHTML = html;
+  }
+
+  function renderCompare() {
+    var ids = ["ibkr", "traderepublic", "degiro"];
+    var html = "";
+    ids.forEach(function (id) {
+      var b = BROKERS.filter(function (x) { return x.id === id; })[0];
+      var status = availOf(b);
+      var dim = status === "no" ? " dim" : "";
+      html += '<div class="card broker-card' + dim + '">' +
+        '<div class="bc-head"><span class="bc-name">' + b.name + '</span><span class="bc-tier tier-badge ' + b.tier + '" style="padding:3px 9px;border-radius:999px;">' + b.tierLabel + '</span></div>' +
+        '<div class="bc-row"><div class="bc-label">Frais</div><div class="bc-val">' + b.fees + '</div></div>' +
+        '<div class="bc-row"><div class="bc-label">Marchés</div><div class="bc-val">' + b.markets + '</div></div>' +
+        '<div class="bc-row"><div class="bc-label">Avantages</div><div class="bc-val">' + b.perks + '</div></div>' +
+        '<div class="bc-row"><div class="bc-label">Pour quel profil</div><div class="bc-val">' + b.profileFit + '</div></div>' +
+        '<div class="bc-avail"><span class="dot" style="background:var(--' + (status === "yes" ? "good" : status === "no" ? "bad" : "warn") + ')"></span>' +
+        availLabel(status) + ' pour un résident ' + (state.country === "FR" ? "français" : state.country === "LU" ? "luxembourgeois" : "marocain") + '</div>' +
+        "</div>";
+    });
+    els.compareGrid.innerHTML = html;
+  }
+
+  function render() {
+    els.recoText.innerHTML = RECO[state.country];
+    els.peaNoteText.textContent = "";
+    els.peaNote.classList.add("show");
+    els.peaNoteText.innerHTML = PEA_NOTES[state.country];
+    renderTier();
+    renderCompare();
+  }
+
+  els.countryGroup.querySelectorAll("button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      state.country = btn.getAttribute("data-country");
+      els.countryGroup.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
+      render();
+    });
+  });
+  els.profileGroup.querySelectorAll("button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      state.profile = btn.getAttribute("data-profile");
+      els.profileGroup.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
+      render();
+    });
+  });
+
+  // pré-remplissage depuis le quiz (?country=FR&profile=debutant)
+  try {
+    var qp = new URLSearchParams(location.search);
+    var qCountry = (qp.get("country") || "").toUpperCase();
+    var qProfile = qp.get("profile");
+    if (["FR", "LU", "MA"].indexOf(qCountry) !== -1) state.country = qCountry;
+    if (["debutant", "actif", "gros"].indexOf(qProfile) !== -1) state.profile = qProfile;
+    els.countryGroup.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-country") === state.country ? "true" : "false"); });
+    els.profileGroup.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-profile") === state.profile ? "true" : "false"); });
+  } catch (e) { /* pas de query string valide : on garde les valeurs par défaut */ }
+
+  render();
+})();
+</script>
+</body>
+</html>

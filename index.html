@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quel investisseur es-tu ?</title>
+<style>
+  :root {
+    color-scheme: light;
+    --ink:            #142521;
+    --ink-secondary:  #4b5d58;
+    --ink-faint:      #7c8b86;
+    --paper:          #f3f5f0;
+    --surface:        #ffffff;
+    --border:         #dde2da;
+    --border-strong:  #c4ccc1;
+    --accent:         #2a78d6;
+    --accent-ink:     #ffffff;
+    --gain:           #eb6834;
+    --good:           #0ca30c;
+    --warn:           #eda100;
+    --bad:            #d03b3b;
+    --shadow:         0 1px 2px rgba(20,37,33,.04), 0 8px 24px -12px rgba(20,37,33,.15);
+    --focus:          0 0 0 3px rgba(42,120,214,.35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ink:            #f2f4f0;
+      --ink-secondary:  #b9c4bd;
+      --ink-faint:      #7d8a83;
+      --paper:          #101512;
+      --surface:        #171d19;
+      --border:         #2a322c;
+      --border-strong:  #3a453d;
+      --accent:         #3987e5;
+      --accent-ink:     #061020;
+      --gain:           #d95926;
+      --good:           #1cbf1c;
+      --warn:           #c98500;
+      --bad:            #e66767;
+      --shadow:         0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+      --focus:          0 0 0 3px rgba(57,135,229,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ink:            #f2f4f0;
+    --ink-secondary:  #b9c4bd;
+    --ink-faint:      #7d8a83;
+    --paper:          #101512;
+    --surface:        #171d19;
+    --border:         #2a322c;
+    --border-strong:  #3a453d;
+    --accent:         #3987e5;
+    --accent-ink:     #061020;
+    --gain:           #d95926;
+    --good:           #1cbf1c;
+    --warn:           #c98500;
+    --bad:            #e66767;
+    --shadow:         0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+    --focus:          0 0 0 3px rgba(57,135,229,.4);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+  .num { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  h1, h2, h3, .display { font-family: "Fraunces", Georgia, serif; text-wrap: balance; }
+  a { color: inherit; }
+  button { font-family: inherit; }
+
+  .shell { max-width: 760px; margin: 0 auto; padding: 0 24px 96px; }
+
+  nav.topbar { border-bottom: 1px solid var(--border); background: var(--paper); position: sticky; top: 0; z-index: 20; }
+  .topbar-inner { max-width: 1080px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: 8px; font-size: 14px; color: var(--ink-faint); letter-spacing: .04em; text-transform: uppercase; }
+  .brand strong { color: var(--ink); font-weight: 600; letter-spacing: 0; text-transform: none; font-size: 15px; }
+  .site-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+  .site-nav a.item, .site-nav span.item { font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid transparent; color: var(--ink-secondary); white-space: nowrap; text-decoration: none; }
+  .site-nav a.item:hover { color: var(--ink); }
+  .site-nav .item.active { background: var(--surface); border-color: var(--border-strong); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
+  .site-nav .item.soon { color: var(--ink-faint); border: 1px dashed var(--border-strong); display: flex; gap: 6px; align-items: center; }
+  .site-nav .item.soon .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-faint); }
+
+  header.hero { padding: 44px 0 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 10px; }
+  header.hero h1 { font-size: clamp(26px, 4vw, 36px); font-weight: 600; margin: 0 0 12px; line-height: 1.15; }
+  header.hero p { font-size: 15.5px; color: var(--ink-secondary); max-width: 58ch; margin: 0; line-height: 1.55; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+
+  /* ---------- quiz ---------- */
+  .quiz-card { padding: 28px; margin-top: 8px; }
+  .quiz-progress { display: flex; gap: 6px; margin-bottom: 22px; }
+  .quiz-dot { flex: 1; height: 4px; border-radius: 999px; background: var(--border); }
+  .quiz-dot.done, .quiz-dot.current { background: var(--accent); }
+  .quiz-dot.current { opacity: .5; }
+  .quiz-step-label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); font-weight: 600; margin: 0 0 8px; }
+  .quiz-q { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
+  .quiz-help { font-size: 13.5px; color: var(--ink-secondary); margin: 0 0 22px; line-height: 1.55; }
+  .choice-grid { display: flex; flex-direction: column; gap: 10px; }
+  .choice { text-align: left; padding: 15px 18px; border-radius: 12px; border: 1px solid var(--border-strong); background: var(--surface); cursor: pointer; font-size: 14px; color: var(--ink); transition: border-color .15s ease, background .15s ease; }
+  .choice:hover { border-color: var(--accent); }
+  .choice:focus-visible { outline: none; box-shadow: var(--focus); }
+  .choice.selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+  .choice .c-title { font-weight: 600; display: block; }
+  .choice .c-sub { display: block; font-size: 12.5px; color: var(--ink-faint); margin-top: 3px; font-weight: 400; line-height: 1.45; }
+  .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+
+  .btn { border: none; border-radius: 8px; font-size: 14px; font-weight: 600; padding: 10px 20px; cursor: pointer; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-primary:focus-visible { outline: none; box-shadow: var(--focus); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border-strong); color: var(--ink-secondary); }
+  .btn-ghost:focus-visible { outline: none; box-shadow: var(--focus); }
+
+  /* ---------- result ---------- */
+  .result-eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 8px; }
+  .result-title { font-size: 22px; font-weight: 600; margin: 0 0 14px; }
+  .result-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .result-chip { font-size: 12px; padding: 6px 12px; border-radius: 999px; background: var(--paper); border: 1px solid var(--border-strong); color: var(--ink-secondary); font-weight: 600; }
+  .reassure-card { padding: 16px 18px; border-left: 3px solid var(--accent); background: var(--paper); border-radius: 0 12px 12px 0; margin-bottom: 26px; font-size: 13.5px; line-height: 1.6; color: var(--ink-secondary); }
+  .reassure-card strong { color: var(--ink); }
+
+  section.block { margin-top: 30px; }
+  section.block h2 { font-size: 17px; font-weight: 600; margin: 0 0 4px; }
+  section.block .block-sub { font-size: 13px; color: var(--ink-secondary); margin: 0 0 14px; line-height: 1.5; }
+
+  .lexique-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (max-width: 620px) { .lexique-grid { grid-template-columns: 1fr; } }
+  .lex-item { padding: 12px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); }
+  .lex-item .lex-term { font-weight: 700; font-size: 13px; color: var(--ink); }
+  .lex-item .lex-def { font-size: 12.5px; color: var(--ink-secondary); margin-top: 3px; line-height: 1.45; }
+
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step-card { display: flex; gap: 16px; align-items: center; padding: 16px 18px; flex-wrap: wrap; }
+  .step-num { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: "Fraunces", serif; flex-shrink: 0; }
+  .step-body { flex: 1; min-width: 180px; }
+  .step-title { font-weight: 600; font-size: 14.5px; }
+  .step-desc { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; line-height: 1.4; }
+  .step-cta { padding: 9px 16px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .step-cta:hover { opacity: .9; }
+
+  .other-country-note { font-size: 12.5px; color: var(--ink-faint); margin-top: 14px; line-height: 1.5; }
+
+  footer.disclaimer { margin-top: 36px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; font-size: 12px; color: var(--ink-faint); line-height: 1.6; background: var(--surface); }
+  footer.disclaimer strong { color: var(--ink-secondary); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+</head>
+<body>
+<nav class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">plateforme investissement <strong>· édition de travail</strong></div>
+    <div class="site-nav">
+      <span class="item active">Quiz</span>
+      <a class="item" href="/simulateur.html">Simulateur</a>
+      <a class="item" href="/broker.html">Broker</a>
+      <a class="item" href="/etf.html">ETF</a>
+      <span class="item soon"><span class="dot"></span>Mes finances</span>
+    </div>
+  </div>
+</nav>
+
+<div class="shell">
+  <header class="hero">
+    <p class="eyebrow">Point de départ — Quel investisseur es-tu ?</p>
+    <h1>Réponds à 4 questions simples, on te trace ton parcours</h1>
+    <p>Aucune connaissance requise. À la fin, tu as un parcours personnalisé — broker, ETF, simulation — dans le bon ordre pour toi.</p>
+  </header>
+
+  <div id="quizWrap"></div>
+
+  <footer class="disclaimer">
+    <strong>À garder en tête :</strong> ce quiz oriente vers un point de départ pédagogique, il ne remplace pas un conseil personnalisé. Vérifie toujours les informations avant d'investir. Ce guide ne constitue pas un conseil en investissement.
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var QUESTIONS = [
+    {
+      id: "country",
+      label: "1 sur 4",
+      q: "Tu vis où ?",
+      help: "Les brokers et les règles fiscales changent selon ton pays de résidence.",
+      options: [
+        { value: "FR", title: "France" },
+        { value: "LU", title: "Luxembourg" },
+        { value: "MA", title: "Maroc" },
+        { value: "other", title: "Un autre pays" }
+      ]
+    },
+    {
+      id: "goal",
+      label: "2 sur 4",
+      q: "Tu veux plutôt...",
+      help: "Ta réponse ici détermine le type d'ETF qui te correspond le mieux.",
+      options: [
+        { value: "construire", title: "Faire grossir un capital sur le long terme", sub: "Tu n'as pas besoin de cet argent avant 10 ans ou plus, tu veux le laisser travailler." },
+        { value: "revenu", title: "Avoir un revenu régulier maintenant", sub: "Par exemple pour compléter un salaire — tu veux recevoir de l'argent en cash régulièrement." },
+        { value: "unknown", title: "Je ne sais pas encore, j'apprends", sub: "Pas de souci, on part sur l'option la plus courante pour débuter." }
+      ]
+    },
+    {
+      id: "budget",
+      label: "3 sur 4",
+      q: "Combien peux-tu mettre de côté pour investir ?",
+      help: "En gardant à part une épargne de sécurité (3 à 6 mois de dépenses) — ce n'est pas cet argent-là qu'on investit.",
+      options: [
+        { value: "lt100", title: "Moins de 100 € par mois" },
+        { value: "100to500", title: "Entre 100 € et 500 € par mois" },
+        { value: "gt500", title: "Plus de 500 € par mois" },
+        { value: "lumpsum", title: "J'ai surtout un montant plus important à placer d'un coup" }
+      ]
+    },
+    {
+      id: "risk",
+      label: "4 sur 4",
+      q: "Ton investissement perd 20 % de sa valeur pendant quelques mois (ça arrive, c'est normal). Tu ferais quoi ?",
+      help: "",
+      options: [
+        { value: "worried", title: "Je m'inquièterais, je serais tenté de tout retirer" },
+        { value: "calm", title: "Ça ne me dérangerait pas, je sais que ça remonte sur le long terme" },
+        { value: "unsure", title: "Je ne sais pas, je n'y ai jamais été confronté" }
+      ]
+    }
+  ];
+
+  var LEXIQUE = [
+    { term: "ETF", def: "Un fonds qui regroupe des centaines d'entreprises en une seule part — tu investis dans tout un marché d'un coup, pas dans une seule action." },
+    { term: "Broker", def: "La plateforme où tu ouvres ton compte et passes tes ordres d'achat/vente — l'équivalent d'une banque, mais pour investir." },
+    { term: "PEA / CTO", def: "Deux types de comptes pour investir. Le CTO est ouvert à tous, accès au monde entier. Le PEA a une meilleure fiscalité mais réservé aux résidents fiscaux français, limité à l'Europe." },
+    { term: "TER", def: "Les frais annuels d'un ETF, prélevés automatiquement. Plus c'est bas, plus tu gardes d'argent — vise sous 0,20 %/an." },
+    { term: "Acc / Dist", def: "Acc réinvestit automatiquement les dividendes pour toi. Dist te les verse en cash sur ton compte." },
+    { term: "Diversification", def: "Répartir son argent sur beaucoup d'entreprises et de pays plutôt que tout miser sur une seule — ça réduit le risque." }
+  ];
+
+  var REASSURE = {
+    worried: "C'est une réaction totalement normale — et c'est justement pour ça qu'on investit un peu chaque mois plutôt que tout d'un coup. Les baisses ponctuelles font partie du jeu : historiquement, les marchés ont toujours fini par remonter sur le long terme. Le vrai risque pour un débutant n'est pas la baisse elle-même, c'est de paniquer et de vendre au pire moment.",
+    calm: "C'est exactement le bon état d'esprit pour investir sur le long terme : une baisse temporaire ne compte que si tu vends au mauvais moment. Tenir bon (voire continuer à verser) pendant une baisse, c'est souvent ce qui fait la différence sur 10 à 15 ans.",
+    unsure: "C'est normal de ne pas savoir avant d'y avoir été confronté — personne ne l'est vraiment tant que ça n'arrive pas. Le plus important à retenir : les marchés montent et baissent, c'est normal, et miser sur le temps long (10 ans ou plus) est ce qui protège le mieux un débutant."
+  };
+
+  var PROFILE_LABEL = { debutant: "Profil débutant", actif: "Profil actif", gros: "Gros capital" };
+  var COUNTRY_LABEL = { FR: "France", LU: "Luxembourg", MA: "Maroc", other: "Ton pays" };
+  var GOAL_LABEL = { construire: "Construire un capital", revenu: "Revenu régulier", unknown: "Construire un capital (par défaut)" };
+
+  var wrap = document.getElementById("quizWrap");
+  var state = { index: 0, answers: {} };
+
+  function budgetToProfile(v) {
+    if (v === "gt500") return "actif";
+    if (v === "lumpsum") return "gros";
+    return "debutant"; // lt100, 100to500
+  }
+
+  function renderProgress(activeIndex, total) {
+    var html = "";
+    for (var i = 0; i < total; i++) {
+      var cls = i < activeIndex ? "done" : (i === activeIndex ? "current" : "");
+      html += '<div class="quiz-dot ' + cls + '"></div>';
+    }
+    return html;
+  }
+
+  function renderQuestion() {
+    var q = QUESTIONS[state.index];
+    var selected = state.answers[q.id];
+    var html = '<div class="card quiz-card">' +
+      '<div class="quiz-progress">' + renderProgress(state.index, QUESTIONS.length) + '</div>' +
+      '<p class="quiz-step-label">' + q.label + '</p>' +
+      '<p class="quiz-q">' + q.q + '</p>' +
+      (q.help ? '<p class="quiz-help">' + q.help + '</p>' : '<div style="margin-bottom:22px"></div>') +
+      '<div class="choice-grid" id="choiceGrid">';
+    q.options.forEach(function (opt) {
+      var sel = selected === opt.value ? " selected" : "";
+      html += '<button type="button" class="choice' + sel + '" data-value="' + opt.value + '">' +
+        '<span class="c-title">' + opt.title + '</span>' +
+        (opt.sub ? '<span class="c-sub">' + opt.sub + '</span>' : "") +
+        '</button>';
+    });
+    html += '</div>' +
+      '<div class="quiz-nav">' +
+      '<button type="button" class="btn btn-ghost" id="btnBack"' + (state.index === 0 ? " disabled" : "") + '>← Précédent</button>' +
+      '<button type="button" class="btn btn-primary" id="btnNext"' + (selected ? "" : " disabled") + '>' + (state.index === QUESTIONS.length - 1 ? "Voir mon parcours" : "Suivant →") + '</button>' +
+      '</div>' +
+      '</div>';
+    wrap.innerHTML = html;
+
+    document.getElementById("choiceGrid").querySelectorAll(".choice").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.answers[q.id] = btn.getAttribute("data-value");
+        renderQuestion();
+      });
+    });
+    var backBtn = document.getElementById("btnBack");
+    if (backBtn) backBtn.addEventListener("click", function () { state.index--; renderQuestion(); });
+    document.getElementById("btnNext").addEventListener("click", function () {
+      if (!state.answers[q.id]) return;
+      if (state.index < QUESTIONS.length - 1) { state.index++; renderQuestion(); }
+      else { renderResult(); }
+    });
+  }
+
+  function renderResult() {
+    var a = state.answers;
+    var country = a.country;
+    var goal = a.goal === "unknown" ? "construire" : a.goal;
+    var profile = budgetToProfile(a.budget);
+    var isOtherCountry = country === "other";
+
+    var brokerUrl = "/broker.html" +
+      (isOtherCountry ? "" : "?country=" + country + "&profile=" + profile);
+    var etfUrl = "/etf.html?goal=" + goal;
+    var simUrl = "/simulateur.html";
+
+    var html = '<div class="card quiz-card">' +
+      '<p class="result-eyebrow">Ton profil</p>' +
+      '<p class="result-title">' + PROFILE_LABEL[profile] + (isOtherCountry ? "" : " · " + COUNTRY_LABEL[country]) + '</p>' +
+      '<div class="result-chip-row">' +
+      '<span class="result-chip">' + GOAL_LABEL[a.goal] + '</span>' +
+      '<span class="result-chip">' + COUNTRY_LABEL[country] + '</span>' +
+      '</div>' +
+      '<div class="reassure-card">' + REASSURE[a.risk] + '</div>' +
+      (isOtherCountry ? '<p class="other-country-note">Le guide broker est surtout détaillé pour la France, le Luxembourg et le Maroc — les principes (CTO, réplication, frais) restent valables ailleurs, mais vérifie toi-même la disponibilité des brokers dans ton pays.</p>' : '') +
+      '</div>' +
+
+      '<section class="block">' +
+      '<h2>Les mots que tu vas croiser</h2>' +
+      '<p class="block-sub">Pas besoin de les retenir par cœur — reviens ici si un mot te bloque plus tard.</p>' +
+      '<div class="lexique-grid">' +
+      LEXIQUE.map(function (l) {
+        return '<div class="lex-item"><div class="lex-term">' + l.term + '</div><div class="lex-def">' + l.def + '</div></div>';
+      }).join("") +
+      '</div>' +
+      '</section>' +
+
+      '<section class="block">' +
+      '<h2>Ton parcours recommandé</h2>' +
+      '<p class="block-sub">Dans cet ordre — chaque page reprend ta réponse pour te montrer directement ce qui te concerne.</p>' +
+      '<div class="steps">' +
+      '<div class="card step-card"><div class="step-num">1</div><div class="step-body"><div class="step-title">Choisis ton broker</div><div class="step-desc">Le compte où tu vas investir — classement et disponibilité pré-filtrés pour toi.</div></div><a class="step-cta" href="' + brokerUrl + '" target="_blank" rel="noopener">Ouvrir →</a></div>' +
+      '<div class="card step-card"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisis ton ETF</div><div class="step-desc">La sélection et le comparatif, avec la recommandation Acc/Dist déjà pré-remplie pour toi.</div></div><a class="step-cta" href="' + etfUrl + '" target="_blank" rel="noopener">Ouvrir →</a></div>' +
+      '<div class="card step-card"><div class="step-num">3</div><div class="step-body"><div class="step-title">Simule ce que ça peut donner</div><div class="step-desc">Projette ton capital dans le temps selon ton âge et ton versement mensuel.</div></div><a class="step-cta" href="' + simUrl + '" target="_blank" rel="noopener">Ouvrir →</a></div>' +
+      '</div>' +
+      '</section>' +
+
+      '<div style="margin-top:26px"><button type="button" class="btn btn-ghost" id="btnRestart">↺ Refaire le quiz</button></div>';
+
+    wrap.innerHTML = html;
+    document.getElementById("btnRestart").addEventListener("click", function () {
+      state = { index: 0, answers: {} };
+      renderQuestion();
+    });
+  }
+
+  renderQuestion();
+})();
+</script>
+</body>
+</html>
