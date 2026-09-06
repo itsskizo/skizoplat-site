@@ -112,6 +112,13 @@
   .segmented button + button { border-left: 1px solid var(--border-strong); }
   .segmented button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
   .segmented button:focus-visible { outline: none; box-shadow: var(--focus); position: relative; z-index: 1; }
+  .segmented button:disabled { opacity: .38; cursor: not-allowed; }
+  .segmented button:disabled:hover { color: var(--ink-secondary); }
+
+  /* ---------- envelope choice (CTO/PEA) ---------- */
+  .envelope-choice { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
+  .pea-pill { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: var(--good); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .03em; vertical-align: middle; }
+  :root:not([data-theme="light"]) .pea-pill, :root[data-theme="dark"] .pea-pill { color: #08240a; }
 
   section.block { margin-top: 34px; }
   section.block h2 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
@@ -270,6 +277,13 @@
     <div class="pea-note" id="peaNote">
       <strong data-i18n="peaForYou">Pour toi&nbsp;:</strong> <span id="peaNoteText"></span>
     </div>
+    <div class="envelope-choice">
+      <span class="filter-label" data-i18n="envelopeLabel">Ton choix pour cette page</span>
+      <div class="segmented" role="group" id="envelopeGroup" style="margin-top:8px" data-i18n-aria="envelopeAria">
+        <button type="button" data-envelope="CTO" aria-pressed="true">CTO</button>
+        <button type="button" data-envelope="PEA" aria-pressed="false" id="peaEnvelopeBtn">PEA</button>
+      </div>
+    </div>
   </section>
 
   <section class="block" id="peaDetailSection" hidden>
@@ -313,8 +327,8 @@
   </section>
 
   <section class="block">
-    <h2 data-i18n="tierHeading">Classement des brokers</h2>
-    <p class="block-sub" data-i18n="tierSub">Le classement (qualité, coûts, sérieux) est indépendant du pays. Le point vert/rouge/orange indique si le broker est ouvert aux résidents du pays sélectionné.</p>
+    <h2 data-i18n="tierHeading" id="tierHeadingText">Classement des brokers</h2>
+    <p class="block-sub" data-i18n="tierSub" id="tierSubText">Le classement (qualité, coûts, sérieux) est indépendant du pays. Le point vert/rouge/orange indique si le broker est ouvert aux résidents du pays sélectionné.</p>
     <div class="tier-grid" id="tierGrid"></div>
     <div class="legend-row">
       <span class="item"><span class="avail" style="background:var(--good)"></span><span data-i18n="legendAvailable">Disponible</span></span>
@@ -324,8 +338,8 @@
   </section>
 
   <section class="block">
-    <h2 data-i18n="trioHeading">Le trio à comparer de près</h2>
-    <p class="block-sub" data-i18n="trioSub">Les trois brokers les plus cités pour démarrer sérieusement — vue détaillée pour trancher selon ton profil.</p>
+    <h2 data-i18n="trioHeading" id="trioHeadingText">Le trio à comparer de près</h2>
+    <p class="block-sub" data-i18n="trioSub" id="trioSubText">Les trois brokers les plus cités pour démarrer sérieusement — vue détaillée pour trancher selon ton profil.</p>
     <div class="compare-grid" id="compareGrid"></div>
   </section>
 
@@ -339,19 +353,26 @@
   "use strict";
 
   // avail: true = disponible, false = non disponible, null = à vérifier
+  // pea: true si l'établissement propose un PEA (vérifié via sinvestir.fr le 06/09/2026 +
+  // confirmation indépendante pour Interactive Brokers, qui a lancé un vrai PEA réglementaire
+  // fin 2024 — premier courtier étranger à le faire. Structure : compte logé chez sa filiale
+  // irlandaise (IBIE, régulée par la Banque centrale d'Irlande) ; l'ouverture s'accompagne
+  // automatiquement d'un compte-titres ordinaire en parallèle (impossible de faire autrement),
+  // et le compte doit être déclaré chaque année via le formulaire 3916 (compte à l'étranger).
+  // IBKR fournit bien l'IFU pour ce PEA, contrairement à la majorité des courtiers étrangers.
   var BROKERS = [
-    { id: "ibkr", name: "Interactive Brokers", tier: "splus", tierLabel: "S+", fr: true, lu: true, ma: true },
-    { id: "saxo", name: "Saxo Banque", tier: "s", tierLabel: "S", fr: true, lu: true, ma: true },
-    { id: "traderepublic", name: "Trade Republic", tier: "s", tierLabel: "S", fr: true, lu: true, ma: false },
-    { id: "xtb", name: "XTB", tier: "a", tierLabel: "A", fr: true, lu: true, ma: true },
-    { id: "shares", name: "Shares", tier: "a", tierLabel: "A", fr: null, lu: null, ma: null },
-    { id: "degiro", name: "DEGIRO", tier: "a", tierLabel: "A", fr: true, lu: null, ma: false },
-    { id: "fortuneo", name: "Fortuneo", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false },
-    { id: "boursorama", name: "Boursorama", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false },
-    { id: "boursedirect", name: "Bourse Direct", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false },
-    { id: "revolut", name: "Revolut", tier: "c", tierLabel: "C", fr: true, lu: true, ma: null },
-    { id: "trading212", name: "Trading 212", tier: "c", tierLabel: "C", fr: true, lu: true, ma: false },
-    { id: "etoro", name: "eToro", tier: "d", tierLabel: "D", fr: true, lu: true, ma: false }
+    { id: "ibkr", name: "Interactive Brokers", tier: "splus", tierLabel: "S+", fr: true, lu: true, ma: true, pea: true },
+    { id: "saxo", name: "Saxo Banque", tier: "s", tierLabel: "S", fr: true, lu: true, ma: true, pea: true },
+    { id: "traderepublic", name: "Trade Republic", tier: "s", tierLabel: "S", fr: true, lu: true, ma: false, pea: true },
+    { id: "xtb", name: "XTB", tier: "a", tierLabel: "A", fr: true, lu: true, ma: true, pea: true },
+    { id: "shares", name: "Shares", tier: "a", tierLabel: "A", fr: null, lu: null, ma: null, pea: true },
+    { id: "degiro", name: "DEGIRO", tier: "a", tierLabel: "A", fr: true, lu: null, ma: false, pea: false },
+    { id: "fortuneo", name: "Fortuneo", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false, pea: true },
+    { id: "boursorama", name: "Boursorama", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false, pea: true },
+    { id: "boursedirect", name: "Bourse Direct", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false, pea: true },
+    { id: "revolut", name: "Revolut", tier: "c", tierLabel: "C", fr: true, lu: true, ma: null, pea: false },
+    { id: "trading212", name: "Trading 212", tier: "c", tierLabel: "C", fr: true, lu: true, ma: false, pea: false },
+    { id: "etoro", name: "eToro", tier: "d", tierLabel: "D", fr: true, lu: true, ma: false, pea: false }
   ];
 
   var TIER_ORDER = ["splus", "s", "a", "b", "c", "d"];
@@ -419,14 +440,23 @@
     }
   };
 
+  // Pour la France, la recommandation dépend aussi de l'enveloppe choisie (CTO ou PEA) —
+  // pour le Luxembourg et le Maroc, l'enveloppe est toujours le CTO (pas de PEA hors résidence
+  // fiscale française), donc une seule version suffit.
   var RECO = {
     fr: {
-      FR: "En France, démarre avec <strong>Trade Republic</strong> (simplicité, PEA depuis 2025) ou <strong>DEGIRO</strong> (accès multi-marchés). Passe à <strong>Interactive Brokers</strong> au-delà de 10-15k€, pour des marchés hors Europe, ou des produits plus avancés. Le PEA t'est accessible en tant que résident fiscal français.",
+      FR: {
+        CTO: "Pour ton compte-titres (CTO), démarre avec <strong>Trade Republic</strong> (simplicité) ou <strong>DEGIRO</strong> (accès multi-marchés). Passe à <strong>Interactive Brokers</strong> au-delà de 10-15k€, pour des marchés hors Europe, ou des produits plus avancés. Pense aussi à ouvrir un PEA en complément si tu n'en as pas encore : la fiscalité y est plus douce après 5 ans.",
+        PEA: "Pour ton PEA, commence simple avec <strong>Trade Republic</strong> (0 € de frais sur les versements programmés) ou <strong>Fortuneo</strong> (banque en ligne établie, tarifs bas). Si tu veux tout centraliser chez un courtier international qui gère aussi tes investissements hors PEA, <strong>Interactive Brokers</strong> propose un vrai PEA réglementaire depuis fin 2024 — via sa filiale irlandaise, avec ouverture automatique d'un compte-titres en parallèle et déclaration annuelle obligatoire (formulaire 3916)."
+      },
       LU: "Au Luxembourg, <strong>Trade Republic</strong> est disponible et reste le plus simple pour démarrer. <strong>DEGIRO</strong> aussi, sous réserve de vérifier ton éligibilité exacte au moment de l'ouverture. Pas de PEA depuis le Luxembourg — tu ouvres directement un CTO. Pour un accès mondial complet ou un gros capital, <strong>Interactive Brokers</strong>.",
       MA: "Au Maroc, <strong>Trade Republic</strong>, <strong>DEGIRO</strong> et <strong>Trading 212</strong> ne sont pas disponibles. Les options les plus solides et confirmées sont <strong>Interactive Brokers</strong>, <strong>XTB</strong> et <strong>Saxo Banque</strong> — tous ouverts aux résidents marocains d'après nos recherches. Pas de PEA (réservé aux résidents fiscaux français) : tu passes par un compte-titres (CTO) équivalent."
     },
     en: {
-      FR: "In France, start with <strong>Trade Republic</strong> (simplicity, PEA since 2025) or <strong>DEGIRO</strong> (multi-market access). Move to <strong>Interactive Brokers</strong> beyond €10-15k, for markets outside Europe, or more advanced products. The PEA is available to you as a French tax resident.",
+      FR: {
+        CTO: "For your brokerage account (CTO), start with <strong>Trade Republic</strong> (simplicity) or <strong>DEGIRO</strong> (multi-market access). Move to <strong>Interactive Brokers</strong> beyond €10-15k, for markets outside Europe, or more advanced products. Also consider opening a PEA alongside it if you don't have one yet — the tax treatment is much gentler after 5 years.",
+        PEA: "For your PEA, start simple with <strong>Trade Republic</strong> (€0 fees on recurring plans) or <strong>Fortuneo</strong> (established online bank, low fees). If you'd rather centralize everything with an international broker that also handles investments outside the PEA, <strong>Interactive Brokers</strong> has offered a genuine regulatory PEA since late 2024 — through its Irish subsidiary, with an ordinary brokerage account opened automatically alongside it and a mandatory annual foreign-account declaration (form 3916)."
+      },
       LU: "In Luxembourg, <strong>Trade Republic</strong> is available and remains the simplest way to start. <strong>DEGIRO</strong> too, provided you check your exact eligibility when opening an account. No PEA from Luxembourg — you open a CTO directly. For full worldwide access or a large capital, <strong>Interactive Brokers</strong>.",
       MA: "In Morocco, <strong>Trade Republic</strong>, <strong>DEGIRO</strong> and <strong>Trading 212</strong> aren't available. The strongest, confirmed options are <strong>Interactive Brokers</strong>, <strong>XTB</strong> and <strong>Saxo Banque</strong> — all open to Moroccan residents according to our research. No PEA (reserved for French tax residents): you go through an equivalent brokerage account (CTO)."
     }
@@ -471,7 +501,7 @@
     { name: "Shares", type: "courtier", opening: 0, custody: 0,
       order: { fr: "0,5 % (< 200 €), 1 € (200-500 €), 0,2 % (> 500 €)", en: "0.5% (<€200), €1 (€200-500), 0.2% (>€500)" }, minDeposit: null, ifu: true },
     { name: "Interactive Brokers", type: "courtier", opening: 0, custody: 0,
-      order: { fr: "0,05 %, min. 1,25 €, plafonné à 29 €", en: "0.05%, min. €1.25, capped at €29" }, minDeposit: null, ifu: false },
+      order: { fr: "0,05 %, min. 1,25 €, plafonné à 29 €", en: "0.05%, min. €1.25, capped at €29" }, minDeposit: null, ifu: true },
     { name: "MEXEM", type: "courtier", opening: 0, custody: 0,
       order: { fr: "0,06 %, min. 1 €", en: "0.06%, min. €1" }, minDeposit: null, ifu: false },
     { name: "Monabanq", type: "banque_ligne", opening: 0, custody: 0,
@@ -512,6 +542,10 @@
       row6Crit: "Fiscalité sur les plus-values", row6Cto: "31,4 % (flat tax)", row6Pea: "18,6 % après 5 ans",
       row7Crit: "Délai d'optimisation fiscale", row7Cto: "Immédiat", row7Pea: "5 ans minimum",
       peaForYou: "Pour toi :",
+      envelopeLabel: "Ton choix pour cette page",
+      envelopeAria: "Choix de l'enveloppe (CTO ou PEA)",
+      envelopeDisabledTitle: "Réservé aux résidents fiscaux français",
+      peaPillLabel: "PEA",
       peaDetailHeading: "Le PEA en détail : quel établissement choisir ?",
       peaDetailSub: "Trois variantes existent selon ton profil, et l'établissement choisi change beaucoup les frais sur le long terme.",
       peaType1Name: "PEA classique",
@@ -529,9 +563,13 @@
       peaFree: "Gratuit", peaYes: "Oui", peaNo: "Non", peaNotSpecified: "—",
       tierHeading: "Classement des brokers",
       tierSub: "Le classement (qualité, coûts, sérieux) est indépendant du pays. Le point vert/rouge/orange indique si le broker est ouvert aux résidents du pays sélectionné.",
+      tierHeadingPea: "Classement des brokers éligibles au PEA",
+      tierSubPea: "Même classement (qualité, coûts, sérieux) que pour le CTO, filtré ici aux établissements qui proposent aussi un PEA. Pour les frais spécifiques au PEA et les établissements 100 % PEA (banques traditionnelles, gestion pilotée), vois le tableau détaillé ci-dessus.",
       legendAvailable: "Disponible", legendUnavailable: "Non disponible", legendCheck: "À vérifier directement",
       trioHeading: "Le trio à comparer de près",
       trioSub: "Les trois brokers les plus cités pour démarrer sérieusement — vue détaillée pour trancher selon ton profil.",
+      trioHeadingPea: "Le trio PEA à comparer de près",
+      trioSubPea: "Trois profils différents pour ouvrir ton PEA : le plus simple et le moins cher, la banque en ligne établie, et le courtier international si tu veux tout centraliser au même endroit.",
       footerDisclaimer: "<strong>Avant d'ouvrir un compte :</strong> les conditions d'éligibilité par pays changent régulièrement et varient parfois selon ta nationalité, ton lieu de naissance ou ta situation fiscale précise (au-delà de ton seul pays de résidence). Les informations de disponibilité ci-dessus viennent de recherches faites le 31/08/2026 et peuvent être incomplètes — vérifie toujours directement sur le site du broker avant d'ouvrir un compte ou de transférer des fonds. Ce guide est pédagogique et ne constitue pas un conseil en investissement."
     },
     en: {
@@ -559,6 +597,10 @@
       row6Crit: "Tax on capital gains", row6Cto: "31.4% (flat tax)", row6Pea: "18.6% after 5 years",
       row7Crit: "Tax optimization delay", row7Cto: "Immediate", row7Pea: "5 years minimum",
       peaForYou: "For you:",
+      envelopeLabel: "Your choice for this page",
+      envelopeAria: "Account wrapper choice (CTO or PEA)",
+      envelopeDisabledTitle: "Reserved for French tax residents",
+      peaPillLabel: "PEA",
       peaDetailHeading: "The PEA in detail: which provider should you choose?",
       peaDetailSub: "Three variants exist depending on your profile, and the provider you pick makes a big difference to fees over the long run.",
       peaType1Name: "Standard PEA",
@@ -576,9 +618,13 @@
       peaFree: "Free", peaYes: "Yes", peaNo: "No", peaNotSpecified: "—",
       tierHeading: "Broker ranking",
       tierSub: "The ranking (quality, costs, reliability) is independent of country. The green/red/orange dot shows whether the broker is open to residents of the selected country.",
+      tierHeadingPea: "Ranking of PEA-eligible brokers",
+      tierSubPea: "Same ranking (quality, costs, reliability) as for the CTO, filtered here to providers that also offer a PEA. For PEA-specific fees and 100% PEA providers (traditional banks, managed investing), see the detailed table above.",
       legendAvailable: "Available", legendUnavailable: "Not available", legendCheck: "Check directly",
       trioHeading: "The trio worth a closer look",
       trioSub: "The three most commonly recommended brokers for getting started seriously — a detailed view to help you decide based on your profile.",
+      trioHeadingPea: "The PEA trio worth a closer look",
+      trioSubPea: "Three different profiles for opening your PEA: the simplest and cheapest, the established online bank, and the international broker if you'd rather centralize everything in one place.",
       footerDisclaimer: "<strong>Before opening an account:</strong> eligibility conditions by country change regularly and can depend on your nationality, place of birth, or exact tax situation (beyond your country of residence alone). The availability information above comes from research done on 31/08/2026 and may be incomplete — always check directly on the broker's website before opening an account or transferring funds. This guide is educational and isn't investment advice."
     }
   };
@@ -599,16 +645,33 @@
   var els = {
     countryGroup: document.getElementById("countryGroup"),
     profileGroup: document.getElementById("profileGroup"),
+    envelopeGroup: document.getElementById("envelopeGroup"),
+    peaEnvelopeBtn: document.getElementById("peaEnvelopeBtn"),
     recoText: document.getElementById("recoText"),
     peaNote: document.getElementById("peaNote"),
     peaNoteText: document.getElementById("peaNoteText"),
     tierGrid: document.getElementById("tierGrid"),
+    tierHeadingText: document.getElementById("tierHeadingText"),
+    tierSubText: document.getElementById("tierSubText"),
     compareGrid: document.getElementById("compareGrid"),
+    trioHeadingText: document.getElementById("trioHeadingText"),
+    trioSubText: document.getElementById("trioSubText"),
     peaDetailSection: document.getElementById("peaDetailSection"),
     peaProvidersBody: document.getElementById("peaProvidersBody")
   };
 
-  var state = { country: "FR", profile: "debutant" };
+  // envelope: "CTO" ou "PEA" — le PEA n'a de sens que pour la France (forcé à CTO ailleurs).
+  var state = { country: "FR", profile: "debutant", envelope: "CTO" };
+
+  function updateEnvelopeControls() {
+    var L = lang();
+    var isFR = state.country === "FR";
+    els.peaEnvelopeBtn.disabled = !isFR;
+    els.peaEnvelopeBtn.title = isFR ? "" : I18N[L].envelopeDisabledTitle;
+    els.envelopeGroup.querySelectorAll("button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-envelope") === state.envelope ? "true" : "false");
+    });
+  }
 
   function countryKey() { return state.country.toLowerCase(); }
 
@@ -621,10 +684,14 @@
 
   function renderTier() {
     var L = lang();
+    var i = I18N[L];
     var text = BROKER_TEXT[L];
+    var isPea = state.envelope === "PEA";
+    var pool = isPea ? BROKERS.filter(function (b) { return b.pea; }) : BROKERS;
+
     var byTier = {};
     TIER_ORDER.forEach(function (t) { byTier[t] = []; });
-    BROKERS.forEach(function (b) { byTier[b.tier].push(b); });
+    pool.forEach(function (b) { byTier[b.tier].push(b); });
 
     var html = "";
     TIER_ORDER.forEach(function (t) {
@@ -635,22 +702,30 @@
         var bt = text[b.id];
         var status = availOf(b);
         var dim = status === "no" ? " dim" : "";
+        var showPeaPill = !isPea && state.country === "FR" && b.pea;
+        var peaPill = showPeaPill ? '<span class="pea-pill">' + i.peaPillLabel + '</span>' : "";
         html += '<span class="chip' + dim + '" title="' + bt.note.replace(/"/g, "&quot;") + '">' +
           '<span class="avail ' + status + '"></span>' +
           '<span class="name">' + b.name + '</span>' +
-          '<span class="tag">' + bt.tag + '</span>' +
+          '<span class="tag">' + bt.tag + '</span>' + peaPill +
           '</span>';
       });
       html += "</div></div>";
     });
     els.tierGrid.innerHTML = html;
+    els.tierHeadingText.textContent = isPea ? i.tierHeadingPea : i.tierHeading;
+    els.tierSubText.textContent = isPea ? i.tierSubPea : i.tierSub;
   }
 
   function renderCompare() {
     var L = lang();
+    var i = I18N[L];
     var text = BROKER_TEXT[L];
     var ui = UI[L];
-    var ids = ["ibkr", "traderepublic", "degiro"];
+    var isPea = state.envelope === "PEA";
+    var ids = isPea ? ["traderepublic", "fortuneo", "ibkr"] : ["ibkr", "traderepublic", "degiro"];
+    els.trioHeadingText.textContent = isPea ? i.trioHeadingPea : i.trioHeading;
+    els.trioSubText.textContent = isPea ? i.trioSubPea : i.trioSub;
     var html = "";
     ids.forEach(function (id) {
       var b = BROKERS.filter(function (x) { return x.id === id; })[0];
@@ -700,12 +775,15 @@
 
   function render() {
     var L = lang();
-    els.recoText.innerHTML = RECO[L][state.country];
+    updateEnvelopeControls();
+    var recoRaw = RECO[L][state.country];
+    els.recoText.innerHTML = (recoRaw && typeof recoRaw === "object") ? recoRaw[state.envelope] : recoRaw;
     els.peaNoteText.textContent = "";
     els.peaNote.classList.add("show");
     els.peaNoteText.innerHTML = PEA_NOTES[L][state.country];
-    els.peaDetailSection.hidden = state.country !== "FR";
-    if (state.country === "FR") renderPeaProviders();
+    var showPeaDetail = state.country === "FR" && state.envelope === "PEA";
+    els.peaDetailSection.hidden = !showPeaDetail;
+    if (showPeaDetail) renderPeaProviders();
     renderTier();
     renderCompare();
   }
@@ -713,6 +791,7 @@
   els.countryGroup.querySelectorAll("button").forEach(function (btn) {
     btn.addEventListener("click", function () {
       state.country = btn.getAttribute("data-country");
+      if (state.country !== "FR") state.envelope = "CTO";
       els.countryGroup.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
       render();
     });
@@ -721,6 +800,13 @@
     btn.addEventListener("click", function () {
       state.profile = btn.getAttribute("data-profile");
       els.profileGroup.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
+      render();
+    });
+  });
+  els.envelopeGroup.querySelectorAll("button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (btn.disabled) return;
+      state.envelope = btn.getAttribute("data-envelope");
       render();
     });
   });
