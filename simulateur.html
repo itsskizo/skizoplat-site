@@ -96,6 +96,13 @@
   .site-nav .item.active { background: var(--surface); border-color: var(--border-strong); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
   .site-nav .item.soon { color: var(--ink-faint); border: 1px dashed var(--border-strong); display: flex; gap: 6px; align-items: center; }
   .site-nav .item.soon .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-faint); }
+  .theme-toggle-btn {
+    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-secondary);
+    border-radius: 999px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; line-height: 1; cursor: pointer; padding: 0; font-family: inherit;
+  }
+  .theme-toggle-btn:hover { border-color: var(--border-strong); color: var(--ink); }
+  .theme-toggle-btn:focus-visible { outline: none; box-shadow: var(--focus); }
 
   header.hero { padding: 48px 0 32px; }
   .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 10px; }
@@ -201,6 +208,8 @@
   .hero-stat .sub strong { color: var(--good); font-weight: 600; }
   .hero-stat .sub.real { color: var(--ink-faint); margin-top: 2px; }
   .hero-stat .sub.real[hidden] { display: none; }
+  .hero-stat .sub.range { color: var(--ink-faint); margin-top: 2px; }
+  .hero-stat .sub.range:empty { display: none; }
 
   .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   @media (max-width: 560px) { .stat-row { grid-template-columns: 1fr; } }
@@ -216,6 +225,15 @@
   .legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--ink-secondary); }
   .legend .item { display: flex; align-items: center; gap: 6px; }
   .legend .swatch { width: 10px; height: 10px; border-radius: 2px; }
+  .legend .swatch-dash { width: 14px; height: 0; border-radius: 0; border-top: 2px dashed var(--ink-secondary); }
+  .legend .swatch-opti { border-top-color: var(--good); }
+  .legend .swatch-pess { border-top-color: var(--ink-secondary); }
+  .range-note { margin: 10px 2px 6px; font-size: 11.5px; color: var(--ink-faint); line-height: 1.5; }
+
+  .alt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .alt-card { padding: 16px 18px; }
+  .alt-badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--accent); margin-bottom: 6px; }
+  .alt-card p { margin: 0; font-size: 13px; color: var(--ink-secondary); line-height: 1.5; }
 
   .chart-wrap { position: relative; width: 100%; margin-top: 6px; }
   svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
@@ -267,6 +285,7 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <script src="/i18n.js"></script>
+<script src="/theme.js"></script>
 </head>
 <body>
 <nav class="topbar">
@@ -277,11 +296,13 @@
       <span class="item active" data-i18n="nav_sim">Simulateur</span>
       <a class="item" href="/broker.html" data-i18n="nav_broker">Broker</a>
       <a class="item" href="/etf.html" data-i18n="nav_etf">ETF</a>
+      <a class="item" href="/prochainement.html" data-i18n="nav_soon">Prochainement</a>
       <span class="item soon" data-i18n-html="nav_finances"><span class="dot"></span>Mes finances</span>
       <div class="segmented lang-toggle" id="langToggle">
         <button type="button" data-lang="fr">FR</button>
         <button type="button" data-lang="en">EN</button>
       </div>
+      <button type="button" class="theme-toggle-btn" id="themeToggle">🌙</button>
     </div>
   </div>
 </nav>
@@ -298,6 +319,16 @@
     <section class="card panel card-pad" aria-label="Paramètres de la simulation" data-i18n-aria="panelAria">
       <h2 data-i18n="panelH2">Tes paramètres</h2>
       <p class="restore-note" id="restoreNote" data-i18n="restoreNote">Derniers paramètres saisis restaurés.</p>
+
+      <div class="field">
+        <div class="field-head">
+          <span class="field-label" data-i18n="modeLabel">Mode de calcul</span>
+        </div>
+        <div class="segmented mode-toggle" id="modeToggle" role="group" aria-label="Mode de calcul" data-i18n-aria="modeLabel">
+          <button type="button" data-mode="capital" aria-pressed="true" data-i18n="modeCapital">Combien vais-je avoir&nbsp;?</button>
+          <button type="button" data-mode="goal" aria-pressed="false" data-i18n="modeGoal">Combien dois-je verser&nbsp;?</button>
+        </div>
+      </div>
 
       <div class="field">
         <div class="field-head">
@@ -332,12 +363,20 @@
         <p class="field-hint" data-i18n="initialHint">Ce que tu as déjà de côté ou placé aujourd'hui — ça continue de composer avec le reste.</p>
       </div>
 
-      <div class="field">
+      <div class="field" id="monthlyField">
         <div class="field-head">
           <span class="field-label" data-i18n="monthlyLabel">Versement mensuel</span>
           <span class="field-value num" id="monthlyOut">300&nbsp;€</span>
         </div>
         <input type="range" id="monthly" min="0" max="3000" step="25" value="300">
+      </div>
+
+      <div class="field" id="goalField" hidden>
+        <div class="field-head">
+          <span class="field-label" data-i18n="goalCapitalLabel">Capital visé</span>
+          <span class="field-value num" id="goalCapitalOut">500 000&nbsp;€</span>
+        </div>
+        <input type="range" id="goalCapital" min="10000" max="2000000" step="10000" value="500000">
       </div>
 
       <div class="field">
@@ -384,10 +423,22 @@
     <!-- RESULTS -->
     <section class="results">
       <div class="card hero-stat">
-        <span class="label" data-i18n-html="heroStatLabel">Capital projeté à <span id="targetAgeLabel">65</span> ans</span>
+        <span class="label" id="heroLabel"></span>
         <div class="value num" id="finalValue">0<span class="cur">EUR</span></div>
-        <span class="sub" data-i18n-html="heroStatSub">soit <strong id="multiple">×0</strong> ce que tu auras versé</span>
+        <span class="sub" id="heroSub"></span>
         <span class="sub real" id="realValueLine" hidden></span>
+        <span class="sub range" id="rangeLine"></span>
+      </div>
+
+      <div class="alt-grid" id="altGrid" hidden>
+        <div class="card alt-card">
+          <span class="alt-badge" data-i18n="altCard1Title">Verse 20&nbsp;% de plus</span>
+          <p id="altCard1Text"></p>
+        </div>
+        <div class="card alt-card">
+          <span class="alt-badge" data-i18n="altCard2Title">Commence 5 ans plus tôt</span>
+          <p id="altCard2Text"></p>
+        </div>
       </div>
 
       <div class="stat-row">
@@ -411,12 +462,15 @@
           <div class="legend">
             <span class="item"><span class="swatch" style="background:var(--accent)"></span><span data-i18n="legendContrib">Versé cumulé</span></span>
             <span class="item"><span class="swatch" style="background:var(--gain)"></span><span data-i18n="legendGain">Plus-value</span></span>
+            <span class="item"><span class="swatch swatch-dash swatch-opti"></span><span data-i18n="legendOpti">Optimiste</span></span>
+            <span class="item"><span class="swatch swatch-dash swatch-pess"></span><span data-i18n="legendPess">Pessimiste</span></span>
           </div>
         </div>
         <div class="chart-wrap" id="chartWrap">
           <svg class="chart" id="chartSvg" viewBox="0 0 720 320" preserveAspectRatio="none" role="img" aria-label="Graphique de croissance du capital" data-i18n-aria="chartAria"></svg>
           <div class="tooltip" id="tooltip"></div>
         </div>
+        <p class="range-note" data-i18n-html="rangeNote">Les pointillés montrent une fourchette indicative, pas une prédiction : ils reprennent l'écart historique observé entre les meilleures et les pires périodes glissantes du marché actions (~100 ans de données US), appliqué autour du taux que tu as choisi. Rien ne garantit que le futur ressemble au passé.</p>
       </div>
 
       <details class="table-card card" id="tableCard">
@@ -454,6 +508,7 @@
       nav_sim: "Simulateur",
       nav_broker: "Broker",
       nav_etf: "ETF",
+      nav_soon: "Prochainement",
       nav_finances: '<span class="dot"></span>Mes finances',
       eyebrow: "Incrément 1 — Simulateur",
       heroH1: 'Combien peux-tu accumuler d\'ici tes&nbsp;<span id="heroAge">65</span>&nbsp;ans&nbsp;?',
@@ -461,6 +516,12 @@
       panelAria: "Paramètres de la simulation",
       panelH2: "Tes paramètres",
       restoreNote: "Derniers paramètres saisis restaurés.",
+      modeLabel: "Mode de calcul",
+      modeCapital: "Combien vais-je avoir ?",
+      modeGoal: "Combien dois-je verser ?",
+      goalCapitalLabel: "Capital visé",
+      altCard1Title: "Verse 20 % de plus",
+      altCard2Title: "Commence 5 ans plus tôt",
       currencyLabel: "Devise",
       ageNowLabel: "Âge actuel",
       ageTargetLabel: "Âge cible",
@@ -476,14 +537,15 @@
       inflationHint: "Taux d'inflation estimé",
       resetBtn: "Réinitialiser les valeurs par défaut",
       assumption: "Repère : le S&P 500 affiche ~10 %/an de moyenne historique sur 20 ans (source : contenu ETF joint), un ETF monde diversifié plutôt 6–8 %/an. Rendements passés ≠ garantie future.",
-      heroStatLabel: 'Capital projeté à <span id="targetAgeLabel">65</span> ans',
-      heroStatSub: 'soit <strong id="multiple">×0</strong> ce que tu auras versé',
       totalContribLabel: "Total versé",
       totalGainLabel: "Plus-value",
       durationLabel: "Durée",
       chartHeading: "Versements vs plus-value dans le temps",
       legendContrib: "Versé cumulé",
       legendGain: "Plus-value",
+      legendOpti: "Optimiste",
+      legendPess: "Pessimiste",
+      rangeNote: "Les pointillés montrent une fourchette indicative, pas une prédiction : ils reprennent l'écart historique observé entre les meilleures et les pires périodes glissantes du marché actions (~100 ans de données US), appliqué autour du taux que tu as choisi. Rien ne garantit que le futur ressemble au passé.",
       chartAria: "Graphique de croissance du capital",
       tableSummary: "Voir le détail année par année",
       thYear: "Année", thAge: "Âge", thContrib: "Versé cumulé", thGain: "Plus-value", thTotal: "Capital total",
@@ -496,6 +558,7 @@
       nav_sim: "Simulator",
       nav_broker: "Broker",
       nav_etf: "ETF",
+      nav_soon: "Coming soon",
       nav_finances: '<span class="dot"></span>My finances',
       eyebrow: "Increment 1 — Simulator",
       heroH1: 'How much could you build up by the time you turn&nbsp;<span id="heroAge">65</span>&nbsp;?',
@@ -503,6 +566,12 @@
       panelAria: "Simulation settings",
       panelH2: "Your settings",
       restoreNote: "Your last settings were restored.",
+      modeLabel: "Calculation mode",
+      modeCapital: "How much will I have?",
+      modeGoal: "How much do I need to save?",
+      goalCapitalLabel: "Target capital",
+      altCard1Title: "Save 20% more",
+      altCard2Title: "Start 5 years earlier",
       currencyLabel: "Currency",
       ageNowLabel: "Current age",
       ageTargetLabel: "Target age",
@@ -518,14 +587,15 @@
       inflationHint: "Estimated inflation rate",
       resetBtn: "Reset to default values",
       assumption: "For reference: the S&P 500 has averaged ~10%/year historically over 20 years (source: linked ETF content), while a diversified world ETF tends to run 6–8%/year. Past returns don't guarantee future ones.",
-      heroStatLabel: 'Projected capital by age <span id="targetAgeLabel">65</span>',
-      heroStatSub: 'that\'s <strong id="multiple">×0</strong> what you will have paid in',
       totalContribLabel: "Total paid in",
       totalGainLabel: "Growth",
       durationLabel: "Duration",
       chartHeading: "Contributions vs. growth over time",
       legendContrib: "Cumulative paid in",
       legendGain: "Growth",
+      legendOpti: "Optimistic",
+      legendPess: "Pessimistic",
+      rangeNote: "The dashed lines sketch an indicative range, not a prediction: they apply the historical gap between the best and worst rolling stock-market periods (~100 years of US data) around the rate you chose. Nothing guarantees the future will look like the past.",
       chartAria: "Chart of capital growth",
       tableSummary: "See year-by-year detail",
       thYear: "Year", thAge: "Age", thContrib: "Cumulative paid in", thGain: "Growth", thTotal: "Total capital",
@@ -534,8 +604,24 @@
   };
 
   var UI = {
-    fr: { yearsSuffix: "ans", netRatePrefix: "Rendement net retenu dans le calcul : ", netRateSuffix: " %/an", netRateParenthetical: " (taux espéré − TER).", realValuePrefix: "≈ ", realValueSuffix: " en pouvoir d'achat d'aujourd'hui", tooltipYear: function (year, age) { return "Année " + year + " · " + age + " ans"; }, tooltipPaid: "Versé", tooltipGain: "Plus-value", tooltipTotal: "Total" },
-    en: { yearsSuffix: "years", netRatePrefix: "Net return used in the calculation: ", netRateSuffix: "%/year", netRateParenthetical: " (expected rate − TER).", realValuePrefix: "≈ ", realValueSuffix: " in today's purchasing power", tooltipYear: function (year, age) { return "Year " + year + " · age " + age; }, tooltipPaid: "Paid in", tooltipGain: "Growth", tooltipTotal: "Total" }
+    fr: { yearsSuffix: "ans", netRatePrefix: "Rendement net retenu dans le calcul : ", netRateSuffix: " %/an", netRateParenthetical: " (taux espéré − TER).", realValuePrefix: "≈ ", realValueSuffix: " en pouvoir d'achat d'aujourd'hui", rangeLinePrefix: "Fourchette indicative : ", tooltipYear: function (year, age) { return "Année " + year + " · " + age + " ans"; }, tooltipPaid: "Versé", tooltipGain: "Plus-value", tooltipTotal: "Total", tooltipPess: "Pessimiste", tooltipOpti: "Optimiste",
+      heroLabelCapital: function (age) { return "Capital projeté à " + age + " ans"; },
+      heroSubCapital: function (multStr) { return "soit ×" + multStr + " ce que tu auras versé"; },
+      heroLabelGoal: "Versement mensuel nécessaire",
+      heroSubGoal: function (targetStr, age) { return "pour atteindre " + targetStr + " à " + age + " ans"; },
+      heroSubGoalReached: function (age) { return "objectif déjà atteint avec ton capital de départ, avant même " + age + " ans"; },
+      altCard1Text: function (monthlyStr, ageStr, origAgeStr) { return "Avec " + monthlyStr + "/mois, tu atteindrais ton objectif vers " + ageStr + " ans au lieu de " + origAgeStr + "."; },
+      altCard2Text: function (monthlyStr) { return "Il te suffirait de verser " + monthlyStr + "/mois au lieu du montant requis aujourd'hui."; }
+    },
+    en: { yearsSuffix: "years", netRatePrefix: "Net return used in the calculation: ", netRateSuffix: "%/year", netRateParenthetical: " (expected rate − TER).", realValuePrefix: "≈ ", realValueSuffix: " in today's purchasing power", rangeLinePrefix: "Indicative range: ", tooltipYear: function (year, age) { return "Year " + year + " · age " + age; }, tooltipPaid: "Paid in", tooltipGain: "Growth", tooltipTotal: "Total", tooltipPess: "Pessimistic", tooltipOpti: "Optimistic",
+      heroLabelCapital: function (age) { return "Projected capital by age " + age; },
+      heroSubCapital: function (multStr) { return "that's ×" + multStr + " what you will have paid in"; },
+      heroLabelGoal: "Required monthly contribution",
+      heroSubGoal: function (targetStr, age) { return "to reach " + targetStr + " by age " + age; },
+      heroSubGoalReached: function (age) { return "goal already reached with your starting capital, even before age " + age; },
+      altCard1Text: function (monthlyStr, ageStr, origAgeStr) { return "At " + monthlyStr + "/month, you'd reach your goal around age " + ageStr + " instead of " + origAgeStr + "."; },
+      altCard2Text: function (monthlyStr) { return "You'd only need " + monthlyStr + "/month instead of the amount required today."; }
+    }
   };
 
   function lang() { return window.SkizoI18n ? window.SkizoI18n.getLang() : "fr"; }
@@ -548,7 +634,10 @@
   }
   function seriesColors() {
     var d = isDark();
-    return { contrib: d ? COLOR_CONTRIB_DARK : COLOR_CONTRIB, gain: d ? COLOR_GAIN_DARK : COLOR_GAIN };
+    return {
+      contrib: d ? COLOR_CONTRIB_DARK : COLOR_CONTRIB, gain: d ? COLOR_GAIN_DARK : COLOR_GAIN,
+      opti: "var(--good)", pess: "var(--ink-secondary)"
+    };
   }
 
   var els = {
@@ -559,6 +648,16 @@
     initialOut: document.getElementById("initialOut"),
     monthly: document.getElementById("monthly"),
     monthlyOut: document.getElementById("monthlyOut"),
+    monthlyField: document.getElementById("monthlyField"),
+    goalField: document.getElementById("goalField"),
+    goalCapital: document.getElementById("goalCapital"),
+    goalCapitalOut: document.getElementById("goalCapitalOut"),
+    modeToggle: document.getElementById("modeToggle"),
+    heroLabel: document.getElementById("heroLabel"),
+    heroSub: document.getElementById("heroSub"),
+    altGrid: document.getElementById("altGrid"),
+    altCard1Text: document.getElementById("altCard1Text"),
+    altCard2Text: document.getElementById("altCard2Text"),
     rate: document.getElementById("rate"),
     rateOut: document.getElementById("rateOut"),
     ter: document.getElementById("ter"),
@@ -568,10 +667,9 @@
     inflationOut: document.getElementById("inflationOut"),
     netRateCaption: document.getElementById("netRateCaption"),
     heroAge: document.getElementById("heroAge"),
-    targetAgeLabel: document.getElementById("targetAgeLabel"),
     finalValue: document.getElementById("finalValue"),
-    multiple: document.getElementById("multiple"),
     realValueLine: document.getElementById("realValueLine"),
+    rangeLine: document.getElementById("rangeLine"),
     totalContrib: document.getElementById("totalContrib"),
     totalGain: document.getElementById("totalGain"),
     durationOut: document.getElementById("durationOut"),
@@ -583,6 +681,20 @@
     restoreNote: document.getElementById("restoreNote")
   };
 
+  // Best-effort locale guess for a first-time visitor (no stored preference yet) —
+  // never calls out to the network, just reads the browser's own timezone/language.
+  function guessCurrency() {
+    try {
+      var tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || "");
+      if (tz === "Africa/Casablanca" || tz === "Africa/El_Aaiun") return "MAD";
+      var langs = navigator.languages || [navigator.language || ""];
+      for (var i = 0; i < langs.length; i++) {
+        if (/-MA$/i.test(langs[i])) return "MAD";
+      }
+    } catch (e) { /* pas grave : on garde EUR par défaut */ }
+    return "EUR";
+  }
+
   var currency = "EUR";
   var curButtons = document.querySelectorAll("[data-cur]");
   curButtons.forEach(function (btn) {
@@ -593,7 +705,31 @@
     });
   });
 
-  var DEFAULTS = { ageNow: 27, ageTarget: 65, initial: 2000, monthly: 300, rate: 7, ter: 0.20, inflation: 2.0, inflationOn: false, currency: "EUR" };
+  // "capital" = classic forward simulation (existing behaviour); "goal" = reverse
+  // goal-seek — the visitor sets a target capital, the tool solves for the required
+  // monthly contribution.
+  var currentMode = "capital";
+  if (els.modeToggle) {
+    els.modeToggle.querySelectorAll("button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.getAttribute("data-mode");
+        if (mode === currentMode) return;
+        currentMode = mode;
+        els.modeToggle.querySelectorAll("button").forEach(function (b) {
+          b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+        });
+        els.monthlyField.hidden = mode !== "capital";
+        els.goalField.hidden = mode !== "goal";
+        els.altGrid.hidden = mode !== "goal";
+        render();
+      });
+    });
+  }
+  if (els.goalCapital) {
+    els.goalCapital.addEventListener("input", function () { render(); });
+  }
+
+  var DEFAULTS = { ageNow: 27, ageTarget: 65, initial: 2000, monthly: 300, rate: 7, ter: 0.20, inflation: 2.0, inflationOn: false, currency: "EUR", mode: "capital", goalCapital: 500000 };
 
   function fmtMoney(v, opts) {
     opts = opts || {};
@@ -639,6 +775,50 @@
     return points;
   }
 
+  // "Goal" mode inverts the usual question: given a target capital, how much do you
+  // need to pay in each month? Uses the same monthly-compounding model as computeSeries.
+  function solveMonthlyForTarget(months, initial, targetFV, monthlyRate) {
+    var fvInitial = initial * Math.pow(1 + monthlyRate, months);
+    var remaining = targetFV - fvInitial;
+    if (remaining <= 0) return 0; // starting capital alone already gets there
+    if (monthlyRate === 0) return months > 0 ? remaining / months : remaining;
+    var factor = (Math.pow(1 + monthlyRate, months) - 1) / monthlyRate;
+    return factor > 0 ? remaining / factor : remaining;
+  }
+
+  // Inverse of the above: given a fixed monthly contribution, how many months does it
+  // take to reach the target? Used for the "verse plus" what-if card.
+  function solveMonthsForTarget(monthlyAmt, initial, targetFV, monthlyRate) {
+    if (targetFV <= initial) return 0;
+    if (monthlyRate === 0) return monthlyAmt > 0 ? (targetFV - initial) / monthlyAmt : Infinity;
+    var k = monthlyAmt / monthlyRate;
+    var denom = initial + k;
+    if (denom <= 0) return Infinity;
+    var ratio = (targetFV + k) / denom;
+    if (ratio <= 0) return Infinity;
+    return Math.log(ratio) / Math.log(1 + monthlyRate);
+  }
+
+  // How many percentage points to add/subtract around the chosen rate to sketch a
+  // "pessimistic"/"optimistic" scenario. Anchored to real historical dispersion of
+  // rolling US stock-market returns since 1926 (worst/best 10y: -4.9%/+21.4%/an,
+  // 20y: <2%/+18%/an, 30y: 7.8%/+14.8%/an — source: NYU Stern / Ben Carlson,
+  // "Deconstructing 10, 20 & 30 Year Stock Market Returns"), interpolated by horizon
+  // length. Illustrative only, not a prediction — see the note under the chart.
+  function rangeOffsetPts(years) {
+    var anchors = [[10, 13], [20, 8], [30, 3.5]];
+    if (years <= anchors[0][0]) return anchors[0][1];
+    if (years >= anchors[anchors.length - 1][0]) return anchors[anchors.length - 1][1];
+    for (var i = 0; i < anchors.length - 1; i++) {
+      var a = anchors[i], b = anchors[i + 1];
+      if (years >= a[0] && years <= b[0]) {
+        var t = (years - a[0]) / (b[0] - a[0]);
+        return a[1] + t * (b[1] - a[1]);
+      }
+    }
+    return anchors[anchors.length - 1][1];
+  }
+
   function saveState(state) {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
   }
@@ -653,7 +833,8 @@
     return {
       ageNow: els.ageNow.value, ageTarget: els.ageTarget.value, initial: els.initial.value,
       monthly: els.monthly.value, rate: els.rate.value, ter: els.ter.value,
-      inflation: els.inflation.value, inflationOn: els.inflationToggle.checked, currency: currency
+      inflation: els.inflation.value, inflationOn: els.inflationToggle.checked, currency: currency,
+      mode: currentMode, goalCapital: els.goalCapital.value
     };
   }
 
@@ -663,11 +844,10 @@
     // that contain these placeholder spans, so re-fetch fresh references every
     // render rather than relying on the ones captured once at startup.
     els.heroAge = document.getElementById("heroAge");
-    els.targetAgeLabel = document.getElementById("targetAgeLabel");
-    els.multiple = document.getElementById("multiple");
     var ages = clampAges();
     var initial = parseFloat(els.initial.value);
-    var monthlyAmt = parseFloat(els.monthly.value);
+    var rawMonthly = parseFloat(els.monthly.value);
+    var goalTarget = parseFloat(els.goalCapital.value);
     var ratePct = parseFloat(els.rate.value);
     var terPct = parseFloat(els.ter.value);
     var inflationOn = els.inflationToggle.checked;
@@ -675,30 +855,77 @@
     els.inflation.disabled = !inflationOn;
 
     var netRatePct = Math.max(0, ratePct - terPct);
+    var monthlyRate = Math.pow(1 + netRatePct / 100, 1 / 12) - 1;
 
     var isEn = lang() === "en";
     function fmtPct(n, d) { var s = n.toFixed(d); return isEn ? s : s.replace(".", ","); }
 
     els.initialOut.innerHTML = fmtMoney(initial);
-    els.monthlyOut.innerHTML = fmtMoney(monthlyAmt);
+    els.monthlyOut.innerHTML = fmtMoney(rawMonthly);
+    els.goalCapitalOut.innerHTML = fmtMoney(goalTarget);
     els.rateOut.textContent = fmtPct(ratePct, 1) + " %";
     els.terOut.textContent = fmtPct(terPct, 2) + " %";
     els.inflationOut.textContent = fmtPct(inflationPct, 1) + " %";
     els.heroAge.textContent = ages.target;
-    els.targetAgeLabel.textContent = ages.target;
     var ui = UI[lang()];
     els.netRateCaption.innerHTML = ui.netRatePrefix + "<strong>" + fmtPct(netRatePct, 2) + ui.netRateSuffix + "</strong>" + ui.netRateParenthetical;
 
+    var years = ages.target - ages.now;
+    var months = years * 12;
+
+    var monthlyAmt, goalAlreadyReached = false;
+    if (currentMode === "goal") {
+      var fvInitialOnly = initial * Math.pow(1 + monthlyRate, months);
+      goalAlreadyReached = fvInitialOnly >= goalTarget;
+      monthlyAmt = goalAlreadyReached ? 0 : solveMonthlyForTarget(months, initial, goalTarget, monthlyRate);
+    } else {
+      monthlyAmt = rawMonthly;
+    }
+
     var series = computeSeries(ages.now, ages.target, initial, monthlyAmt, netRatePct);
     var last = series[series.length - 1];
-    var years = ages.target - ages.now;
 
-    els.finalValue.innerHTML = fmtMoney(last.total) + '<span class="cur">' + currency + "</span>";
+    // Illustrative pessimistic/optimistic bounds — same contributions, a rate offset
+    // around the chosen one, sized from historical rolling-period dispersion.
+    var offsetPts = rangeOffsetPts(years || 1);
+    var pessRate = Math.max(0, netRatePct - offsetPts);
+    var optiRate = netRatePct + offsetPts;
+    var seriesPess = computeSeries(ages.now, ages.target, initial, monthlyAmt, pessRate);
+    var seriesOpti = computeSeries(ages.now, ages.target, initial, monthlyAmt, optiRate);
+    var lastPess = seriesPess[seriesPess.length - 1];
+    var lastOpti = seriesOpti[seriesOpti.length - 1];
+
     var mult = last.contributed > 0 ? last.total / last.contributed : 0;
-    els.multiple.textContent = "×" + fmtPct(mult, 1);
+
+    if (currentMode === "goal") {
+      els.finalValue.innerHTML = fmtMoney(monthlyAmt) + '<span class="cur">' + currency + "</span>";
+      els.heroLabel.textContent = ui.heroLabelGoal;
+      els.heroSub.textContent = goalAlreadyReached ? ui.heroSubGoalReached(ages.target) : ui.heroSubGoal(fmtMoney(goalTarget), ages.target);
+
+      if (!goalAlreadyReached && monthlyAmt > 0) {
+        var altMonthly1 = monthlyAmt * 1.2;
+        var months1 = solveMonthsForTarget(altMonthly1, initial, goalTarget, monthlyRate);
+        var age1 = Math.round(ages.now + months1 / 12);
+        els.altCard1Text.textContent = ui.altCard1Text(fmtMoney(altMonthly1), age1, ages.target);
+
+        var monthsEarlier = months + 5 * 12;
+        var monthly2 = solveMonthlyForTarget(monthsEarlier, initial, goalTarget, monthlyRate);
+        els.altCard2Text.textContent = ui.altCard2Text(fmtMoney(monthly2));
+        els.altGrid.hidden = false;
+      } else {
+        els.altGrid.hidden = true;
+      }
+    } else {
+      els.finalValue.innerHTML = fmtMoney(last.total) + '<span class="cur">' + currency + "</span>";
+      els.heroLabel.textContent = ui.heroLabelCapital(ages.target);
+      els.heroSub.innerHTML = ui.heroSubCapital(fmtPct(mult, 1));
+      els.altGrid.hidden = true;
+    }
+
     els.totalContrib.innerHTML = fmtMoney(last.contributed);
     els.totalGain.innerHTML = fmtMoney(last.gain);
     els.durationOut.textContent = years + " " + ui.yearsSuffix;
+    els.rangeLine.textContent = ui.rangeLinePrefix + fmtMoney(lastPess.total) + " – " + fmtMoney(lastOpti.total);
 
     if (inflationOn) {
       var realValue = last.total / Math.pow(1 + inflationPct / 100, years || 1);
@@ -708,7 +935,7 @@
       els.realValueLine.hidden = true;
     }
 
-    renderChart(series);
+    renderChart(series, seriesPess, seriesOpti);
     renderTable(series);
 
     if (!opts.skipSave) saveState(currentState());
@@ -724,9 +951,10 @@
 
   var W = 720, H = 320, PAD_L = 54, PAD_R = 12, PAD_T = 16, PAD_B = 28;
 
-  function renderChart(series) {
+  function renderChart(series, seriesPess, seriesOpti) {
     var colors = seriesColors();
-    var maxY = Math.max.apply(null, series.map(function (p) { return p.total; })) * 1.08 || 1;
+    var maxOpti = seriesOpti ? Math.max.apply(null, seriesOpti.map(function (p) { return p.total; })) : 0;
+    var maxY = Math.max(Math.max.apply(null, series.map(function (p) { return p.total; })), maxOpti) * 1.08 || 1;
     var minYears = series.length - 1 || 1;
 
     function x(i) { return PAD_L + (i / minYears) * (W - PAD_L - PAD_R); }
@@ -753,6 +981,14 @@
       totalPath += " L " + x(i) + " " + y(p.total);
     });
 
+    var pessPath = "", optiPath = "";
+    if (seriesPess && seriesOpti) {
+      pessPath = "M " + x(0) + " " + y(seriesPess[0].total);
+      seriesPess.forEach(function (p, i) { pessPath += " L " + x(i) + " " + y(p.total); });
+      optiPath = "M " + x(0) + " " + y(seriesOpti[0].total);
+      seriesOpti.forEach(function (p, i) { optiPath += " L " + x(i) + " " + y(p.total); });
+    }
+
     var contribArea = contribPath + " L " + x(minYears) + " " + y(0) + " L " + x(0) + " " + y(0) + " Z";
     var betweenArea = totalPath + " L " + x(minYears) + " " + y(series[minYears].contributed);
     var revContrib = "";
@@ -765,6 +1001,10 @@
     svg += '<path d="' + betweenArea + '" fill="' + colors.gain + '" fill-opacity="0.18"/>';
     svg += '<path d="' + contribPath + '" fill="none" stroke="' + colors.contrib + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
     svg += '<path d="' + totalPath + '" fill="none" stroke="' + colors.gain + '" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round"/>';
+    if (pessPath && optiPath) {
+      svg += '<path d="' + optiPath + '" fill="none" stroke="' + colors.opti + '" stroke-width="1.5" stroke-dasharray="5 4" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>';
+      svg += '<path d="' + pessPath + '" fill="none" stroke="' + colors.pess + '" stroke-width="1.5" stroke-dasharray="5 4" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>';
+    }
     svg += labels;
     svg += xLabels;
     svg += '<g id="hoverLayer" style="display:none">' +
@@ -799,11 +1039,19 @@
 
       var tt = els.tooltip;
       var tui = UI[lang()];
+      var rangeRows = "";
+      if (seriesOpti && seriesPess) {
+        var pOpti = seriesOpti[idx], pPess = seriesPess[idx];
+        rangeRows =
+          '<div class="row" style="margin-top:4px"><span class="sw" style="background:' + colors.opti + '"></span>' + tui.tooltipOpti + '&nbsp;: ' + fmtMoney(pOpti.total) + "</div>" +
+          '<div class="row"><span class="sw" style="background:' + colors.pess + '"></span>' + tui.tooltipPess + '&nbsp;: ' + fmtMoney(pPess.total) + "</div>";
+      }
       tt.innerHTML =
         '<div class="t-year">' + tui.tooltipYear(p.year, p.age) + "</div>" +
         '<div class="row"><span class="sw" style="background:' + colors.contrib + '"></span>' + tui.tooltipPaid + '&nbsp;: ' + fmtMoney(p.contributed) + "</div>" +
         '<div class="row"><span class="sw" style="background:' + colors.gain + '"></span>' + tui.tooltipGain + '&nbsp;: ' + fmtMoney(p.gain) + "</div>" +
-        '<div class="row" style="margin-top:2px;font-weight:600">' + tui.tooltipTotal + '&nbsp;: ' + fmtMoney(p.total) + "</div>";
+        '<div class="row" style="margin-top:2px;font-weight:600">' + tui.tooltipTotal + '&nbsp;: ' + fmtMoney(p.total) + "</div>" +
+        rangeRows;
       var wrapRect = els.chartWrap.getBoundingClientRect();
       var leftPx = (px / W) * wrapRect.width;
       var topPx = (y(p.total) / H) * wrapRect.height;
@@ -842,6 +1090,16 @@
     els.inflationToggle.checked = !!state.inflationOn;
     currency = state.currency || "EUR";
     curButtons.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-cur") === currency ? "true" : "false"); });
+    els.goalCapital.value = state.goalCapital != null ? state.goalCapital : DEFAULTS.goalCapital;
+    currentMode = state.mode === "goal" ? "goal" : "capital";
+    if (els.modeToggle) {
+      els.modeToggle.querySelectorAll("button").forEach(function (b) {
+        b.setAttribute("aria-pressed", b.getAttribute("data-mode") === currentMode ? "true" : "false");
+      });
+    }
+    els.monthlyField.hidden = currentMode !== "capital";
+    els.goalField.hidden = currentMode !== "goal";
+    els.altGrid.hidden = currentMode !== "goal";
   }
 
   // wire inputs
@@ -875,11 +1133,20 @@
     els.restoreNote.classList.add("show");
     if (saved.ter != null && parseFloat(saved.ter) !== DEFAULTS.ter) document.getElementById("advancedDetails").open = true;
     if (saved.inflationOn) document.getElementById("advancedDetails").open = true;
+  } else {
+    // first visit, nothing saved yet: guess a sensible starting currency
+    var guessed = guessCurrency();
+    if (guessed !== currency) {
+      currency = guessed;
+      curButtons.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-cur") === currency ? "true" : "false"); });
+    }
   }
 
   window.SkizoI18n.initToggle(I18N, function () {
     render({ skipSave: true });
+    if (window.SkizoTheme) window.SkizoTheme.refreshLabel();
   });
+  if (window.SkizoTheme) window.SkizoTheme.initToggle();
 })();
 </script>
 </body>

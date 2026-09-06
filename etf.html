@@ -94,6 +94,13 @@
   .site-nav .item.active { background: var(--surface); border-color: var(--border-strong); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
   .site-nav .item.soon { color: var(--ink-faint); border: 1px dashed var(--border-strong); display: flex; gap: 6px; align-items: center; }
   .site-nav .item.soon .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-faint); }
+  .theme-toggle-btn {
+    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-secondary);
+    border-radius: 999px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; line-height: 1; cursor: pointer; padding: 0; font-family: inherit;
+  }
+  .theme-toggle-btn:hover { border-color: var(--border-strong); color: var(--ink); }
+  .theme-toggle-btn:focus-visible { outline: none; box-shadow: var(--focus); }
 
   header.hero { padding: 48px 0 28px; }
   .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 10px; }
@@ -202,6 +209,7 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <script src="/i18n.js"></script>
+<script src="/theme.js"></script>
 </head>
 <body>
 <nav class="topbar">
@@ -212,11 +220,13 @@
       <a class="item" href="/simulateur.html" data-i18n="nav_sim">Simulateur</a>
       <a class="item" href="/broker.html" data-i18n="nav_broker">Broker</a>
       <span class="item active" data-i18n="nav_etf">ETF</span>
+      <a class="item" href="/prochainement.html" data-i18n="nav_soon">Prochainement</a>
       <span class="item soon" data-i18n-html="nav_finances"><span class="dot"></span>Mes finances</span>
       <div class="segmented lang-toggle" id="langToggle">
         <button type="button" data-lang="fr">FR</button>
         <button type="button" data-lang="en">EN</button>
       </div>
+      <button type="button" class="theme-toggle-btn" id="themeToggle">🌙</button>
     </div>
   </div>
 </nav>
@@ -399,6 +409,7 @@
       pageTitle: "Choisir son ETF",
       brand: 'plateforme investissement <strong>· édition de travail</strong>',
       nav_quiz: "Quiz", nav_sim: "Simulateur", nav_broker: "Broker", nav_etf: "ETF",
+      nav_soon: "Prochainement",
       nav_finances: '<span class="dot"></span>Mes finances',
       eyebrow: "Incrément 3 — Choisir son ETF",
       heroH1: "Quel ETF choisir ? (et pourquoi un seul suffit souvent)",
@@ -446,6 +457,7 @@
       pageTitle: "Choose your ETF",
       brand: 'investment platform <strong>· working edition</strong>',
       nav_quiz: "Quiz", nav_sim: "Simulator", nav_broker: "Broker", nav_etf: "ETF",
+      nav_soon: "Coming soon",
       nav_finances: '<span class="dot"></span>My finances',
       eyebrow: "Increment 3 — Choosing an ETF",
       heroH1: "Which ETF should you choose? (and why one is often enough)",
@@ -690,7 +702,9 @@
     updateProgress();
     if (lastGoal) renderGoalReco(lastGoal);
     renderCompos();
+    if (window.SkizoTheme) window.SkizoTheme.refreshLabel();
   });
+  if (window.SkizoTheme) window.SkizoTheme.initToggle();
 })();
 </script>
 </body>
