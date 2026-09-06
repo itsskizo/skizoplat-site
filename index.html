@@ -373,12 +373,12 @@
       wordsSub: "Pas besoin de les retenir par cœur — reviens ici si un mot te bloque plus tard.",
       pathTitle: "Ton parcours recommandé",
       pathSub: "Dans cet ordre — chaque page reprend ta réponse pour te montrer directement ce qui te concerne.",
-      step1Title: "Choisis ton broker",
-      step1Desc: "Le compte où tu vas investir — classement et disponibilité pré-filtrés pour toi.",
-      step2Title: "Choisis ton ETF",
-      step2Desc: "La sélection et le comparatif, avec la recommandation Acc/Dist déjà pré-remplie pour toi.",
-      step3Title: "Simule ce que ça peut donner",
-      step3Desc: "Projette ton capital dans le temps selon ton âge et ton versement mensuel.",
+      simTitle: "Simule ce que ça peut donner",
+      simDesc: "Projette ton capital dans le temps selon ton âge et ton versement mensuel.",
+      brokerTitle: "Choisis ton broker",
+      brokerDesc: "Le compte où tu vas investir — classement et disponibilité pré-filtrés pour toi.",
+      etfTitle: "Choisis ton ETF",
+      etfDesc: "La sélection et le comparatif, avec la recommandation Acc/Dist déjà pré-remplie pour toi.",
       open: "Ouvrir →",
       restart: "↺ Refaire le quiz",
       otherCountryNote: "Le guide broker est surtout détaillé pour la France, le Luxembourg et le Maroc — les principes (CTO, réplication, frais) restent valables ailleurs, mais vérifie toi-même la disponibilité des brokers dans ton pays."
@@ -392,12 +392,12 @@
       wordsSub: "No need to memorize them — come back here if a word trips you up later.",
       pathTitle: "Your recommended path",
       pathSub: "In this order — each page picks up your answer to show you directly what's relevant to you.",
-      step1Title: "Choose your broker",
-      step1Desc: "The account you'll invest through — ranking and availability pre-filtered for you.",
-      step2Title: "Choose your ETF",
-      step2Desc: "The selection and comparison, with the Acc/Dist recommendation already pre-filled for you.",
-      step3Title: "Simulate what it could give",
-      step3Desc: "Project your capital over time based on your age and monthly contribution.",
+      simTitle: "Simulate what it could give",
+      simDesc: "Project your capital over time based on your age and monthly contribution.",
+      brokerTitle: "Choose your broker",
+      brokerDesc: "The account you'll invest through — ranking and availability pre-filtered for you.",
+      etfTitle: "Choose your ETF",
+      etfDesc: "The selection and comparison, with the Acc/Dist recommendation already pre-filled for you.",
       open: "Open →",
       restart: "↺ Retake the quiz",
       otherCountryNote: "The broker guide is mostly detailed for France, Luxembourg and Morocco — the principles (brokerage account type, replication, fees) still apply elsewhere, but check broker availability in your country yourself."
@@ -507,9 +507,9 @@
       '<h2>' + ui.pathTitle + '</h2>' +
       '<p class="block-sub">' + ui.pathSub + '</p>' +
       '<div class="steps">' +
-      '<div class="card step-card"><div class="step-num">1</div><div class="step-body"><div class="step-title">' + ui.step1Title + '</div><div class="step-desc">' + ui.step1Desc + '</div></div><a class="step-cta" href="' + brokerUrl + '" target="_blank" rel="noopener">' + ui.open + '</a></div>' +
-      '<div class="card step-card"><div class="step-num">2</div><div class="step-body"><div class="step-title">' + ui.step2Title + '</div><div class="step-desc">' + ui.step2Desc + '</div></div><a class="step-cta" href="' + etfUrl + '" target="_blank" rel="noopener">' + ui.open + '</a></div>' +
-      '<div class="card step-card"><div class="step-num">3</div><div class="step-body"><div class="step-title">' + ui.step3Title + '</div><div class="step-desc">' + ui.step3Desc + '</div></div><a class="step-cta" href="' + simUrl + '" target="_blank" rel="noopener">' + ui.open + '</a></div>' +
+      '<div class="card step-card"><div class="step-num">1</div><div class="step-body"><div class="step-title">' + ui.simTitle + '</div><div class="step-desc">' + ui.simDesc + '</div></div><a class="step-cta" href="' + simUrl + '" target="_blank" rel="noopener">' + ui.open + '</a></div>' +
+      '<div class="card step-card"><div class="step-num">2</div><div class="step-body"><div class="step-title">' + ui.brokerTitle + '</div><div class="step-desc">' + ui.brokerDesc + '</div></div><a class="step-cta" href="' + brokerUrl + '" target="_blank" rel="noopener">' + ui.open + '</a></div>' +
+      '<div class="card step-card"><div class="step-num">3</div><div class="step-body"><div class="step-title">' + ui.etfTitle + '</div><div class="step-desc">' + ui.etfDesc + '</div></div><a class="step-cta" href="' + etfUrl + '" target="_blank" rel="noopener">' + ui.open + '</a></div>' +
       '</div>' +
       '</section>' +
 
