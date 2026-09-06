@@ -134,6 +134,18 @@
   table.compare td.yes { color: var(--good); font-weight: 600; }
   table.compare td.no { color: var(--bad); font-weight: 600; }
   table.compare td.neutral { color: var(--ink); font-weight: 600; }
+
+  /* ---------- PEA en détail ---------- */
+  .pea-types-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
+  .pea-type-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .pea-type-card .pt-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .pea-type-card .pt-cap { font-family: "IBM Plex Mono", monospace; font-size: 20px; font-weight: 600; color: var(--accent); }
+  .pea-type-card .pt-cap-note { font-family: "IBM Plex Sans", sans-serif; font-size: 11.5px; font-weight: 500; color: var(--ink-faint); }
+  .pea-type-card .pt-desc { font-size: 12.5px; color: var(--ink-secondary); margin-top: 6px; line-height: 1.5; }
+  .pea-source-note { margin-top: 12px; font-size: 11.5px; color: var(--ink-faint); line-height: 1.5; }
+  #peaDetailSection[hidden] { display: none; }
+  table.pea-providers th, table.pea-providers td { white-space: nowrap; }
+  table.pea-providers td.name-cell { white-space: normal; font-weight: 600; color: var(--ink); }
   .pea-note { margin-top: 14px; padding: 14px 18px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border-strong); font-size: 13px; color: var(--ink-secondary); line-height: 1.55; display: none; }
   .pea-note.show { display: block; }
   .pea-note strong { color: var(--ink); }
@@ -250,7 +262,7 @@
           <tr><td class="crit" data-i18n="row3Crit">Options &amp; produits dérivés</td><td class="yes" data-i18n="row3Cto">Oui</td><td class="no" data-i18n="row3Pea">Non</td></tr>
           <tr><td class="crit" data-i18n="row4Crit">Plafond de versement</td><td class="yes" data-i18n="row4Cto">Illimité</td><td class="neutral" data-i18n="row4Pea">150 000 €</td></tr>
           <tr><td class="crit" data-i18n="row5Crit">Accessible hors France</td><td class="yes" data-i18n="row5Cto">Oui</td><td class="no" data-i18n="row5Pea">Non-résidents exclus</td></tr>
-          <tr><td class="crit" data-i18n="row6Crit">Fiscalité sur les plus-values</td><td class="neutral" data-i18n="row6Cto">30 % (flat tax)</td><td class="yes" data-i18n="row6Pea">17,2 % après 5 ans</td></tr>
+          <tr><td class="crit" data-i18n="row6Crit">Fiscalité sur les plus-values</td><td class="neutral" data-i18n="row6Cto">31,4 % (flat tax)</td><td class="yes" data-i18n="row6Pea">18,6 % après 5 ans</td></tr>
           <tr><td class="crit" data-i18n="row7Crit">Délai d'optimisation fiscale</td><td class="yes" data-i18n="row7Cto">Immédiat</td><td class="neutral" data-i18n="row7Pea">5 ans minimum</td></tr>
         </tbody>
       </table>
@@ -258,6 +270,46 @@
     <div class="pea-note" id="peaNote">
       <strong data-i18n="peaForYou">Pour toi&nbsp;:</strong> <span id="peaNoteText"></span>
     </div>
+  </section>
+
+  <section class="block" id="peaDetailSection" hidden>
+    <h2 data-i18n="peaDetailHeading">Le PEA en détail : quel établissement choisir&nbsp;?</h2>
+    <p class="block-sub" data-i18n="peaDetailSub">Trois variantes existent selon ton profil, et l'établissement choisi change beaucoup les frais sur le long terme.</p>
+
+    <div class="pea-types-grid">
+      <div class="pea-type-card">
+        <div class="pt-name" data-i18n="peaType1Name">PEA classique</div>
+        <div class="pt-cap">150 000&nbsp;€</div>
+        <div class="pt-desc" data-i18n="peaType1Desc">Le compte standard, ouvert à toute personne majeure résidente fiscale française. Un seul par personne.</div>
+      </div>
+      <div class="pea-type-card">
+        <div class="pt-name" data-i18n="peaType2Name">PEA-PME</div>
+        <div class="pt-cap">225 000&nbsp;€ <span class="pt-cap-note" data-i18n="peaType2CapNote">(cumulé avec le PEA)</span></div>
+        <div class="pt-desc" data-i18n="peaType2Desc">Dédié aux petites et moyennes entreprises européennes, en complément du PEA classique — le total des deux ne dépasse pas 225 000 €.</div>
+      </div>
+      <div class="pea-type-card">
+        <div class="pt-name" data-i18n="peaType3Name">PEA Jeune</div>
+        <div class="pt-cap">20 000&nbsp;€</div>
+        <div class="pt-desc" data-i18n="peaType3Desc">Pour les 18-25 ans encore rattachés au foyer fiscal de leurs parents — devient un PEA classique (plafond restauré à 150 000 €) à l'indépendance fiscale.</div>
+      </div>
+    </div>
+
+    <div class="wrapper-table" style="margin-top:18px">
+      <table class="compare pea-providers">
+        <thead><tr>
+          <th data-i18n="peaThName">Établissement</th>
+          <th data-i18n="peaThType">Type</th>
+          <th data-i18n="peaThOpening">Frais d'ouverture</th>
+          <th data-i18n="peaThCustody">Tenue de compte</th>
+          <th data-i18n="peaThOrder">Frais par ordre</th>
+          <th data-i18n="peaThMin">Dépôt min.</th>
+          <th data-i18n="peaThIfu">IFU fourni</th>
+        </tr></thead>
+        <tbody id="peaProvidersBody"></tbody>
+      </table>
+    </div>
+    <p class="pea-source-note" data-i18n="peaSourceNote">Frais : comparatif sinvestir.fr (consulté le 06/09/2026) — grilles tarifaires à vérifier directement avant ouverture, elles évoluent.</p>
+    <p class="pea-source-note" data-i18n="peaTaxNote">Fiscalité (LFSS 2026) : 31,4&nbsp;% avant 5 ans (12,8&nbsp;% impôt + 18,6&nbsp;% prélèvements sociaux), puis 18,6&nbsp;% seuls après 5 ans. L'IFU (imprimé fiscal unique) simplifie ta déclaration ; certains établissements domiciliés hors de France ne le fournissent pas.</p>
   </section>
 
   <section class="block">
@@ -393,6 +445,47 @@
     }
   };
 
+  // Comparatif des établissements pour ouvrir un PEA — source : sinvestir.fr, consulté le 06/09/2026.
+  // opening/custody : 0 = gratuit ; nombre = valeur en euros ; objet {fr,en} = texte libre (grille tarifaire).
+  // order : toujours un objet {fr,en} (structures trop variées pour un simple nombre).
+  // minDeposit : nombre en euros, ou null si non précisé par la source.
+  // ifu : fournit le document fiscal simplifiant la déclaration (true/false).
+  var PEA_PROVIDERS = [
+    { name: "Trade Republic", type: "courtier", opening: 0, custody: 0,
+      order: { fr: "0 € (plan programmé), sinon 1 €", en: "€0 (recurring plan), otherwise €1" }, minDeposit: 1, ifu: true },
+    { name: "Fortuneo", type: "banque_ligne", opening: 0, custody: 0,
+      order: { fr: "0 € pour le 1er ordre mensuel ≤ 500 €, puis 0,35 %", en: "€0 for the 1st monthly order ≤€500, then 0.35%" }, minDeposit: 100, ifu: true },
+    { name: "Crédit Agricole Investstore Intégral", type: "banque_trad",
+      opening: 0, custody: { fr: "96 €/an si moins de 12 ordres", en: "€96/year if fewer than 12 orders" },
+      order: { fr: "0,48 % à 0,12 % selon le montant", en: "0.48% to 0.12% depending on amount" }, minDeposit: 15, ifu: true },
+    { name: "Bourse Direct", type: "courtier", opening: 0, custody: 0,
+      order: { fr: "0,5 % à 0,09 % selon le montant (dégressif)", en: "0.5% to 0.09% depending on amount (tiered)" }, minDeposit: 1, ifu: true },
+    { name: "Saxo", type: "courtier", opening: 0, custody: 0,
+      order: { fr: "0,08 %, min. 2 €", en: "0.08%, min. €2" }, minDeposit: 1, ifu: true },
+    { name: "BoursoBank", type: "banque_ligne", opening: 0, custody: 0,
+      order: { fr: "0,50 % (≤ 399 €), 1,99 € (399-500 €), 0,50 % au-delà", en: "0.50% (≤€399), €1.99 (€399-500), 0.50% beyond" }, minDeposit: 100, ifu: true },
+    { name: "XTB", type: "courtier", opening: 0, custody: 0,
+      order: { fr: "0 € jusqu'à 100 000 €/mois investis", en: "€0 up to €100,000/month invested" }, minDeposit: 10, ifu: true },
+    { name: "EasyBourse", type: "courtier", opening: 0, custody: { fr: "3 €/mois si compte inactif", en: "€3/month if account inactive" },
+      order: { fr: "2 € jusqu'à 500 €, puis 0,45 %", en: "€2 up to €500, then 0.45%" }, minDeposit: 200, ifu: true },
+    { name: "Shares", type: "courtier", opening: 0, custody: 0,
+      order: { fr: "0,5 % (< 200 €), 1 € (200-500 €), 0,2 % (> 500 €)", en: "0.5% (<€200), €1 (€200-500), 0.2% (>€500)" }, minDeposit: null, ifu: true },
+    { name: "Interactive Brokers", type: "courtier", opening: 0, custody: 0,
+      order: { fr: "0,05 %, min. 1,25 €, plafonné à 29 €", en: "0.05%, min. €1.25, capped at €29" }, minDeposit: null, ifu: false },
+    { name: "MEXEM", type: "courtier", opening: 0, custody: 0,
+      order: { fr: "0,06 %, min. 1 €", en: "0.06%, min. €1" }, minDeposit: null, ifu: false },
+    { name: "Monabanq", type: "banque_ligne", opening: 0, custody: 0,
+      order: { fr: "0 € pour le 1er ordre mensuel, puis 6 €/ordre", en: "€0 for the 1st monthly order, then €6/order" }, minDeposit: null, ifu: true },
+    { name: "Hello Bank!", type: "banque_ligne", opening: 0, custody: { fr: "plafonnés à 0,4 %, max 5 €/ligne", en: "capped at 0.4%, max €5/line" },
+      order: { fr: "1,75 € à 8 € selon le montant", en: "€1.75 to €8 depending on amount" }, minDeposit: null, ifu: false },
+    { name: "N26", type: "banque_ligne", opening: 0, custody: 0,
+      order: { fr: "0 €", en: "€0" }, minDeposit: null, ifu: false },
+    { name: "Yomoni", type: "gestion_pilotee", opening: 0, custody: { fr: "1,6 %/an (gestion pilotée)", en: "1.6%/year (managed investing)" },
+      order: { fr: "—", en: "—" }, minDeposit: null, ifu: true },
+    { name: "Ramify", type: "gestion_pilotee", opening: 0, custody: { fr: "1 % à 1,3 %/an + ~0,2 % de frais ETF", en: "1% to 1.3%/year + ~0.2% ETF fees" },
+      order: { fr: "—", en: "—" }, minDeposit: null, ifu: true }
+  ];
+
   var I18N = {
     fr: {
       pageTitle: "Choisir son Broker",
@@ -416,9 +509,24 @@
       row3Crit: "Options & produits dérivés", row3Cto: "Oui", row3Pea: "Non",
       row4Crit: "Plafond de versement", row4Cto: "Illimité", row4Pea: "150 000 €",
       row5Crit: "Accessible hors France", row5Cto: "Oui", row5Pea: "Non-résidents exclus",
-      row6Crit: "Fiscalité sur les plus-values", row6Cto: "30 % (flat tax)", row6Pea: "17,2 % après 5 ans",
+      row6Crit: "Fiscalité sur les plus-values", row6Cto: "31,4 % (flat tax)", row6Pea: "18,6 % après 5 ans",
       row7Crit: "Délai d'optimisation fiscale", row7Cto: "Immédiat", row7Pea: "5 ans minimum",
       peaForYou: "Pour toi :",
+      peaDetailHeading: "Le PEA en détail : quel établissement choisir ?",
+      peaDetailSub: "Trois variantes existent selon ton profil, et l'établissement choisi change beaucoup les frais sur le long terme.",
+      peaType1Name: "PEA classique",
+      peaType1Desc: "Le compte standard, ouvert à toute personne majeure résidente fiscale française. Un seul par personne.",
+      peaType2Name: "PEA-PME",
+      peaType2CapNote: "(cumulé avec le PEA)",
+      peaType2Desc: "Dédié aux petites et moyennes entreprises européennes, en complément du PEA classique — le total des deux ne dépasse pas 225 000 €.",
+      peaType3Name: "PEA Jeune",
+      peaType3Desc: "Pour les 18-25 ans encore rattachés au foyer fiscal de leurs parents — devient un PEA classique (plafond restauré à 150 000 €) à l'indépendance fiscale.",
+      peaThName: "Établissement", peaThType: "Type", peaThOpening: "Frais d'ouverture", peaThCustody: "Tenue de compte",
+      peaThOrder: "Frais par ordre", peaThMin: "Dépôt min.", peaThIfu: "IFU fourni",
+      peaSourceNote: "Frais : comparatif sinvestir.fr (consulté le 06/09/2026) — grilles tarifaires à vérifier directement avant ouverture, elles évoluent.",
+      peaTaxNote: "Fiscalité (LFSS 2026) : 31,4 % avant 5 ans (12,8 % impôt + 18,6 % prélèvements sociaux), puis 18,6 % seuls après 5 ans. L'IFU (imprimé fiscal unique) simplifie ta déclaration ; certains établissements domiciliés hors de France ne le fournissent pas.",
+      peaTypeBanqueTrad: "Banque traditionnelle", peaTypeBanqueLigne: "Banque en ligne", peaTypeCourtier: "Courtier en ligne", peaTypeGestionPilotee: "Gestion pilotée",
+      peaFree: "Gratuit", peaYes: "Oui", peaNo: "Non", peaNotSpecified: "—",
       tierHeading: "Classement des brokers",
       tierSub: "Le classement (qualité, coûts, sérieux) est indépendant du pays. Le point vert/rouge/orange indique si le broker est ouvert aux résidents du pays sélectionné.",
       legendAvailable: "Disponible", legendUnavailable: "Non disponible", legendCheck: "À vérifier directement",
@@ -448,9 +556,24 @@
       row3Crit: "Options & derivatives", row3Cto: "Yes", row3Pea: "No",
       row4Crit: "Contribution cap", row4Cto: "Unlimited", row4Pea: "€150,000",
       row5Crit: "Accessible outside France", row5Cto: "Yes", row5Pea: "Non-residents excluded",
-      row6Crit: "Tax on capital gains", row6Cto: "30% (flat tax)", row6Pea: "17.2% after 5 years",
+      row6Crit: "Tax on capital gains", row6Cto: "31.4% (flat tax)", row6Pea: "18.6% after 5 years",
       row7Crit: "Tax optimization delay", row7Cto: "Immediate", row7Pea: "5 years minimum",
       peaForYou: "For you:",
+      peaDetailHeading: "The PEA in detail: which provider should you choose?",
+      peaDetailSub: "Three variants exist depending on your profile, and the provider you pick makes a big difference to fees over the long run.",
+      peaType1Name: "Standard PEA",
+      peaType1Desc: "The standard account, open to any adult French tax resident. One per person.",
+      peaType2Name: "PEA-PME",
+      peaType2CapNote: "(combined with the PEA)",
+      peaType2Desc: "Dedicated to small and mid-size European companies, alongside a standard PEA — the two combined can't exceed €225,000.",
+      peaType3Name: "PEA Jeune",
+      peaType3Desc: "For 18-25 year-olds still attached to their parents' tax household — becomes a standard PEA (cap restored to €150,000) once they're tax-independent.",
+      peaThName: "Provider", peaThType: "Type", peaThOpening: "Opening fee", peaThCustody: "Custody fee",
+      peaThOrder: "Fee per order", peaThMin: "Min. deposit", peaThIfu: "IFU provided",
+      peaSourceNote: "Fees: comparison from sinvestir.fr (accessed 06/09/2026) — check pricing directly before opening an account, fee schedules change.",
+      peaTaxNote: "Taxation (LFSS 2026): 31.4% before 5 years (12.8% income tax + 18.6% social contributions), then 18.6% alone after 5 years. The IFU (French tax summary form) simplifies your tax return; some providers based outside France don't provide one.",
+      peaTypeBanqueTrad: "Traditional bank", peaTypeBanqueLigne: "Online bank", peaTypeCourtier: "Online broker", peaTypeGestionPilotee: "Managed investing",
+      peaFree: "Free", peaYes: "Yes", peaNo: "No", peaNotSpecified: "—",
       tierHeading: "Broker ranking",
       tierSub: "The ranking (quality, costs, reliability) is independent of country. The green/red/orange dot shows whether the broker is open to residents of the selected country.",
       legendAvailable: "Available", legendUnavailable: "Not available", legendCheck: "Check directly",
@@ -480,7 +603,9 @@
     peaNote: document.getElementById("peaNote"),
     peaNoteText: document.getElementById("peaNoteText"),
     tierGrid: document.getElementById("tierGrid"),
-    compareGrid: document.getElementById("compareGrid")
+    compareGrid: document.getElementById("compareGrid"),
+    peaDetailSection: document.getElementById("peaDetailSection"),
+    peaProvidersBody: document.getElementById("peaProvidersBody")
   };
 
   var state = { country: "FR", profile: "debutant" };
@@ -546,12 +671,41 @@
     els.compareGrid.innerHTML = html;
   }
 
+  var PEA_TYPE_KEY = { banque_trad: "peaTypeBanqueTrad", banque_ligne: "peaTypeBanqueLigne", courtier: "peaTypeCourtier", gestion_pilotee: "peaTypeGestionPilotee" };
+
+  function renderPeaProviders() {
+    var L = lang();
+    var i = I18N[L];
+    function fee(v) {
+      if (v === 0) return i.peaFree;
+      if (typeof v === "object") return v[L];
+      return v;
+    }
+    var rows = PEA_PROVIDERS.map(function (p) {
+      var minDep = p.minDeposit != null ? p.minDeposit + " €" : i.peaNotSpecified;
+      var ifuText = p.ifu ? i.peaYes : i.peaNo;
+      var ifuClass = p.ifu ? "yes" : "no";
+      return "<tr>" +
+        "<td class=\"name-cell\">" + p.name + "</td>" +
+        "<td>" + i[PEA_TYPE_KEY[p.type]] + "</td>" +
+        "<td>" + fee(p.opening) + "</td>" +
+        "<td>" + fee(p.custody) + "</td>" +
+        "<td>" + p.order[L] + "</td>" +
+        "<td>" + minDep + "</td>" +
+        "<td class=\"" + ifuClass + "\">" + ifuText + "</td>" +
+        "</tr>";
+    }).join("");
+    els.peaProvidersBody.innerHTML = rows;
+  }
+
   function render() {
     var L = lang();
     els.recoText.innerHTML = RECO[L][state.country];
     els.peaNoteText.textContent = "";
     els.peaNote.classList.add("show");
     els.peaNoteText.innerHTML = PEA_NOTES[L][state.country];
+    els.peaDetailSection.hidden = state.country !== "FR";
+    if (state.country === "FR") renderPeaProviders();
     renderTier();
     renderCompare();
   }
