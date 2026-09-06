@@ -75,12 +75,18 @@
   .topbar-inner { max-width: 1080px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   .brand { display: flex; align-items: baseline; gap: 8px; font-size: 14px; color: var(--ink-faint); letter-spacing: .04em; text-transform: uppercase; }
   .brand strong { color: var(--ink); font-weight: 600; letter-spacing: 0; text-transform: none; font-size: 15px; }
-  .site-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+  .site-nav { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .site-nav a.item, .site-nav span.item { font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid transparent; color: var(--ink-secondary); white-space: nowrap; text-decoration: none; }
   .site-nav a.item:hover { color: var(--ink); }
   .site-nav .item.active { background: var(--surface); border-color: var(--border-strong); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
   .site-nav .item.soon { color: var(--ink-faint); border: 1px dashed var(--border-strong); display: flex; gap: 6px; align-items: center; }
   .site-nav .item.soon .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-faint); }
+
+  .segmented { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+  .segmented button { border: none; background: var(--surface); color: var(--ink-secondary); font-size: 12.5px; font-weight: 600; padding: 6px 11px; cursor: pointer; font-family: inherit; }
+  .segmented button + button { border-left: 1px solid var(--border-strong); }
+  .segmented button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .segmented button:focus-visible { outline: none; box-shadow: var(--focus); position: relative; z-index: 1; }
 
   header.hero { padding: 44px 0 24px; }
   .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 10px; }
@@ -154,105 +160,254 @@
 <body>
 <nav class="topbar">
   <div class="topbar-inner">
-    <div class="brand">plateforme investissement <strong>· édition de travail</strong></div>
+    <div class="brand" data-i18n-html="brand"></div>
     <div class="site-nav">
-      <span class="item active">Quiz</span>
-      <a class="item" href="/simulateur.html">Simulateur</a>
-      <a class="item" href="/broker.html">Broker</a>
-      <a class="item" href="/etf.html">ETF</a>
-      <span class="item soon"><span class="dot"></span>Mes finances</span>
+      <span class="item active" data-i18n="nav_quiz"></span>
+      <a class="item" href="/simulateur.html" data-i18n="nav_sim"></a>
+      <a class="item" href="/broker.html" data-i18n="nav_broker"></a>
+      <a class="item" href="/etf.html" data-i18n="nav_etf"></a>
+      <span class="item soon" data-i18n-html="nav_finances"></span>
+      <div class="segmented lang-toggle" id="langToggle">
+        <button type="button" data-lang="fr">FR</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
     </div>
   </div>
 </nav>
 
 <div class="shell">
   <header class="hero">
-    <p class="eyebrow">Point de départ — Quel investisseur es-tu ?</p>
-    <h1>Réponds à 4 questions simples, on te trace ton parcours</h1>
-    <p>Aucune connaissance requise. À la fin, tu as un parcours personnalisé — broker, ETF, simulation — dans le bon ordre pour toi.</p>
+    <p class="eyebrow" data-i18n="hero_eyebrow"></p>
+    <h1 data-i18n="hero_h1"></h1>
+    <p data-i18n="hero_p"></p>
   </header>
 
   <div id="quizWrap"></div>
 
-  <footer class="disclaimer">
-    <strong>À garder en tête :</strong> ce quiz oriente vers un point de départ pédagogique, il ne remplace pas un conseil personnalisé. Vérifie toujours les informations avant d'investir. Ce guide ne constitue pas un conseil en investissement.
-  </footer>
+  <footer class="disclaimer" data-i18n-html="footer"></footer>
 </div>
 
+<script src="/i18n.js"></script>
 <script>
 (function () {
   "use strict";
 
-  var QUESTIONS = [
-    {
-      id: "country",
-      label: "1 sur 4",
-      q: "Tu vis où ?",
-      help: "Les brokers et les règles fiscales changent selon ton pays de résidence.",
-      options: [
-        { value: "FR", title: "France" },
-        { value: "LU", title: "Luxembourg" },
-        { value: "MA", title: "Maroc" },
-        { value: "other", title: "Un autre pays" }
-      ]
+  var I18N = {
+    fr: {
+      brand: 'plateforme investissement <strong>· édition de travail</strong>',
+      nav_quiz: "Quiz",
+      nav_sim: "Simulateur",
+      nav_broker: "Broker",
+      nav_etf: "ETF",
+      nav_finances: '<span class="dot"></span>Mes finances',
+      hero_eyebrow: "Point de départ — Quel investisseur es-tu ?",
+      hero_h1: "Réponds à 4 questions simples, on te trace ton parcours",
+      hero_p: "Aucune connaissance requise. À la fin, tu as un parcours personnalisé — broker, ETF, simulation — dans le bon ordre pour toi.",
+      footer: '<strong>À garder en tête :</strong> ce quiz oriente vers un point de départ pédagogique, il ne remplace pas un conseil personnalisé. Vérifie toujours les informations avant d\'investir. Ce guide ne constitue pas un conseil en investissement.'
     },
-    {
-      id: "goal",
-      label: "2 sur 4",
-      q: "Tu veux plutôt...",
-      help: "Ta réponse ici détermine le type d'ETF qui te correspond le mieux.",
-      options: [
-        { value: "construire", title: "Faire grossir un capital sur le long terme", sub: "Tu n'as pas besoin de cet argent avant 10 ans ou plus, tu veux le laisser travailler." },
-        { value: "revenu", title: "Avoir un revenu régulier maintenant", sub: "Par exemple pour compléter un salaire — tu veux recevoir de l'argent en cash régulièrement." },
-        { value: "unknown", title: "Je ne sais pas encore, j'apprends", sub: "Pas de souci, on part sur l'option la plus courante pour débuter." }
-      ]
-    },
-    {
-      id: "budget",
-      label: "3 sur 4",
-      q: "Combien peux-tu mettre de côté pour investir ?",
-      help: "En gardant à part une épargne de sécurité (3 à 6 mois de dépenses) — ce n'est pas cet argent-là qu'on investit.",
-      options: [
-        { value: "lt100", title: "Moins de 100 € par mois" },
-        { value: "100to500", title: "Entre 100 € et 500 € par mois" },
-        { value: "gt500", title: "Plus de 500 € par mois" },
-        { value: "lumpsum", title: "J'ai surtout un montant plus important à placer d'un coup" }
-      ]
-    },
-    {
-      id: "risk",
-      label: "4 sur 4",
-      q: "Ton investissement perd 20 % de sa valeur pendant quelques mois (ça arrive, c'est normal). Tu ferais quoi ?",
-      help: "",
-      options: [
-        { value: "worried", title: "Je m'inquièterais, je serais tenté de tout retirer" },
-        { value: "calm", title: "Ça ne me dérangerait pas, je sais que ça remonte sur le long terme" },
-        { value: "unsure", title: "Je ne sais pas, je n'y ai jamais été confronté" }
-      ]
+    en: {
+      brand: 'investment platform <strong>· working edition</strong>',
+      nav_quiz: "Quiz",
+      nav_sim: "Simulator",
+      nav_broker: "Broker",
+      nav_etf: "ETF",
+      nav_finances: '<span class="dot"></span>My finances',
+      hero_eyebrow: "Starting point — What kind of investor are you?",
+      hero_h1: "Answer 4 simple questions, we'll map out your path",
+      hero_p: "No prior knowledge needed. At the end, you get a personalized path — broker, ETF, simulation — in the right order for you.",
+      footer: '<strong>Keep in mind:</strong> this quiz points you to an educational starting point, it doesn\'t replace personalized advice. Always verify information before investing. This guide is not investment advice.'
     }
-  ];
-
-  var LEXIQUE = [
-    { term: "ETF", def: "Un fonds qui regroupe des centaines d'entreprises en une seule part — tu investis dans tout un marché d'un coup, pas dans une seule action." },
-    { term: "Broker", def: "La plateforme où tu ouvres ton compte et passes tes ordres d'achat/vente — l'équivalent d'une banque, mais pour investir." },
-    { term: "PEA / CTO", def: "Deux types de comptes pour investir. Le CTO est ouvert à tous, accès au monde entier. Le PEA a une meilleure fiscalité mais réservé aux résidents fiscaux français, limité à l'Europe." },
-    { term: "TER", def: "Les frais annuels d'un ETF, prélevés automatiquement. Plus c'est bas, plus tu gardes d'argent — vise sous 0,20 %/an." },
-    { term: "Acc / Dist", def: "Acc réinvestit automatiquement les dividendes pour toi. Dist te les verse en cash sur ton compte." },
-    { term: "Diversification", def: "Répartir son argent sur beaucoup d'entreprises et de pays plutôt que tout miser sur une seule — ça réduit le risque." }
-  ];
-
-  var REASSURE = {
-    worried: "C'est une réaction totalement normale — et c'est justement pour ça qu'on investit un peu chaque mois plutôt que tout d'un coup. Les baisses ponctuelles font partie du jeu : historiquement, les marchés ont toujours fini par remonter sur le long terme. Le vrai risque pour un débutant n'est pas la baisse elle-même, c'est de paniquer et de vendre au pire moment.",
-    calm: "C'est exactement le bon état d'esprit pour investir sur le long terme : une baisse temporaire ne compte que si tu vends au mauvais moment. Tenir bon (voire continuer à verser) pendant une baisse, c'est souvent ce qui fait la différence sur 10 à 15 ans.",
-    unsure: "C'est normal de ne pas savoir avant d'y avoir été confronté — personne ne l'est vraiment tant que ça n'arrive pas. Le plus important à retenir : les marchés montent et baissent, c'est normal, et miser sur le temps long (10 ans ou plus) est ce qui protège le mieux un débutant."
   };
 
-  var PROFILE_LABEL = { debutant: "Profil débutant", actif: "Profil actif", gros: "Gros capital" };
-  var COUNTRY_LABEL = { FR: "France", LU: "Luxembourg", MA: "Maroc", other: "Ton pays" };
-  var GOAL_LABEL = { construire: "Construire un capital", revenu: "Revenu régulier", unknown: "Construire un capital (par défaut)" };
+  var QUESTIONS = {
+    fr: [
+      {
+        id: "country",
+        label: "1 sur 4",
+        q: "Tu vis où ?",
+        help: "Les brokers et les règles fiscales changent selon ton pays de résidence.",
+        options: [
+          { value: "FR", title: "France" },
+          { value: "LU", title: "Luxembourg" },
+          { value: "MA", title: "Maroc" },
+          { value: "other", title: "Un autre pays" }
+        ]
+      },
+      {
+        id: "goal",
+        label: "2 sur 4",
+        q: "Tu veux plutôt...",
+        help: "Ta réponse ici détermine le type d'ETF qui te correspond le mieux.",
+        options: [
+          { value: "construire", title: "Faire grossir un capital sur le long terme", sub: "Tu n'as pas besoin de cet argent avant 10 ans ou plus, tu veux le laisser travailler." },
+          { value: "revenu", title: "Avoir un revenu régulier maintenant", sub: "Par exemple pour compléter un salaire — tu veux recevoir de l'argent en cash régulièrement." },
+          { value: "unknown", title: "Je ne sais pas encore, j'apprends", sub: "Pas de souci, on part sur l'option la plus courante pour débuter." }
+        ]
+      },
+      {
+        id: "budget",
+        label: "3 sur 4",
+        q: "Combien peux-tu mettre de côté pour investir ?",
+        help: "En gardant à part une épargne de sécurité (3 à 6 mois de dépenses) — ce n'est pas cet argent-là qu'on investit.",
+        options: [
+          { value: "lt100", title: "Moins de 100 € par mois" },
+          { value: "100to500", title: "Entre 100 € et 500 € par mois" },
+          { value: "gt500", title: "Plus de 500 € par mois" },
+          { value: "lumpsum", title: "J'ai surtout un montant plus important à placer d'un coup" }
+        ]
+      },
+      {
+        id: "risk",
+        label: "4 sur 4",
+        q: "Ton investissement perd 20 % de sa valeur pendant quelques mois (ça arrive, c'est normal). Tu ferais quoi ?",
+        help: "",
+        options: [
+          { value: "worried", title: "Je m'inquièterais, je serais tenté de tout retirer" },
+          { value: "calm", title: "Ça ne me dérangerait pas, je sais que ça remonte sur le long terme" },
+          { value: "unsure", title: "Je ne sais pas, je n'y ai jamais été confronté" }
+        ]
+      }
+    ],
+    en: [
+      {
+        id: "country",
+        label: "1 of 4",
+        q: "Where do you live?",
+        help: "Brokers and tax rules change depending on your country of residence.",
+        options: [
+          { value: "FR", title: "France" },
+          { value: "LU", title: "Luxembourg" },
+          { value: "MA", title: "Morocco" },
+          { value: "other", title: "Another country" }
+        ]
+      },
+      {
+        id: "goal",
+        label: "2 of 4",
+        q: "You're mostly looking to...",
+        help: "Your answer here determines which type of ETF suits you best.",
+        options: [
+          { value: "construire", title: "Grow capital over the long term", sub: "You won't need this money for 10+ years, you want to let it work." },
+          { value: "revenu", title: "Get a regular income now", sub: "For example to top up a salary — you want to receive cash regularly." },
+          { value: "unknown", title: "I don't know yet, I'm still learning", sub: "No worries, we'll go with the most common option for beginners." }
+        ]
+      },
+      {
+        id: "budget",
+        label: "3 of 4",
+        q: "How much can you set aside to invest?",
+        help: "Keeping a safety cushion aside (3 to 6 months of expenses) — that money isn't for investing.",
+        options: [
+          { value: "lt100", title: "Less than €100 per month" },
+          { value: "100to500", title: "Between €100 and €500 per month" },
+          { value: "gt500", title: "More than €500 per month" },
+          { value: "lumpsum", title: "I mainly have a larger lump sum to invest at once" }
+        ]
+      },
+      {
+        id: "risk",
+        label: "4 of 4",
+        q: "Your investment loses 20% of its value for a few months (it happens, it's normal). What would you do?",
+        help: "",
+        options: [
+          { value: "worried", title: "I'd worry, I'd be tempted to withdraw everything" },
+          { value: "calm", title: "It wouldn't bother me, I know it recovers over the long run" },
+          { value: "unsure", title: "I don't know, I've never faced that before" }
+        ]
+      }
+    ]
+  };
+
+  var LEXIQUE = {
+    fr: [
+      { term: "ETF", def: "Un fonds qui regroupe des centaines d'entreprises en une seule part — tu investis dans tout un marché d'un coup, pas dans une seule action." },
+      { term: "Broker", def: "La plateforme où tu ouvres ton compte et passes tes ordres d'achat/vente — l'équivalent d'une banque, mais pour investir." },
+      { term: "PEA / CTO", def: "Deux types de comptes pour investir. Le CTO est ouvert à tous, accès au monde entier. Le PEA a une meilleure fiscalité mais réservé aux résidents fiscaux français, limité à l'Europe." },
+      { term: "TER", def: "Les frais annuels d'un ETF, prélevés automatiquement. Plus c'est bas, plus tu gardes d'argent — vise sous 0,20 %/an." },
+      { term: "Acc / Dist", def: "Acc réinvestit automatiquement les dividendes pour toi. Dist te les verse en cash sur ton compte." },
+      { term: "Diversification", def: "Répartir son argent sur beaucoup d'entreprises et de pays plutôt que tout miser sur une seule — ça réduit le risque." }
+    ],
+    en: [
+      { term: "ETF", def: "A fund that bundles hundreds of companies into a single share — you invest in a whole market at once, not just one stock." },
+      { term: "Broker", def: "The platform where you open your account and place buy/sell orders — the equivalent of a bank, but for investing." },
+      { term: "PEA / CTO", def: "Two types of investment accounts (France). CTO is open to anyone, worldwide access. PEA has better tax treatment but is reserved for French tax residents, limited to Europe." },
+      { term: "TER", def: "An ETF's annual fee, deducted automatically. The lower, the more money you keep — aim for under 0.20%/year." },
+      { term: "Acc / Dist", def: "Acc automatically reinvests dividends for you. Dist pays them out to you in cash." },
+      { term: "Diversification", def: "Spreading your money across many companies and countries instead of betting on just one — it reduces risk." }
+    ]
+  };
+
+  var REASSURE = {
+    fr: {
+      worried: "C'est une réaction totalement normale — et c'est justement pour ça qu'on investit un peu chaque mois plutôt que tout d'un coup. Les baisses ponctuelles font partie du jeu : historiquement, les marchés ont toujours fini par remonter sur le long terme. Le vrai risque pour un débutant n'est pas la baisse elle-même, c'est de paniquer et de vendre au pire moment.",
+      calm: "C'est exactement le bon état d'esprit pour investir sur le long terme : une baisse temporaire ne compte que si tu vends au mauvais moment. Tenir bon (voire continuer à verser) pendant une baisse, c'est souvent ce qui fait la différence sur 10 à 15 ans.",
+      unsure: "C'est normal de ne pas savoir avant d'y avoir été confronté — personne ne l'est vraiment tant que ça n'arrive pas. Le plus important à retenir : les marchés montent et baissent, c'est normal, et miser sur le temps long (10 ans ou plus) est ce qui protège le mieux un débutant."
+    },
+    en: {
+      worried: "That's a completely normal reaction — and it's exactly why we invest a little each month rather than all at once. Temporary drops are part of the game: historically, markets have always eventually recovered over the long term. The real risk for a beginner isn't the drop itself, it's panicking and selling at the worst possible moment.",
+      calm: "That's exactly the right mindset for long-term investing: a temporary drop only matters if you sell at the wrong moment. Holding steady (or even continuing to invest) during a downturn is often what makes the difference over 10 to 15 years.",
+      unsure: "It's normal not to know until you've actually faced it — nobody really does until it happens. The most important thing to remember: markets go up and down, that's normal, and betting on the long term (10 years or more) is what best protects a beginner."
+    }
+  };
+
+  var PROFILE_LABEL = {
+    fr: { debutant: "Profil débutant", actif: "Profil actif", gros: "Gros capital" },
+    en: { debutant: "Beginner profile", actif: "Active profile", gros: "Large capital" }
+  };
+  var COUNTRY_LABEL = {
+    fr: { FR: "France", LU: "Luxembourg", MA: "Maroc", other: "Ton pays" },
+    en: { FR: "France", LU: "Luxembourg", MA: "Morocco", other: "Your country" }
+  };
+  var GOAL_LABEL = {
+    fr: { construire: "Construire un capital", revenu: "Revenu régulier", unknown: "Construire un capital (par défaut)" },
+    en: { construire: "Building capital", revenu: "Regular income", unknown: "Building capital (default)" }
+  };
+
+  var UI = {
+    fr: {
+      back: "← Précédent",
+      next: "Suivant →",
+      seeResult: "Voir mon parcours",
+      yourProfile: "Ton profil",
+      wordsTitle: "Les mots que tu vas croiser",
+      wordsSub: "Pas besoin de les retenir par cœur — reviens ici si un mot te bloque plus tard.",
+      pathTitle: "Ton parcours recommandé",
+      pathSub: "Dans cet ordre — chaque page reprend ta réponse pour te montrer directement ce qui te concerne.",
+      step1Title: "Choisis ton broker",
+      step1Desc: "Le compte où tu vas investir — classement et disponibilité pré-filtrés pour toi.",
+      step2Title: "Choisis ton ETF",
+      step2Desc: "La sélection et le comparatif, avec la recommandation Acc/Dist déjà pré-remplie pour toi.",
+      step3Title: "Simule ce que ça peut donner",
+      step3Desc: "Projette ton capital dans le temps selon ton âge et ton versement mensuel.",
+      open: "Ouvrir →",
+      restart: "↺ Refaire le quiz",
+      otherCountryNote: "Le guide broker est surtout détaillé pour la France, le Luxembourg et le Maroc — les principes (CTO, réplication, frais) restent valables ailleurs, mais vérifie toi-même la disponibilité des brokers dans ton pays."
+    },
+    en: {
+      back: "← Back",
+      next: "Next →",
+      seeResult: "See my path",
+      yourProfile: "Your profile",
+      wordsTitle: "Words you'll come across",
+      wordsSub: "No need to memorize them — come back here if a word trips you up later.",
+      pathTitle: "Your recommended path",
+      pathSub: "In this order — each page picks up your answer to show you directly what's relevant to you.",
+      step1Title: "Choose your broker",
+      step1Desc: "The account you'll invest through — ranking and availability pre-filtered for you.",
+      step2Title: "Choose your ETF",
+      step2Desc: "The selection and comparison, with the Acc/Dist recommendation already pre-filled for you.",
+      step3Title: "Simulate what it could give",
+      step3Desc: "Project your capital over time based on your age and monthly contribution.",
+      open: "Open →",
+      restart: "↺ Retake the quiz",
+      otherCountryNote: "The broker guide is mostly detailed for France, Luxembourg and Morocco — the principles (brokerage account type, replication, fees) still apply elsewhere, but check broker availability in your country yourself."
+    }
+  };
 
   var wrap = document.getElementById("quizWrap");
-  var state = { index: 0, answers: {} };
+  var state = { index: 0, answers: {}, screen: "question" };
+
+  function lang() { return window.SkizoI18n ? window.SkizoI18n.getLang() : "fr"; }
 
   function budgetToProfile(v) {
     if (v === "gt500") return "actif";
@@ -270,10 +425,14 @@
   }
 
   function renderQuestion() {
-    var q = QUESTIONS[state.index];
+    state.screen = "question";
+    var L = lang();
+    var ui = UI[L];
+    var questions = QUESTIONS[L];
+    var q = questions[state.index];
     var selected = state.answers[q.id];
     var html = '<div class="card quiz-card">' +
-      '<div class="quiz-progress">' + renderProgress(state.index, QUESTIONS.length) + '</div>' +
+      '<div class="quiz-progress">' + renderProgress(state.index, questions.length) + '</div>' +
       '<p class="quiz-step-label">' + q.label + '</p>' +
       '<p class="quiz-q">' + q.q + '</p>' +
       (q.help ? '<p class="quiz-help">' + q.help + '</p>' : '<div style="margin-bottom:22px"></div>') +
@@ -287,8 +446,8 @@
     });
     html += '</div>' +
       '<div class="quiz-nav">' +
-      '<button type="button" class="btn btn-ghost" id="btnBack"' + (state.index === 0 ? " disabled" : "") + '>← Précédent</button>' +
-      '<button type="button" class="btn btn-primary" id="btnNext"' + (selected ? "" : " disabled") + '>' + (state.index === QUESTIONS.length - 1 ? "Voir mon parcours" : "Suivant →") + '</button>' +
+      '<button type="button" class="btn btn-ghost" id="btnBack"' + (state.index === 0 ? " disabled" : "") + '>' + ui.back + '</button>' +
+      '<button type="button" class="btn btn-primary" id="btnNext"' + (selected ? "" : " disabled") + '>' + (state.index === questions.length - 1 ? ui.seeResult : ui.next) + '</button>' +
       '</div>' +
       '</div>';
     wrap.innerHTML = html;
@@ -303,12 +462,15 @@
     if (backBtn) backBtn.addEventListener("click", function () { state.index--; renderQuestion(); });
     document.getElementById("btnNext").addEventListener("click", function () {
       if (!state.answers[q.id]) return;
-      if (state.index < QUESTIONS.length - 1) { state.index++; renderQuestion(); }
+      if (state.index < questions.length - 1) { state.index++; renderQuestion(); }
       else { renderResult(); }
     });
   }
 
   function renderResult() {
+    state.screen = "result";
+    var L = lang();
+    var ui = UI[L];
     var a = state.answers;
     var country = a.country;
     var goal = a.goal === "unknown" ? "construire" : a.goal;
@@ -321,37 +483,37 @@
     var simUrl = "/simulateur.html";
 
     var html = '<div class="card quiz-card">' +
-      '<p class="result-eyebrow">Ton profil</p>' +
-      '<p class="result-title">' + PROFILE_LABEL[profile] + (isOtherCountry ? "" : " · " + COUNTRY_LABEL[country]) + '</p>' +
+      '<p class="result-eyebrow">' + ui.yourProfile + '</p>' +
+      '<p class="result-title">' + PROFILE_LABEL[L][profile] + (isOtherCountry ? "" : " · " + COUNTRY_LABEL[L][country]) + '</p>' +
       '<div class="result-chip-row">' +
-      '<span class="result-chip">' + GOAL_LABEL[a.goal] + '</span>' +
-      '<span class="result-chip">' + COUNTRY_LABEL[country] + '</span>' +
+      '<span class="result-chip">' + GOAL_LABEL[L][a.goal] + '</span>' +
+      '<span class="result-chip">' + COUNTRY_LABEL[L][country] + '</span>' +
       '</div>' +
-      '<div class="reassure-card">' + REASSURE[a.risk] + '</div>' +
-      (isOtherCountry ? '<p class="other-country-note">Le guide broker est surtout détaillé pour la France, le Luxembourg et le Maroc — les principes (CTO, réplication, frais) restent valables ailleurs, mais vérifie toi-même la disponibilité des brokers dans ton pays.</p>' : '') +
+      '<div class="reassure-card">' + REASSURE[L][a.risk] + '</div>' +
+      (isOtherCountry ? '<p class="other-country-note">' + ui.otherCountryNote + '</p>' : '') +
       '</div>' +
 
       '<section class="block">' +
-      '<h2>Les mots que tu vas croiser</h2>' +
-      '<p class="block-sub">Pas besoin de les retenir par cœur — reviens ici si un mot te bloque plus tard.</p>' +
+      '<h2>' + ui.wordsTitle + '</h2>' +
+      '<p class="block-sub">' + ui.wordsSub + '</p>' +
       '<div class="lexique-grid">' +
-      LEXIQUE.map(function (l) {
+      LEXIQUE[L].map(function (l) {
         return '<div class="lex-item"><div class="lex-term">' + l.term + '</div><div class="lex-def">' + l.def + '</div></div>';
       }).join("") +
       '</div>' +
       '</section>' +
 
       '<section class="block">' +
-      '<h2>Ton parcours recommandé</h2>' +
-      '<p class="block-sub">Dans cet ordre — chaque page reprend ta réponse pour te montrer directement ce qui te concerne.</p>' +
+      '<h2>' + ui.pathTitle + '</h2>' +
+      '<p class="block-sub">' + ui.pathSub + '</p>' +
       '<div class="steps">' +
-      '<div class="card step-card"><div class="step-num">1</div><div class="step-body"><div class="step-title">Choisis ton broker</div><div class="step-desc">Le compte où tu vas investir — classement et disponibilité pré-filtrés pour toi.</div></div><a class="step-cta" href="' + brokerUrl + '" target="_blank" rel="noopener">Ouvrir →</a></div>' +
-      '<div class="card step-card"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisis ton ETF</div><div class="step-desc">La sélection et le comparatif, avec la recommandation Acc/Dist déjà pré-remplie pour toi.</div></div><a class="step-cta" href="' + etfUrl + '" target="_blank" rel="noopener">Ouvrir →</a></div>' +
-      '<div class="card step-card"><div class="step-num">3</div><div class="step-body"><div class="step-title">Simule ce que ça peut donner</div><div class="step-desc">Projette ton capital dans le temps selon ton âge et ton versement mensuel.</div></div><a class="step-cta" href="' + simUrl + '" target="_blank" rel="noopener">Ouvrir →</a></div>' +
+      '<div class="card step-card"><div class="step-num">1</div><div class="step-body"><div class="step-title">' + ui.step1Title + '</div><div class="step-desc">' + ui.step1Desc + '</div></div><a class="step-cta" href="' + brokerUrl + '" target="_blank" rel="noopener">' + ui.open + '</a></div>' +
+      '<div class="card step-card"><div class="step-num">2</div><div class="step-body"><div class="step-title">' + ui.step2Title + '</div><div class="step-desc">' + ui.step2Desc + '</div></div><a class="step-cta" href="' + etfUrl + '" target="_blank" rel="noopener">' + ui.open + '</a></div>' +
+      '<div class="card step-card"><div class="step-num">3</div><div class="step-body"><div class="step-title">' + ui.step3Title + '</div><div class="step-desc">' + ui.step3Desc + '</div></div><a class="step-cta" href="' + simUrl + '" target="_blank" rel="noopener">' + ui.open + '</a></div>' +
       '</div>' +
       '</section>' +
 
-      '<div style="margin-top:26px"><button type="button" class="btn btn-ghost" id="btnRestart">↺ Refaire le quiz</button></div>';
+      '<div style="margin-top:26px"><button type="button" class="btn btn-ghost" id="btnRestart">' + ui.restart + '</button></div>';
 
     wrap.innerHTML = html;
     document.getElementById("btnRestart").addEventListener("click", function () {
@@ -360,7 +522,14 @@
     });
   }
 
-  renderQuestion();
+  function render() {
+    if (state.screen === "result") renderResult();
+    else renderQuestion();
+  }
+
+  window.SkizoI18n.initToggle(I18N, function () {
+    render();
+  });
 })();
 </script>
 </body>

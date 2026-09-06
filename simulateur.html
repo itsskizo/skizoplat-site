@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulateur d'Investissement</title>
+<title data-i18n="pageTitle">Simulateur d'Investissement</title>
 <style>
   :root {
     color-scheme: light;
@@ -87,7 +87,7 @@
   }
   .brand { display: flex; align-items: baseline; gap: 8px; font-size: 14px; color: var(--ink-faint); letter-spacing: .04em; text-transform: uppercase; }
   .brand strong { color: var(--ink); font-weight: 600; letter-spacing: 0; text-transform: none; font-size: 15px; }
-  .site-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+  .site-nav { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .site-nav .item {
     font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid transparent;
     color: var(--ink-secondary); white-space: nowrap; text-decoration: none;
@@ -266,39 +266,44 @@
 </style>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="/i18n.js"></script>
 </head>
 <body>
 <nav class="topbar">
   <div class="topbar-inner">
-    <div class="brand">plateforme investissement <strong>· édition de travail</strong></div>
+    <div class="brand" data-i18n-html="brand">plateforme investissement <strong>· édition de travail</strong></div>
     <div class="site-nav">
-      <a class="item" href="/">Quiz</a>
-      <span class="item active">Simulateur</span>
-      <a class="item" href="/broker.html">Broker</a>
-      <a class="item" href="/etf.html">ETF</a>
-      <span class="item soon"><span class="dot"></span>Mes finances</span>
+      <a class="item" href="/" data-i18n="nav_quiz">Quiz</a>
+      <span class="item active" data-i18n="nav_sim">Simulateur</span>
+      <a class="item" href="/broker.html" data-i18n="nav_broker">Broker</a>
+      <a class="item" href="/etf.html" data-i18n="nav_etf">ETF</a>
+      <span class="item soon" data-i18n-html="nav_finances"><span class="dot"></span>Mes finances</span>
+      <div class="segmented lang-toggle" id="langToggle">
+        <button type="button" data-lang="fr">FR</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
     </div>
   </div>
 </nav>
 
 <div class="shell">
   <header class="hero">
-    <p class="eyebrow">Incrément 1 — Simulateur</p>
-    <h1>Combien peux-tu accumuler d'ici tes&nbsp;<span id="heroAge">65</span>&nbsp;ans&nbsp;?</h1>
-    <p>Règle ton âge, ce que tu as déjà investi, ton versement mensuel et ton taux de rendement espéré — le graphique et le tableau se recalculent en direct.</p>
+    <p class="eyebrow" data-i18n="eyebrow">Incrément 1 — Simulateur</p>
+    <h1 data-i18n-html="heroH1">Combien peux-tu accumuler d'ici tes&nbsp;<span id="heroAge">65</span>&nbsp;ans&nbsp;?</h1>
+    <p data-i18n="heroP">Règle ton âge, ce que tu as déjà investi, ton versement mensuel et ton taux de rendement espéré — le graphique et le tableau se recalculent en direct.</p>
   </header>
 
   <div class="layout">
     <!-- INPUTS -->
-    <section class="card panel card-pad" aria-label="Paramètres de la simulation">
-      <h2>Tes paramètres</h2>
-      <p class="restore-note" id="restoreNote">Derniers paramètres saisis restaurés.</p>
+    <section class="card panel card-pad" aria-label="Paramètres de la simulation" data-i18n-aria="panelAria">
+      <h2 data-i18n="panelH2">Tes paramètres</h2>
+      <p class="restore-note" id="restoreNote" data-i18n="restoreNote">Derniers paramètres saisis restaurés.</p>
 
       <div class="field">
         <div class="field-head">
-          <span class="field-label">Devise</span>
+          <span class="field-label" data-i18n="currencyLabel">Devise</span>
         </div>
-        <div class="segmented" role="group" aria-label="Devise">
+        <div class="segmented" role="group" aria-label="Devise" data-i18n-aria="currencyLabel">
           <button type="button" data-cur="EUR" aria-pressed="true">EUR €</button>
           <button type="button" data-cur="MAD" aria-pressed="false">MAD DH</button>
         </div>
@@ -307,29 +312,29 @@
       <div class="field">
         <div class="two-up">
           <div>
-            <div class="field-head"><span class="field-label">Âge actuel</span></div>
+            <div class="field-head"><span class="field-label" data-i18n="ageNowLabel">Âge actuel</span></div>
             <input class="num-input" type="number" id="ageNow" min="16" max="79" step="1" value="27">
           </div>
           <div>
-            <div class="field-head"><span class="field-label">Âge cible</span></div>
+            <div class="field-head"><span class="field-label" data-i18n="ageTargetLabel">Âge cible</span></div>
             <input class="num-input" type="number" id="ageTarget" min="17" max="90" step="1" value="65">
           </div>
         </div>
-        <input type="range" id="ageTargetRange" min="17" max="90" step="1" value="65" style="margin-top:12px;" aria-label="Âge cible (curseur)">
+        <input type="range" id="ageTargetRange" min="17" max="90" step="1" value="65" style="margin-top:12px;" aria-label="Âge cible (curseur)" data-i18n-aria="ageTargetRangeAria">
       </div>
 
       <div class="field">
         <div class="field-head">
-          <span class="field-label">Capital déjà investi</span>
+          <span class="field-label" data-i18n="initialLabel">Capital déjà investi</span>
           <span class="field-value num" id="initialOut">2 000&nbsp;€</span>
         </div>
         <input type="range" id="initial" min="0" max="50000" step="500" value="2000">
-        <p class="field-hint">Ce que tu as déjà de côté ou placé aujourd'hui — ça continue de composer avec le reste.</p>
+        <p class="field-hint" data-i18n="initialHint">Ce que tu as déjà de côté ou placé aujourd'hui — ça continue de composer avec le reste.</p>
       </div>
 
       <div class="field">
         <div class="field-head">
-          <span class="field-label">Versement mensuel</span>
+          <span class="field-label" data-i18n="monthlyLabel">Versement mensuel</span>
           <span class="field-value num" id="monthlyOut">300&nbsp;€</span>
         </div>
         <input type="range" id="monthly" min="0" max="3000" step="25" value="300">
@@ -337,32 +342,32 @@
 
       <div class="field">
         <div class="field-head">
-          <span class="field-label">Taux de rendement annuel espéré</span>
+          <span class="field-label" data-i18n="rateLabel">Taux de rendement annuel espéré</span>
           <span class="field-value num" id="rateOut">7,0&nbsp;%</span>
         </div>
         <input type="range" id="rate" min="0" max="15" step="0.1" value="7">
       </div>
 
       <details class="advanced" id="advancedDetails">
-        <summary>Hypothèses avancées <span class="chev">▸</span></summary>
+        <summary><span data-i18n="advancedSummary">Hypothèses avancées</span> <span class="chev">▸</span></summary>
         <div class="advanced-body">
           <div class="field" style="margin-bottom:0">
             <div class="field-head">
-              <span class="field-label">Frais annuels (TER)</span>
+              <span class="field-label" data-i18n="terLabel">Frais annuels (TER)</span>
               <span class="field-value num" id="terOut">0,20&nbsp;%</span>
             </div>
             <input type="range" id="ter" min="0" max="1.5" step="0.01" value="0.20">
-            <p class="field-hint">Frais courants de l'ETF, déduits du rendement chaque année. Repère : 0,07&nbsp;% à 0,20&nbsp;% pour un ETF large (S&amp;P 500, MSCI World).</p>
+            <p class="field-hint" data-i18n="terHint">Frais courants de l'ETF, déduits du rendement chaque année. Repère : 0,07&nbsp;% à 0,20&nbsp;% pour un ETF large (S&amp;P 500, MSCI World).</p>
           </div>
 
           <div class="field" style="margin-bottom:0">
             <label class="toggle-row">
-              <span class="field-label">Corriger pour l'inflation</span>
+              <span class="field-label" data-i18n="inflationLabel">Corriger pour l'inflation</span>
               <input type="checkbox" id="inflationToggle" class="toggle-check">
             </label>
             <input type="range" id="inflation" min="0" max="5" step="0.1" value="2" disabled style="margin-top:12px;">
             <div class="inflation-sub">
-              <span class="field-hint" style="margin:0">Taux d'inflation estimé</span>
+              <span class="field-hint" style="margin:0" data-i18n="inflationHint">Taux d'inflation estimé</span>
               <span class="field-value num" id="inflationOut" style="font-size:12.5px">2,0&nbsp;%</span>
             </div>
           </div>
@@ -371,62 +376,62 @@
         </div>
       </details>
 
-      <button class="reset-link" id="resetBtn" type="button">Réinitialiser les valeurs par défaut</button>
+      <button class="reset-link" id="resetBtn" type="button" data-i18n="resetBtn">Réinitialiser les valeurs par défaut</button>
 
-      <p class="assumption">Repère : le S&amp;P 500 affiche ~10&nbsp;%/an de moyenne historique sur 20 ans (source : contenu ETF joint), un ETF monde diversifié plutôt 6–8&nbsp;%/an. Rendements passés ≠ garantie future.</p>
+      <p class="assumption" data-i18n-html="assumption">Repère : le S&amp;P 500 affiche ~10&nbsp;%/an de moyenne historique sur 20 ans (source : contenu ETF joint), un ETF monde diversifié plutôt 6–8&nbsp;%/an. Rendements passés ≠ garantie future.</p>
     </section>
 
     <!-- RESULTS -->
     <section class="results">
       <div class="card hero-stat">
-        <span class="label">Capital projeté à <span id="targetAgeLabel">65</span> ans</span>
+        <span class="label" data-i18n-html="heroStatLabel">Capital projeté à <span id="targetAgeLabel">65</span> ans</span>
         <div class="value num" id="finalValue">0<span class="cur">EUR</span></div>
-        <span class="sub">soit <strong id="multiple">×0</strong> ce que tu auras versé</span>
+        <span class="sub" data-i18n-html="heroStatSub">soit <strong id="multiple">×0</strong> ce que tu auras versé</span>
         <span class="sub real" id="realValueLine" hidden></span>
       </div>
 
       <div class="stat-row">
         <div class="card stat-tile">
-          <span class="label"><span class="swatch" style="background:var(--accent)"></span>Total versé</span>
+          <span class="label"><span class="swatch" style="background:var(--accent)"></span><span data-i18n="totalContribLabel">Total versé</span></span>
           <div class="value num" id="totalContrib">0&nbsp;€</div>
         </div>
         <div class="card stat-tile">
-          <span class="label"><span class="swatch" style="background:var(--gain)"></span>Plus-value</span>
+          <span class="label"><span class="swatch" style="background:var(--gain)"></span><span data-i18n="totalGainLabel">Plus-value</span></span>
           <div class="value num" id="totalGain" style="color:var(--gain)">0&nbsp;€</div>
         </div>
         <div class="card stat-tile">
-          <span class="label"><span class="swatch" style="background:var(--good)"></span>Durée</span>
+          <span class="label"><span class="swatch" style="background:var(--good)"></span><span data-i18n="durationLabel">Durée</span></span>
           <div class="value num" id="durationOut">0 ans</div>
         </div>
       </div>
 
       <div class="card chart-card">
         <div class="chart-head">
-          <h3>Versements vs plus-value dans le temps</h3>
+          <h3 data-i18n="chartHeading">Versements vs plus-value dans le temps</h3>
           <div class="legend">
-            <span class="item"><span class="swatch" style="background:var(--accent)"></span>Versé cumulé</span>
-            <span class="item"><span class="swatch" style="background:var(--gain)"></span>Plus-value</span>
+            <span class="item"><span class="swatch" style="background:var(--accent)"></span><span data-i18n="legendContrib">Versé cumulé</span></span>
+            <span class="item"><span class="swatch" style="background:var(--gain)"></span><span data-i18n="legendGain">Plus-value</span></span>
           </div>
         </div>
         <div class="chart-wrap" id="chartWrap">
-          <svg class="chart" id="chartSvg" viewBox="0 0 720 320" preserveAspectRatio="none" role="img" aria-label="Graphique de croissance du capital"></svg>
+          <svg class="chart" id="chartSvg" viewBox="0 0 720 320" preserveAspectRatio="none" role="img" aria-label="Graphique de croissance du capital" data-i18n-aria="chartAria"></svg>
           <div class="tooltip" id="tooltip"></div>
         </div>
       </div>
 
       <details class="table-card card" id="tableCard">
-        <summary>Voir le détail année par année <span class="chev">▸</span></summary>
+        <summary><span data-i18n="tableSummary">Voir le détail année par année</span> <span class="chev">▸</span></summary>
         <div class="table-scroll">
           <table>
             <thead>
-              <tr><th>Année</th><th>Âge</th><th>Versé cumulé</th><th>Plus-value</th><th>Capital total</th></tr>
+              <tr><th data-i18n="thYear">Année</th><th data-i18n="thAge">Âge</th><th data-i18n="thContrib">Versé cumulé</th><th data-i18n="thGain">Plus-value</th><th data-i18n="thTotal">Capital total</th></tr>
             </thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>
       </details>
 
-      <footer class="disclaimer">
+      <footer class="disclaimer" data-i18n="footerDisclaimer">
         Simulation pédagogique basée sur un rendement constant hypothétique (calcul en intérêts composés, versements mensuels, capitalisation mensuelle, frais TER déduits du rendement). Elle ne tient pas compte de la fiscalité ni des frais de courtage, et ne constitue pas un conseil en investissement. Les rendements passés ne préjugent pas des rendements futurs.
       </footer>
     </section>
@@ -440,6 +445,100 @@
   var COLOR_CONTRIB = "#2a78d6", COLOR_CONTRIB_DARK = "#3987e5";
   var COLOR_GAIN = "#eb6834", COLOR_GAIN_DARK = "#d95926";
   var STORAGE_KEY = "skizoplat_simulateur_v1";
+
+  var I18N = {
+    fr: {
+      pageTitle: "Simulateur d'Investissement",
+      brand: 'plateforme investissement <strong>· édition de travail</strong>',
+      nav_quiz: "Quiz",
+      nav_sim: "Simulateur",
+      nav_broker: "Broker",
+      nav_etf: "ETF",
+      nav_finances: '<span class="dot"></span>Mes finances',
+      eyebrow: "Incrément 1 — Simulateur",
+      heroH1: 'Combien peux-tu accumuler d\'ici tes&nbsp;<span id="heroAge">65</span>&nbsp;ans&nbsp;?',
+      heroP: "Règle ton âge, ce que tu as déjà investi, ton versement mensuel et ton taux de rendement espéré — le graphique et le tableau se recalculent en direct.",
+      panelAria: "Paramètres de la simulation",
+      panelH2: "Tes paramètres",
+      restoreNote: "Derniers paramètres saisis restaurés.",
+      currencyLabel: "Devise",
+      ageNowLabel: "Âge actuel",
+      ageTargetLabel: "Âge cible",
+      ageTargetRangeAria: "Âge cible (curseur)",
+      initialLabel: "Capital déjà investi",
+      initialHint: "Ce que tu as déjà de côté ou placé aujourd'hui — ça continue de composer avec le reste.",
+      monthlyLabel: "Versement mensuel",
+      rateLabel: "Taux de rendement annuel espéré",
+      advancedSummary: "Hypothèses avancées",
+      terLabel: "Frais annuels (TER)",
+      terHint: "Frais courants de l'ETF, déduits du rendement chaque année. Repère : 0,07 % à 0,20 % pour un ETF large (S&P 500, MSCI World).",
+      inflationLabel: "Corriger pour l'inflation",
+      inflationHint: "Taux d'inflation estimé",
+      resetBtn: "Réinitialiser les valeurs par défaut",
+      assumption: "Repère : le S&P 500 affiche ~10 %/an de moyenne historique sur 20 ans (source : contenu ETF joint), un ETF monde diversifié plutôt 6–8 %/an. Rendements passés ≠ garantie future.",
+      heroStatLabel: 'Capital projeté à <span id="targetAgeLabel">65</span> ans',
+      heroStatSub: 'soit <strong id="multiple">×0</strong> ce que tu auras versé',
+      totalContribLabel: "Total versé",
+      totalGainLabel: "Plus-value",
+      durationLabel: "Durée",
+      chartHeading: "Versements vs plus-value dans le temps",
+      legendContrib: "Versé cumulé",
+      legendGain: "Plus-value",
+      chartAria: "Graphique de croissance du capital",
+      tableSummary: "Voir le détail année par année",
+      thYear: "Année", thAge: "Âge", thContrib: "Versé cumulé", thGain: "Plus-value", thTotal: "Capital total",
+      footerDisclaimer: "Simulation pédagogique basée sur un rendement constant hypothétique (calcul en intérêts composés, versements mensuels, capitalisation mensuelle, frais TER déduits du rendement). Elle ne tient pas compte de la fiscalité ni des frais de courtage, et ne constitue pas un conseil en investissement. Les rendements passés ne préjugent pas des rendements futurs."
+    },
+    en: {
+      pageTitle: "Investment Simulator",
+      brand: 'investment platform <strong>· working edition</strong>',
+      nav_quiz: "Quiz",
+      nav_sim: "Simulator",
+      nav_broker: "Broker",
+      nav_etf: "ETF",
+      nav_finances: '<span class="dot"></span>My finances',
+      eyebrow: "Increment 1 — Simulator",
+      heroH1: 'How much could you build up by the time you turn&nbsp;<span id="heroAge">65</span>&nbsp;?',
+      heroP: "Set your age, what you've already invested, your monthly contribution and your expected return rate — the chart and table recalculate instantly.",
+      panelAria: "Simulation settings",
+      panelH2: "Your settings",
+      restoreNote: "Your last settings were restored.",
+      currencyLabel: "Currency",
+      ageNowLabel: "Current age",
+      ageTargetLabel: "Target age",
+      ageTargetRangeAria: "Target age (slider)",
+      initialLabel: "Already invested",
+      initialHint: "What you already have set aside or invested today — it keeps compounding along with the rest.",
+      monthlyLabel: "Monthly contribution",
+      rateLabel: "Expected annual return rate",
+      advancedSummary: "Advanced assumptions",
+      terLabel: "Annual fees (TER)",
+      terHint: "The ETF's ongoing costs, deducted from the return each year. Typical range: 0.07% to 0.20% for a broad ETF (S&P 500, MSCI World).",
+      inflationLabel: "Adjust for inflation",
+      inflationHint: "Estimated inflation rate",
+      resetBtn: "Reset to default values",
+      assumption: "For reference: the S&P 500 has averaged ~10%/year historically over 20 years (source: linked ETF content), while a diversified world ETF tends to run 6–8%/year. Past returns don't guarantee future ones.",
+      heroStatLabel: 'Projected capital by age <span id="targetAgeLabel">65</span>',
+      heroStatSub: 'that\'s <strong id="multiple">×0</strong> what you will have paid in',
+      totalContribLabel: "Total paid in",
+      totalGainLabel: "Growth",
+      durationLabel: "Duration",
+      chartHeading: "Contributions vs. growth over time",
+      legendContrib: "Cumulative paid in",
+      legendGain: "Growth",
+      chartAria: "Chart of capital growth",
+      tableSummary: "See year-by-year detail",
+      thYear: "Year", thAge: "Age", thContrib: "Cumulative paid in", thGain: "Growth", thTotal: "Total capital",
+      footerDisclaimer: "Educational simulation based on a hypothetical constant return (compound interest, monthly contributions, monthly compounding, TER fees deducted from the return). It doesn't account for taxes or brokerage fees, and isn't investment advice. Past returns don't predict future ones."
+    }
+  };
+
+  var UI = {
+    fr: { yearsSuffix: "ans", netRatePrefix: "Rendement net retenu dans le calcul : ", netRateSuffix: " %/an", netRateParenthetical: " (taux espéré − TER).", realValuePrefix: "≈ ", realValueSuffix: " en pouvoir d'achat d'aujourd'hui", tooltipYear: function (year, age) { return "Année " + year + " · " + age + " ans"; }, tooltipPaid: "Versé", tooltipGain: "Plus-value", tooltipTotal: "Total" },
+    en: { yearsSuffix: "years", netRatePrefix: "Net return used in the calculation: ", netRateSuffix: "%/year", netRateParenthetical: " (expected rate − TER).", realValuePrefix: "≈ ", realValueSuffix: " in today's purchasing power", tooltipYear: function (year, age) { return "Year " + year + " · age " + age; }, tooltipPaid: "Paid in", tooltipGain: "Growth", tooltipTotal: "Total" }
+  };
+
+  function lang() { return window.SkizoI18n ? window.SkizoI18n.getLang() : "fr"; }
 
   function isDark() {
     var t = document.documentElement.getAttribute("data-theme");
@@ -499,7 +598,7 @@
   function fmtMoney(v, opts) {
     opts = opts || {};
     try {
-      return new Intl.NumberFormat("fr-FR", {
+      return new Intl.NumberFormat(lang() === "en" ? "en-GB" : "fr-FR", {
         style: "currency", currency: currency,
         maximumFractionDigits: opts.decimals || 0,
         minimumFractionDigits: opts.decimals || 0
@@ -560,6 +659,12 @@
 
   function render(opts) {
     opts = opts || {};
+    // data-i18n-html swaps (language toggle) rebuild the innerHTML of elements
+    // that contain these placeholder spans, so re-fetch fresh references every
+    // render rather than relying on the ones captured once at startup.
+    els.heroAge = document.getElementById("heroAge");
+    els.targetAgeLabel = document.getElementById("targetAgeLabel");
+    els.multiple = document.getElementById("multiple");
     var ages = clampAges();
     var initial = parseFloat(els.initial.value);
     var monthlyAmt = parseFloat(els.monthly.value);
@@ -571,14 +676,18 @@
 
     var netRatePct = Math.max(0, ratePct - terPct);
 
+    var isEn = lang() === "en";
+    function fmtPct(n, d) { var s = n.toFixed(d); return isEn ? s : s.replace(".", ","); }
+
     els.initialOut.innerHTML = fmtMoney(initial);
     els.monthlyOut.innerHTML = fmtMoney(monthlyAmt);
-    els.rateOut.textContent = ratePct.toFixed(1).replace(".", ",") + " %";
-    els.terOut.textContent = terPct.toFixed(2).replace(".", ",") + " %";
-    els.inflationOut.textContent = inflationPct.toFixed(1).replace(".", ",") + " %";
+    els.rateOut.textContent = fmtPct(ratePct, 1) + " %";
+    els.terOut.textContent = fmtPct(terPct, 2) + " %";
+    els.inflationOut.textContent = fmtPct(inflationPct, 1) + " %";
     els.heroAge.textContent = ages.target;
     els.targetAgeLabel.textContent = ages.target;
-    els.netRateCaption.innerHTML = "Rendement net retenu dans le calcul : <strong>" + netRatePct.toFixed(2).replace(".", ",") + " %/an</strong> (taux espéré − TER).";
+    var ui = UI[lang()];
+    els.netRateCaption.innerHTML = ui.netRatePrefix + "<strong>" + fmtPct(netRatePct, 2) + ui.netRateSuffix + "</strong>" + ui.netRateParenthetical;
 
     var series = computeSeries(ages.now, ages.target, initial, monthlyAmt, netRatePct);
     var last = series[series.length - 1];
@@ -586,14 +695,14 @@
 
     els.finalValue.innerHTML = fmtMoney(last.total) + '<span class="cur">' + currency + "</span>";
     var mult = last.contributed > 0 ? last.total / last.contributed : 0;
-    els.multiple.textContent = "×" + mult.toFixed(1).replace(".", ",");
+    els.multiple.textContent = "×" + fmtPct(mult, 1);
     els.totalContrib.innerHTML = fmtMoney(last.contributed);
     els.totalGain.innerHTML = fmtMoney(last.gain);
-    els.durationOut.textContent = years + " ans";
+    els.durationOut.textContent = years + " " + ui.yearsSuffix;
 
     if (inflationOn) {
       var realValue = last.total / Math.pow(1 + inflationPct / 100, years || 1);
-      els.realValueLine.innerHTML = "≈ " + fmtMoney(realValue) + " en pouvoir d'achat d'aujourd'hui";
+      els.realValueLine.innerHTML = ui.realValuePrefix + fmtMoney(realValue) + ui.realValueSuffix;
       els.realValueLine.hidden = false;
     } else {
       els.realValueLine.hidden = true;
@@ -689,11 +798,12 @@
       dotTotal.setAttribute("cx", px); dotTotal.setAttribute("cy", y(p.total));
 
       var tt = els.tooltip;
+      var tui = UI[lang()];
       tt.innerHTML =
-        '<div class="t-year">Année ' + p.year + " · " + p.age + " ans</div>" +
-        '<div class="row"><span class="sw" style="background:' + colors.contrib + '"></span>Versé&nbsp;: ' + fmtMoney(p.contributed) + "</div>" +
-        '<div class="row"><span class="sw" style="background:' + colors.gain + '"></span>Plus-value&nbsp;: ' + fmtMoney(p.gain) + "</div>" +
-        '<div class="row" style="margin-top:2px;font-weight:600">Total&nbsp;: ' + fmtMoney(p.total) + "</div>";
+        '<div class="t-year">' + tui.tooltipYear(p.year, p.age) + "</div>" +
+        '<div class="row"><span class="sw" style="background:' + colors.contrib + '"></span>' + tui.tooltipPaid + '&nbsp;: ' + fmtMoney(p.contributed) + "</div>" +
+        '<div class="row"><span class="sw" style="background:' + colors.gain + '"></span>' + tui.tooltipGain + '&nbsp;: ' + fmtMoney(p.gain) + "</div>" +
+        '<div class="row" style="margin-top:2px;font-weight:600">' + tui.tooltipTotal + '&nbsp;: ' + fmtMoney(p.total) + "</div>";
       var wrapRect = els.chartWrap.getBoundingClientRect();
       var leftPx = (px / W) * wrapRect.width;
       var topPx = (y(p.total) / H) * wrapRect.height;
@@ -767,7 +877,9 @@
     if (saved.inflationOn) document.getElementById("advancedDetails").open = true;
   }
 
-  render({ skipSave: true });
+  window.SkizoI18n.initToggle(I18N, function () {
+    render({ skipSave: true });
+  });
 })();
 </script>
 </body>
