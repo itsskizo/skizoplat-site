@@ -102,9 +102,18 @@
 
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
 
-  .company-picker { margin: 22px 0 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-  .company-picker .segmented button { padding: 9px 16px; font-size: 13px; }
-  .company-picker .picker-note { font-size: 12.5px; color: var(--ink-faint); }
+  .company-picker { margin: 22px 0 28px; }
+  .company-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .company-pills button {
+    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-secondary);
+    font-size: 13px; font-weight: 600; padding: 8px 15px; border-radius: 999px; cursor: pointer; font-family: inherit;
+  }
+  .company-pills button:hover { color: var(--ink); }
+  .company-pills button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .company-pills button:focus-visible { outline: none; box-shadow: var(--focus); }
+  .company-picker .picker-note { font-size: 12.5px; color: var(--ink-faint); line-height: 1.5; }
+  .company-picker .picker-note a { text-decoration: underline; text-decoration-color: var(--border-strong); }
+  .company-picker .picker-note a:hover { color: var(--ink); }
 
   .fiche { padding: 26px 26px 28px; margin-bottom: 20px; }
   .fiche-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 6px; }
@@ -187,11 +196,19 @@
   </header>
 
   <div class="company-picker">
-    <div class="segmented" id="companyGroup">
+    <div class="company-pills" id="companyGroup">
       <button type="button" data-company="meta">Meta</button>
+      <button type="button" data-company="googl">Alphabet</button>
+      <button type="button" data-company="amzn">Amazon</button>
+      <button type="button" data-company="msft">Microsoft</button>
       <button type="button" data-company="nvda">Nvidia</button>
+      <button type="button" data-company="asml">ASML</button>
+      <button type="button" data-company="v">Visa</button>
+      <button type="button" data-company="ma">Mastercard</button>
+      <button type="button" data-company="spgi">S&amp;P Global</button>
+      <button type="button" data-company="nflx">Netflix</button>
     </div>
-    <span class="picker-note" data-i18n="pickerNote"></span>
+    <p class="picker-note" data-i18n-html="pickerNote"></p>
   </div>
 
   <div id="ficheWrap"></div>
@@ -219,7 +236,7 @@
       eyebrow: "Nouveau · en construction",
       heroH1: "Fiches d'analyse d'entreprises",
       heroP: "Des repères factuels — chiffres, valorisation, catalyseurs et risques — pour t'aider à comprendre une entreprise avant d'investir dedans. Ce n'est pas un conseil d'achat ou de vente : à toi de te faire ton avis.",
-      pickerNote: "Version test avec 2 entreprises — d'autres viendront selon tes retours.",
+      pickerNote: "Les 10 entreprises de ton portefeuille (hors <a href=\"/etf.html\">VUAA</a>, qui est un ETF S&amp;P 500 et pas une action individuelle — retrouve-le sur la page ETF). D'autres pourront s'ajouter selon tes envies.",
       updatePrefix: "Chiffres au",
       secOverview: "Vue d'ensemble",
       secFinancials: "Chiffres clés",
@@ -243,7 +260,7 @@
       eyebrow: "New · work in progress",
       heroH1: "Company analysis sheets",
       heroP: "Factual reference points — figures, valuation, catalysts and risks — to help you understand a company before investing in it. This is not a buy or sell recommendation: forming your own view is up to you.",
-      pickerNote: "Test version with 2 companies — more will come based on your feedback.",
+      pickerNote: "The 10 companies from your portfolio (excluding <a href=\"/etf.html\">VUAA</a>, which is an S&amp;P 500 ETF, not a single company — find it on the ETF page). More may be added over time.",
       updatePrefix: "Figures as of",
       secOverview: "Overview",
       secFinancials: "Key figures",
@@ -377,6 +394,486 @@
       sources: [
         { label: "Nvidia — Résultats T2 exercice 2027 (communiqué officiel)", url: "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2027/default.aspx" },
         { label: "StockAnalysis.com — NVDA, statistiques (18/09/2026)", url: "https://stockanalysis.com/stocks/nvda/statistics/" }
+      ]
+    },
+    asml: {
+      name: "ASML Holding",
+      ticker: "ASML · Nasdaq/Euronext",
+      sector: { fr: "Semi-conducteurs, équipements de lithographie", en: "Semiconductors, lithography equipment" },
+      resultsAsOf: { fr: "résultats T2 2026, publiés le 15/07/2026", en: "Q2 2026 results, published 07/15/2026" },
+      valuationAsOf: "19/09/2026",
+      overview: {
+        fr: "ASML conçoit et fabrique les machines de photolithographie qui gravent les circuits sur les plaques de silicium. L'entreprise est le seul fournisseur au monde de machines EUV (lithographie ultraviolette extrême), un maillon incontournable pour fabriquer les puces les plus avancées (IA, smartphones, data centers).",
+        en: "ASML designs and manufactures the photolithography machines that etch circuits onto silicon wafers. It is the world's sole supplier of EUV (extreme ultraviolet) lithography machines, an essential link in manufacturing the most advanced chips (AI, smartphones, data centers)."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T2 2026)", en: "Revenue (Q2 2026)" }, value: "9,3 Md€", note: { fr: "+20,8 % sur un an", en: "+20.8% YoY" }, trend: "up" },
+        { label: { fr: "Résultat net", en: "Net income" }, value: "2,9 Md€", note: { fr: "+26,1 % sur un an", en: "+26.1% YoY" }, trend: "up" },
+        { label: { fr: "Marge brute", en: "Gross margin" }, value: "54,0 %", note: { fr: "objectif 2026 : 54–56 %", en: "2026 target: 54–56%" }, trend: "" },
+        { label: { fr: "Guidance CA 2026", en: "2026 revenue guidance" }, value: "43–45 Md€", note: { fr: "relevée deux fois en 2026", en: "raised twice in 2026" }, trend: "up" },
+        { label: { fr: "Systèmes vendus (T2)", en: "Systems sold (Q2)" }, value: "86 + 5", note: { fr: "neufs + d'occasion", en: "new + used" }, trend: "" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "1 679,92 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "636,9 Md$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "52,5x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "29,6x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "n/d" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "15,8x" }
+      ],
+      catalysts: {
+        fr: [
+          "La demande liée à l'IA continue de tirer l'activité : la guidance 2026 a été relevée deux fois cette année, et la quasi-totalité de la capacité EUV additionnelle jusqu'en 2027 est déjà réservée.",
+          "Le déploiement de la nouvelle génération High-NA EUV (machine livrée à Intel fin 2025) ouvre une gamme de produits encore plus chère (350-400 M$ pièce, contre 150-200 M$ pour l'EUV classique).",
+          "Position quasi-monopolistique : ASML détient 100 % du marché EUV et environ 94 % de la lithographie dans son ensemble — aucun concurrent (Nikon, Canon, SMEE en Chine) ne propose d'alternative EUV commerciale."
+        ],
+        en: [
+          "AI-driven demand keeps pulling the business forward: 2026 guidance has been raised twice this year, and nearly all additional EUV capacity through 2027 is already booked.",
+          "The rollout of the new High-NA EUV generation (a machine delivered to Intel in late 2025) opens an even pricier product tier ($350-400M per unit vs. $150-200M for standard EUV).",
+          "Near-monopoly position: ASML holds 100% of the EUV market and roughly 94% of lithography overall — no competitor (Nikon, Canon, China's SMEE) offers a commercial EUV alternative."
+        ]
+      },
+      risks: {
+        fr: [
+          "Les restrictions d'exportation vers la Chine s'intensifient : la part de la Chine dans les ventes de systèmes est passée de 36 % (T4 2025) à 19 % (T1 2026), et une loi américaine à l'étude pourrait interdire la vente et la maintenance d'équipements aux usines chinoises.",
+          "Forte concentration client : TSMC et Samsung représentent à eux deux environ 38 % du chiffre d'affaires, et TSMC a repoussé l'adoption du High-NA EUV à 2028.",
+          "Le secteur des équipements de semi-conducteurs est cyclique : une guidance prudente en juillet 2025 avait fait perdre environ 30 Md$ de capitalisation à ASML en une seule séance.",
+          "Valorisation élevée (PER TTM autour de 50x), qui laisse peu de marge d'erreur en cas de déception sur la demande."
+        ],
+        en: [
+          "China export restrictions are intensifying: China's share of system sales fell from 36% (Q4 2025) to 19% (Q1 2026), and a proposed US law could bar equipment sales and servicing to Chinese fabs.",
+          "Heavy customer concentration: TSMC and Samsung together account for roughly 38% of revenue, and TSMC has pushed High-NA EUV adoption out to 2028.",
+          "The semiconductor equipment sector is cyclical: cautious guidance in July 2025 alone wiped about $30B off ASML's market cap in a single session.",
+          "High valuation (TTM P/E around 50x), leaving little room for error if demand disappoints."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : un PER de plus de 50x reflète la position de quasi-monopole d'ASML sur une technologie indispensable — mais ce type de valorisation ne pardonne pas un ralentissement, même temporaire, comme l'a montré la chute de juillet 2025.",
+        en: "Read this, don't just follow it: a P/E above 50x reflects ASML's near-monopoly position on an essential technology — but that kind of valuation leaves no room for even a temporary slowdown, as the July 2025 drop showed."
+      },
+      sources: [
+        { label: "ASML — Résultats T2 2026 (communiqué officiel)", url: "https://www.asml.com/en/news/press-releases/2026/q2-2026-financial-results" },
+        { label: "StockAnalysis.com — ASML, statistiques (19/09/2026)", url: "https://stockanalysis.com/stocks/asml/statistics/" }
+      ]
+    },
+    googl: {
+      name: "Alphabet (Google)",
+      ticker: "GOOG/GOOGL · Nasdaq",
+      sector: { fr: "Recherche en ligne, publicité digitale, cloud, IA", en: "Online search, digital advertising, cloud, AI" },
+      resultsAsOf: { fr: "résultats T2 2026, publiés le 22/07/2026", en: "Q2 2026 results, published 07/22/2026" },
+      valuationAsOf: "19/09/2026",
+      overview: {
+        fr: "Alphabet est la maison mère de Google Search, YouTube, Google Cloud et Android. L'essentiel du chiffre d'affaires vient de la publicité (Search + YouTube), avec une activité Cloud/IA entreprise en forte croissance.",
+        en: "Alphabet is the parent company of Google Search, YouTube, Google Cloud and Android. Most of its revenue comes from advertising (Search + YouTube), with a fast-growing enterprise Cloud/AI business."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T2 2026)", en: "Revenue (Q2 2026)" }, value: "119,8 Md$", note: { fr: "+24 % sur un an", en: "+24% YoY" }, trend: "up" },
+        { label: { fr: "Résultat net", en: "Net income" }, value: "112,1 Md$", note: { fr: "+298 % — inclut une plus-value exceptionnelle de 98 Md$", en: "+298% — includes a one-time $98B gain" }, trend: "up" },
+        { label: { fr: "Marge opérationnelle", en: "Operating margin" }, value: "34 %", note: { fr: "+2 points sur un an", en: "+2 points YoY" }, trend: "up" },
+        { label: { fr: "Chiffre d'affaires Google Cloud", en: "Google Cloud revenue" }, value: "24,8 Md$", note: { fr: "+82 % sur un an", en: "+82% YoY" }, trend: "up" },
+        { label: { fr: "Carnet de commandes Cloud", en: "Cloud backlog" }, value: "514 Md$", note: { fr: "fin juin 2026", en: "as of June 2026" }, trend: "up" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "349,54 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "4,27 T$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "17,5x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "26,1x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "2,04" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "9,6x" }
+      ],
+      catalysts: {
+        fr: [
+          "Google Cloud accélère fortement (+82 % sur un an au T2 2026), porté par la demande en IA d'entreprise (Gemini) ; le carnet de commandes a atteint 514 Md$ fin juin 2026.",
+          "Le procès antitrust sur la publicité (ad-tech) s'est conclu en septembre 2026 sans obligation de céder l'activité — seulement des changements de comportement, ce qui écarte le pire scénario.",
+          "Le volet 'moteur de recherche' du procès antitrust américain (conclu fin 2025, en appel) laisse Google conserver Chrome et Android — les remèdes retenus sont contractuels, pas structurels."
+        ],
+        en: [
+          "Google Cloud is accelerating sharply (+82% YoY in Q2 2026), driven by enterprise AI (Gemini) demand; backlog reached $514B by end of June 2026.",
+          "The ad-tech antitrust case concluded in September 2026 without a forced divestiture — only behavioral changes, avoiding the worst-case scenario.",
+          "The search-engine antitrust case (concluded late 2025, on appeal) leaves Google keeping Chrome and Android — the remedies are contractual, not structural."
+        ]
+      },
+      risks: {
+        fr: [
+          "Investissements en IA massifs : la guidance de capex 2026 a été relevée à 195-205 Md$ (contre 180-190 Md$), ce qui pèse sur la trésorerie disponible.",
+          "Les procédures antitrust américaines restent en appel (recherche et publicité) — l'ampleur définitive des remèdes n'est pas encore fixée.",
+          "Risque de disruption du moteur de recherche par les nouveaux entrants IA (OpenAI, Microsoft) — un sujet régulièrement cité par les analystes.",
+          "Le bond de +298 % du résultat net n'est pas organique (plus-value exceptionnelle) : le résultat opérationnel (+30 %) est un meilleur indicateur, et le PER affiché (17,5x) sous-estime probablement la vraie valorisation."
+        ],
+        en: [
+          "Massive AI investment: 2026 capex guidance was raised to $195–205B (from $180–190B), weighing on free cash flow.",
+          "US antitrust proceedings remain on appeal (search and ad-tech) — the final scope of remedies isn't settled yet.",
+          "Risk of search disruption from AI entrants (OpenAI, Microsoft) — a concern regularly cited by analysts.",
+          "The +298% net income jump isn't organic (one-time gain): operating income (+30%) is a better indicator, and the headline P/E (17.5x) likely understates the real valuation."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : le PER de 17,5x paraît bas, mais il est gonflé par un gain exceptionnel ponctuel sur des titres détenus — le résultat opérationnel (+30 %) et le PER prévisionnel (26,1x) donnent une image plus fidèle de la valorisation réelle.",
+        en: "Read this, don't just follow it: the 17.5x P/E looks low, but it's inflated by a one-time gain on held securities — operating income (+30%) and the forward P/E (26.1x) give a more accurate picture of the real valuation."
+      },
+      sources: [
+        { label: "Alphabet — Résultats T2 2026 (communiqué officiel)", url: "https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf" },
+        { label: "StockAnalysis.com — GOOGL, statistiques (19/09/2026)", url: "https://stockanalysis.com/stocks/googl/statistics/" }
+      ]
+    },
+    amzn: {
+      name: "Amazon.com",
+      ticker: "AMZN · Nasdaq",
+      sector: { fr: "E-commerce, cloud (AWS), publicité", en: "E-commerce, cloud (AWS), advertising" },
+      resultsAsOf: { fr: "résultats T2 2026, publiés le 30/07/2026", en: "Q2 2026 results, published 07/30/2026" },
+      valuationAsOf: "19/09/2026",
+      overview: {
+        fr: "Amazon exploite une place de marché e-commerce mondiale (vente directe et places de marché tierces), le cloud AWS et une activité publicitaire en forte croissance. AWS ne représente qu'environ 21 % du chiffre d'affaires, mais génère l'essentiel du profit du groupe (marge opérationnelle de 39,4 % contre 13,7 % pour l'ensemble).",
+        en: "Amazon runs a global e-commerce marketplace (direct sales and third-party), the AWS cloud business, and a fast-growing advertising business. AWS is only about 21% of revenue but generates most of the group's profit (39.4% operating margin vs. 13.7% company-wide)."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T2 2026)", en: "Revenue (Q2 2026)" }, value: "200,6 Md$", note: { fr: "+20 % sur un an", en: "+20% YoY" }, trend: "up" },
+        { label: { fr: "Résultat net", en: "Net income" }, value: "62,6 Md$", note: { fr: "+245 % — inclut une plus-value de 53,4 Md$ (participation Anthropic)", en: "+245% — includes a $53.4B gain (Anthropic stake)" }, trend: "up" },
+        { label: { fr: "Marge opérationnelle", en: "Operating margin" }, value: "13,7 %", note: { fr: "résultat opérationnel +43 % sur un an", en: "operating income +43% YoY" }, trend: "up" },
+        { label: { fr: "Chiffre d'affaires AWS", en: "AWS revenue" }, value: "42,2 Md$", note: { fr: "+37 % — meilleure croissance en 18 trimestres", en: "+37% — best growth in 18 quarters" }, trend: "up" },
+        { label: { fr: "Publicité", en: "Advertising" }, value: "19,8 Md$", note: { fr: "+26 % sur un an", en: "+26% YoY" }, trend: "up" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "253,71 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "2,74 T$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "20,4x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "27,6x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "1,33" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "3,5x" }
+      ],
+      catalysts: {
+        fr: [
+          "AWS retrouve de l'élan : +37 % sur un an au T2 2026 (meilleure croissance depuis 18 trimestres), avec un carnet de commandes en forte hausse (~244 Md$ fin 2025, +40 % sur un an).",
+          "La publicité continue de croître vite (+26 % sur un an) et reste une activité à forte marge, en plein développement.",
+          "La marge opérationnelle d'AWS s'est élargie à 39,4 %, signe d'effet de levier malgré les investissements massifs en IA."
+        ],
+        en: [
+          "AWS is regaining momentum: +37% YoY in Q2 2026 (best growth in 18 quarters), with a strong backlog (~$244B end of 2025, +40% YoY).",
+          "Advertising keeps growing fast (+26% YoY) and remains a high-margin, fast-developing business.",
+          "AWS operating margin expanded to 39.4%, a sign of operating leverage despite heavy AI investment."
+        ]
+      },
+      risks: {
+        fr: [
+          "Le capex prévu pour 2026 atteint environ 200 Md$ (essentiellement pour AWS), ce qui pèse sur la trésorerie disponible.",
+          "Un procès antitrust de la FTC pour position dominante doit s'ouvrir le 13 octobre 2026.",
+          "La FTC et 22 États ont attaqué Amazon en justice en août 2026 pour un système caché de surfacturation publicitaire.",
+          "La compétition entre géants du cloud (Microsoft, Google, Meta, Amazon) sur les investissements IA — plus de 630 Md$ cumulés en 2026 — pose la question du retour sur investissement pour tous."
+        ],
+        en: [
+          "2026 capex guidance reaches roughly $200B (mostly for AWS), weighing on free cash flow.",
+          "An FTC monopoly-power lawsuit is set for trial on October 13, 2026.",
+          "The FTC and 22 states sued Amazon in August 2026 over an alleged secret advertising-surcharge scheme.",
+          "Intense AI-infrastructure spending competition among cloud giants (Microsoft, Google, Meta, Amazon — over $630B combined in 2026) raises ROI questions for all of them."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : comme chez Alphabet, le bond du résultat net (+245 %) vient en grande partie d'une plus-value ponctuelle (participation dans Anthropic) — la vraie dynamique du groupe se lit plutôt dans la reprise de croissance d'AWS (+37 %) et l'expansion de sa marge.",
+        en: "Read this, don't just follow it: as with Alphabet, the jump in net income (+245%) is largely a one-time gain (the Anthropic stake) — the group's real momentum shows up in AWS's growth reacceleration (+37%) and margin expansion instead."
+      },
+      sources: [
+        { label: "Amazon — Résultats T2 2026 (communiqué officiel)", url: "https://ir.aboutamazon.com/files/doc_earnings/2026/q2/earnings-result/AMZN-Q2-2026-Earnings-Release.pdf" },
+        { label: "StockAnalysis.com — AMZN, statistiques (19/09/2026)", url: "https://stockanalysis.com/stocks/amzn/statistics/" }
+      ]
+    },
+    msft: {
+      name: "Microsoft",
+      ticker: "MSFT · Nasdaq",
+      sector: { fr: "Logiciels, cloud (Azure), IA", en: "Software, cloud (Azure), AI" },
+      resultsAsOf: { fr: "résultats T4 exercice 2026, publiés le 29/07/2026", en: "Q4 FY2026 results, published 07/29/2026" },
+      valuationAsOf: "18/09/2026",
+      overview: {
+        fr: "Microsoft regroupe Windows, la suite Office/Microsoft 365, le cloud Azure, LinkedIn et le gaming (Xbox). L'entreprise a investi environ 135 Md$ pour une participation de 27 % dans OpenAI et déploie ses fonctionnalités Copilot dans l'ensemble de ses produits.",
+        en: "Microsoft spans Windows, the Office/Microsoft 365 suite, Azure cloud, LinkedIn and gaming (Xbox). It has invested roughly $135B for a 27% stake in OpenAI and is rolling out Copilot features across its entire product line."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T4 FY26)", en: "Revenue (Q4 FY26)" }, value: "90,0 Md$", note: { fr: "+18 % sur un an", en: "+18% YoY" }, trend: "up" },
+        { label: { fr: "Résultat net", en: "Net income" }, value: "35,8 Md$", note: { fr: "+31 % sur un an", en: "+31% YoY" }, trend: "up" },
+        { label: { fr: "Marge opérationnelle", en: "Operating margin" }, value: "~45 %", note: { fr: "", en: "" }, trend: "" },
+        { label: { fr: "Chiffre d'affaires cloud", en: "Microsoft Cloud revenue" }, value: "59,3 Md$", note: { fr: "+27 % sur un an", en: "+27% YoY" }, trend: "up" },
+        { label: { fr: "Croissance Azure", en: "Azure growth" }, value: "+43 %", note: { fr: "sur un an, dépasse 100 Md$ en rythme annuel", en: "YoY, tops $100B annualized" }, trend: "up" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "493,78 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "3,67 T$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "27,5x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "25,0x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "1,55" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "11,1x" }
+      ],
+      catalysts: {
+        fr: [
+          "Azure accélère à +43 % sur un an, la demande en cloud/IA dépassant l'offre disponible.",
+          "Microsoft 365 Copilot a dépassé les 30 millions de sièges payants — la monétisation de l'IA dans la suite bureautique prend de l'ampleur.",
+          "L'accord OpenAI révisé (avril 2026) supprime l'obligation pour Microsoft de reverser une part de ses revenus à OpenAI, tout en conservant des revenus plafonnés jusqu'en 2030."
+        ],
+        en: [
+          "Azure is accelerating to +43% YoY, with cloud/AI demand outpacing available supply.",
+          "Microsoft 365 Copilot surpassed 30 million paid seats — AI monetization across the office suite is gaining scale.",
+          "The revised OpenAI deal (April 2026) removes Microsoft's obligation to share revenue with OpenAI, while it still receives capped revenue through 2030."
+        ]
+      },
+      risks: {
+        fr: [
+          "Le capex prévu pour l'exercice 2026 atteint environ 190 Md$ (+61 % sur un an), en partie à cause de la hausse des prix des composants mémoire — un montant supérieur aux attentes des analystes.",
+          "Pression réglementaire en Europe (plainte de Slack sur le lien Teams/Office, examens au titre du Digital Markets Act).",
+          "Une enquête antitrust européenne viserait aussi les pratiques cloud de Microsoft et d'Amazon (information relayée par la presse, non vérifiée de façon indépendante par manque d'accès à la source primaire).",
+          "L'accord OpenAI révisé fait perdre à Microsoft l'exclusivité de propriété intellectuelle et l'exclusivité cloud : OpenAI peut désormais utiliser d'autres fournisseurs."
+        ],
+        en: [
+          "FY2026 capex guidance reaches roughly $190B (+61% YoY), partly due to rising memory component prices — above analyst expectations.",
+          "Regulatory pressure in Europe (Slack's complaint over Teams/Office bundling, Digital Markets Act scrutiny).",
+          "A reported EU antitrust probe also targets Microsoft's and Amazon's cloud practices (press-reported, not independently verified from a primary source).",
+          "The revised OpenAI deal costs Microsoft its IP and cloud exclusivity: OpenAI can now use other cloud providers."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : la croissance d'Azure (+43 %) est solide, mais elle se paie par un capex qui grimpe plus vite que prévu — à surveiller sur les prochains trimestres pour voir si l'investissement se traduit vraiment en profits additionnels.",
+        en: "Read this, don't just follow it: Azure's growth (+43%) is strong, but it comes with capex rising faster than expected — worth watching over the next few quarters to see whether the investment actually converts into additional profit."
+      },
+      sources: [
+        { label: "Microsoft — Résultats T4 exercice 2026 (communiqué officiel)", url: "https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast" },
+        { label: "StockAnalysis.com — MSFT, statistiques (18/09/2026)", url: "https://stockanalysis.com/stocks/msft/statistics/" }
+      ]
+    },
+    v: {
+      name: "Visa",
+      ticker: "V · NYSE",
+      sector: { fr: "Réseau de paiement par carte", en: "Card payments network" },
+      resultsAsOf: { fr: "résultats T3 exercice 2026, publiés le 28/07/2026", en: "Q3 FY2026 results, published 07/28/2026" },
+      valuationAsOf: "18/09/2026",
+      overview: {
+        fr: "Visa exploite le plus grand réseau mondial de paiements par carte : l'entreprise prélève une petite commission sur chaque transaction, sans jamais prêter d'argent elle-même — le risque de crédit reste chez les banques émettrices des cartes.",
+        en: "Visa operates the world's largest card payments network: it takes a small fee on each transaction without ever lending money itself — credit risk stays with the card-issuing banks."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T3 FY26)", en: "Revenue (Q3 FY26)" }, value: "11,6 Md$", note: { fr: "+14 % sur un an", en: "+14% YoY" }, trend: "up" },
+        { label: { fr: "Résultat net", en: "Net income" }, value: "5,6 Md$", note: { fr: "+7 % sur un an", en: "+7% YoY" }, trend: "up" },
+        { label: { fr: "Marge opérationnelle", en: "Operating margin" }, value: "~59 %", note: { fr: "~67 % en ajusté", en: "~67% adjusted" }, trend: "" },
+        { label: { fr: "Volume total de paiements", en: "Total payments volume" }, value: "> 4 000 Md$", note: { fr: "un seuil franchi pour la 1ère fois", en: "crossed for the first time" }, trend: "up" },
+        { label: { fr: "Volume transfrontalier", en: "Cross-border volume" }, value: "+13 %", note: { fr: "sur un an, à devises constantes", en: "YoY, constant-dollar" }, trend: "up" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "368,29 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "676,0 Md$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "31,4x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "25,5x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "1,76" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "15,2x" }
+      ],
+      catalysts: {
+        fr: [
+          "La bascule du cash vers le paiement par carte/digital continue partout dans le monde, un moteur de croissance structurel de long terme.",
+          "Le volume transfrontalier (voyages, e-commerce international) a progressé de 13 % sur un an, signe d'une reprise solide.",
+          "Nouveaux relais de croissance : paiements B2B, infrastructure stablecoin/paiement instantané, et un programme de rachat d'actions important (4,9 Md$ au dernier trimestre)."
+        ],
+        en: [
+          "The shift from cash to card/digital payments keeps advancing worldwide, a long-term structural growth driver.",
+          "Cross-border volume (travel, international e-commerce) grew 13% YoY, a sign of solid recovery.",
+          "New growth avenues: B2B payments, stablecoin/instant-payment infrastructure, and a large buyback program ($4.9B in the latest quarter)."
+        ]
+      },
+      risks: {
+        fr: [
+          "Le ministère de la Justice américain poursuit Visa depuis 2024 pour position dominante sur le marché des cartes de débit — l'affaire est toujours en instruction, avec des échéances repoussées vers 2027.",
+          "Des litiges en cours avec des commerçants sur les commissions d'interchange (certains contestent les termes d'un accord de règlement proposé).",
+          "Les stablecoins et les systèmes de paiement instantané de compte à compte pourraient, à terme, contourner les commissions des réseaux de cartes.",
+          "Le chiffre d'affaires de Visa est directement lié au volume de dépenses des consommateurs : un ralentissement économique pèserait mécaniquement sur la croissance."
+        ],
+        en: [
+          "The US DOJ has been suing Visa since 2024 over alleged debit-market dominance — the case is still in discovery, with deadlines pushed toward 2027.",
+          "Ongoing merchant litigation over interchange fees (some merchants contest the terms of a proposed settlement).",
+          "Stablecoins and account-to-account instant payments could eventually bypass card-network fees.",
+          "Visa's revenue is directly tied to consumer spending volume: an economic slowdown would mechanically weigh on growth."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : Visa reste avant tout un pari sur la poursuite de la bascule mondiale du cash vers le paiement digital — un PER autour de 31x reflète une activité très rentable, mais aussi peu de marge d'erreur si cette tendance de fond ralentissait.",
+        en: "Read this, don't just follow it: Visa is fundamentally a bet on the continued global shift from cash to digital payments — a P/E around 31x reflects a highly profitable business, but also little room for error if that underlying trend were to slow."
+      },
+      sources: [
+        { label: "Visa — Résultats T3 exercice 2026 (communiqué officiel)", url: "https://s1.q4cdn.com/050606653/files/doc_financials/2026/q3/Q3-2026-Earnings-Release_vF.pdf" },
+        { label: "StockAnalysis.com — V, statistiques (18/09/2026)", url: "https://stockanalysis.com/stocks/v/statistics/" }
+      ]
+    },
+    ma: {
+      name: "Mastercard",
+      ticker: "MA · NYSE",
+      sector: { fr: "Réseau de paiement par carte", en: "Card payments network" },
+      resultsAsOf: { fr: "résultats T2 2026, publiés fin juillet 2026", en: "Q2 2026 results, published late July 2026" },
+      valuationAsOf: "19/09/2026",
+      overview: {
+        fr: "Mastercard exploite un réseau mondial de paiements par carte, principal concurrent de Visa. L'entreprise prélève une commission sur le volume et le nombre de transactions, sans émettre de cartes ni prêter d'argent elle-même.",
+        en: "Mastercard operates a global card payments network, Visa's main rival. It earns fees on transaction volume and count without issuing cards or lending money itself."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T2 2026)", en: "Revenue (Q2 2026)" }, value: "9,3 Md$", note: { fr: "+14 % sur un an (GAAP)", en: "+14% YoY (GAAP)" }, trend: "up" },
+        { label: { fr: "Résultat net", en: "Net income" }, value: "4,4 Md$", note: { fr: "+19 % sur un an", en: "+19% YoY" }, trend: "up" },
+        { label: { fr: "Marge opérationnelle", en: "Operating margin" }, value: "60,2 %", note: { fr: "61,1 % en ajusté", en: "61.1% adjusted" }, trend: "" },
+        { label: { fr: "Volume brut de transactions (GDV)", en: "Gross dollar volume (GDV)" }, value: "+8 %", note: { fr: "à devises constantes", en: "constant currency" }, trend: "up" },
+        { label: { fr: "Services à valeur ajoutée", en: "Value-added services" }, value: "+20 %", note: { fr: "sur un an", en: "YoY" }, trend: "up" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "565,24 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "495,2 Md$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "31,1x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "26,6x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "1,61" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "14,1x" }
+      ],
+      catalysts: {
+        fr: [
+          "La bascule structurelle du cash vers le paiement digital continue de soutenir la croissance des volumes (+8 % au T2 2026).",
+          "Les services à valeur ajoutée (cybersécurité, lutte contre la fraude, données) croissent bien plus vite que l'activité réseau classique (+20 % sur un an), diversifiant les revenus.",
+          "Reprise du volume transfrontalier (+12 %) et nouveaux paris sur les stablecoins/paiements automatisés (rachat de BVNK)."
+        ],
+        en: [
+          "The structural shift from cash to digital payments keeps supporting volume growth (+8% in Q2 2026).",
+          "Value-added services (cybersecurity, fraud prevention, data) are growing much faster than the core network business (+20% YoY), diversifying revenue.",
+          "Cross-border volume recovery (+12%) and new bets on stablecoins/agentic payments (BVNK acquisition)."
+        ]
+      },
+      risks: {
+        fr: [
+          "Un litige antitrust américain de longue date sur les commissions d'interchange a débouché sur un projet d'accord contesté par de grands commerçants comme Walmart — toujours en cours d'examen judiciaire.",
+          "Une pression réglementaire équivalente existe aussi dans l'Union européenne et ailleurs sur les commissions d'interchange.",
+          "Les stablecoins et les paiements instantanés de compte à compte pourraient, à terme, réduire la dépendance aux réseaux de cartes.",
+          "Le chiffre d'affaires dépend directement du volume de dépenses des consommateurs, donc sensible à un ralentissement économique."
+        ],
+        en: [
+          "A long-running US antitrust dispute over interchange fees led to a proposed settlement contested by large merchants like Walmart — still under judicial review.",
+          "Similar regulatory pressure exists in the EU and elsewhere over interchange fees.",
+          "Stablecoins and account-to-account instant payments could eventually reduce reliance on card networks.",
+          "Revenue depends directly on consumer spending volume, so it's sensitive to an economic slowdown."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : Mastercard et Visa partagent le même profil — un duopole très rentable sur un marché encore en expansion, mais aussi le même risque réglementaire (interchange) et la même dépendance à la consommation mondiale.",
+        en: "Read this, don't just follow it: Mastercard and Visa share the same profile — a highly profitable duopoly in a still-growing market, but also the same regulatory risk (interchange fees) and the same dependence on global consumer spending."
+      },
+      sources: [
+        { label: "Mastercard — Résultats T2 2026 (SEC, communiqué officiel)", url: "https://www.sec.gov/Archives/edgar/data/1141391/000114139126000081/ma06302026-exx991xearnings.htm" },
+        { label: "StockAnalysis.com — MA, statistiques (19/09/2026)", url: "https://stockanalysis.com/stocks/ma/statistics/" }
+      ]
+    },
+    spgi: {
+      name: "S&P Global",
+      ticker: "SPGI · NYSE",
+      sector: { fr: "Données financières et notation de crédit", en: "Financial data and credit ratings" },
+      resultsAsOf: { fr: "résultats T2 2026, publiés le 28/07/2026", en: "Q2 2026 results, published 07/28/2026" },
+      valuationAsOf: "18/09/2026",
+      overview: {
+        fr: "S&P Global est une entreprise de données et de notation financière (pas une entreprise opérationnelle classique) : notation de crédit (S&P Global Ratings), données de marché (Market Intelligence), indices boursiers via S&P Dow Jones Indices (qui gère notamment l'indice S&P 500), et données énergie/matières premières.",
+        en: "S&P Global is a financial data and ratings company (not a traditional operating business): credit ratings (S&P Global Ratings), market data (Market Intelligence), stock market indices via S&P Dow Jones Indices (which runs the S&P 500 index, among others), and energy/commodity data."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T2 2026)", en: "Revenue (Q2 2026)" }, value: "4,15 Md$", note: { fr: "+10 % sur un an", en: "+10% YoY" }, trend: "up" },
+        { label: { fr: "Résultat net", en: "Net income" }, value: "1,22 Md$", note: { fr: "+14 % sur un an", en: "+14% YoY" }, trend: "up" },
+        { label: { fr: "Marge opérationnelle", en: "Operating margin" }, value: "47,8 %", note: { fr: "+410 points de base", en: "+410 bps" }, trend: "up" },
+        { label: { fr: "Chiffre d'affaires Ratings", en: "Ratings revenue" }, value: "1,34 Md$", note: { fr: "+17 % sur un an", en: "+17% YoY" }, trend: "up" },
+        { label: { fr: "Chiffre d'affaires Indices", en: "Indices revenue" }, value: "534 M$", note: { fr: "+20 % — résultat record", en: "+20% — record result" }, trend: "up" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "405,32 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "119,5 Md$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "24,7x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "21,5x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "1,72" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "7,4x" }
+      ],
+      catalysts: {
+        fr: [
+          "L'activité Indices bat des records (+20 % sur un an), portée par des commissions liées aux encours (ETF, fonds indiciels) qui augmentent avec les marchés mondiaux.",
+          "L'activité Ratings profite d'une reprise des émissions obligataires et de prêts (+25 % sur les revenus de transaction du segment).",
+          "Environ 45 % du chiffre d'affaires pro forma est récurrent (abonnements), ce qui soutient des marges élevées et une certaine résilience."
+        ],
+        en: [
+          "The Indices business is hitting record results (+20% YoY), driven by asset-linked fees (ETFs, index funds) that rise along with global markets.",
+          "The Ratings business benefits from a rebound in bond and loan issuance (+25% in the segment's transaction revenue).",
+          "Roughly 45% of pro-forma revenue is recurring (subscriptions), supporting high margins and some resilience."
+        ]
+      },
+      risks: {
+        fr: [
+          "L'activité de notation (Ratings) est cyclique : elle dépend directement du volume d'émissions obligataires et du contexte de taux d'intérêt — en 2022, un ralentissement du marché obligataire avait forcé S&P Global à suspendre ses prévisions annuelles.",
+          "Concurrence de Moody's et d'autres fournisseurs de données financières.",
+          "Risque de 'désintermédiation' par l'IA générative sur les produits de données et d'analyse — un sujet débattu par plusieurs analystes.",
+          "Valorisation qui reste élevée (PER autour de 25x) par rapport au marché dans son ensemble."
+        ],
+        en: [
+          "The Ratings business is cyclical: it depends directly on bond issuance volumes and the interest-rate environment — in 2022, a bond-market slowdown forced S&P Global to suspend its annual guidance.",
+          "Competition from Moody's and other financial data providers.",
+          "Risk of generative-AI 'disintermediation' of data and analytics products — debated by several analysts.",
+          "Valuation remains elevated (P/E around 25x) relative to the broader market."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : S&P Global n'est pas une entreprise 'produit' classique mais un fournisseur de données et de notations quasi incontournable pour les marchés financiers — un profil résilient, mais dont l'activité de notation reste directement liée au cycle économique et aux taux.",
+        en: "Read this, don't just follow it: S&P Global isn't a typical 'product' company but a near-essential data and ratings provider for financial markets — a resilient profile, but one where the ratings business stays directly tied to the economic and rate cycle."
+      },
+      sources: [
+        { label: "S&P Global — Résultats T2 2026 (communiqué officiel)", url: "https://s29.q4cdn.com/690959130/files/doc_financials/2026/q2/S-P-Global-2Q-2026-Earnings-Release-and-Exhibits-7-28-2026.pdf" },
+        { label: "StockAnalysis.com — SPGI, statistiques (18/09/2026)", url: "https://stockanalysis.com/stocks/spgi/statistics/" }
+      ]
+    },
+    nflx: {
+      name: "Netflix",
+      ticker: "NFLX · Nasdaq",
+      sector: { fr: "Streaming vidéo par abonnement", en: "Subscription video streaming" },
+      resultsAsOf: { fr: "résultats T2 2026, publiés en juillet 2026", en: "Q2 2026 results, published July 2026" },
+      valuationAsOf: "19/09/2026",
+      overview: {
+        fr: "Netflix est un service de streaming par abonnement (séries, films, jeux), avec une offre sans publicité et une offre avec publicité, et une expansion récente vers le direct (sport, événements).",
+        en: "Netflix is a subscription streaming service (series, films, games), with an ad-free and an ad-supported tier, and a recent expansion into live programming (sports, events)."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T2 2026)", en: "Revenue (Q2 2026)" }, value: "12,56 Md$", note: { fr: "+13 % sur un an", en: "+13% YoY" }, trend: "up" },
+        { label: { fr: "Résultat net", en: "Net income" }, value: "3,40 Md$", note: { fr: "+8,8 % sur un an", en: "+8.8% YoY" }, trend: "up" },
+        { label: { fr: "Marge opérationnelle", en: "Operating margin" }, value: "33,4 %", note: { fr: "vs 34,1 % un an plus tôt", en: "vs 34.1% a year earlier" }, trend: "down" },
+        { label: { fr: "Offre avec publicité", en: "Ad-supported tier" }, value: "~250 M", note: { fr: "utilisateurs actifs/mois", en: "monthly active users" }, trend: "up" },
+        { label: { fr: "Guidance CA 2026", en: "2026 revenue guidance" }, value: "51,0–51,4 Md$", note: { fr: "+13 à 14 %", en: "+13 to 14%" }, trend: "up" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "71,79 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "298,9 Md$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "22,6x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "20,7x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "0,98" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "6,2x" }
+      ],
+      catalysts: {
+        fr: [
+          "L'offre avec publicité prend de l'ampleur (~250 millions d'utilisateurs actifs mensuels), avec des revenus publicitaires qui visent un quasi-doublement en 2026 (environ 3 Md$).",
+          "Netflix a relevé ses prix au Royaume-Uni en septembre 2026 (deuxième hausse de l'année) sans, pour l'instant, casser la dynamique d'abonnement.",
+          "Expansion du direct (sport, événements) vers 15 nouveaux marchés internationaux, avec de bons tarifs publicitaires."
+        ],
+        en: [
+          "The ad-supported tier is scaling (~250 million monthly active users), with ad revenue set to roughly double in 2026 (about $3B).",
+          "Netflix raised UK prices in September 2026 (second hike this year) without, so far, breaking subscription momentum.",
+          "Live expansion (sports, events) into 15 new international markets, with strong ad rates."
+        ]
+      },
+      risks: {
+        fr: [
+          "Signes de tassement de l'engagement : les heures vues sur les 10 programmes les plus populaires ont reculé de 9 à 13 % sur un an, et l'action a touché un plus bas sur 52 semaines fin juin 2026.",
+          "Netflix ne communique plus son nombre d'abonnés chaque trimestre depuis 2025, ce qui réduit la visibilité sur la croissance réelle de la base d'utilisateurs.",
+          "Concurrence forte pour capter l'attention des spectateurs (YouTube en particulier), et inflation des coûts de contenu.",
+          "Risque de lassitude des abonnés face aux hausses de prix répétées (+54 % sur l'offre sans publicité depuis 2021, contre +16 % d'inflation aux États-Unis) — un thème surnommé 'streamflation'."
+        ],
+        en: [
+          "Signs of softening engagement: hours viewed on the top-10 titles fell 9-13% YoY, and the stock hit a 52-week low in late June 2026.",
+          "Netflix stopped disclosing quarterly subscriber counts in 2025, reducing visibility into real user-base growth.",
+          "Strong competition for viewer attention (YouTube in particular), and content-cost inflation.",
+          "Risk of subscriber fatigue from repeated price hikes (+54% on the ad-free tier since 2021, vs. +16% US inflation) — a trend nicknamed 'streamflation'."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : un PEG proche de 1 suggère une valorisation globalement équilibrée par rapport à la croissance attendue — mais les signaux de tassement de l'engagement et la question de la lassitude face aux prix méritent d'être suivis dans les prochains trimestres.",
+        en: "Read this, don't just follow it: a PEG near 1 suggests a broadly balanced valuation relative to expected growth — but the signs of softening engagement and the question of price fatigue are worth watching over the next few quarters."
+      },
+      sources: [
+        { label: "Netflix — Lettre aux actionnaires T2 2026 (communiqué officiel)", url: "https://s22.q4cdn.com/959853165/files/doc_financials/2026/q2/FINAL-Q2-26-Shareholder-Letter.pdf" },
+        { label: "StockAnalysis.com — NFLX, statistiques (19/09/2026)", url: "https://stockanalysis.com/stocks/nflx/statistics/" }
       ]
     }
   };
