@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entreprises</title>
+<style>
+  :root {
+    color-scheme: light;
+    --ink:            #142521;
+    --ink-secondary:  #4b5d58;
+    --ink-faint:      #7c8b86;
+    --paper:          #f3f5f0;
+    --surface:        #ffffff;
+    --border:         #dde2da;
+    --border-strong:  #c4ccc1;
+    --accent:         #2a78d6;
+    --accent-ink:     #ffffff;
+    --gain:           #eb6834;
+    --good:           #0ca30c;
+    --warn:           #eda100;
+    --bad:            #d03b3b;
+    --shadow:         0 1px 2px rgba(20,37,33,.04), 0 8px 24px -12px rgba(20,37,33,.15);
+    --focus:          0 0 0 3px rgba(42,120,214,.35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ink:            #f2f4f0;
+      --ink-secondary:  #b9c4bd;
+      --ink-faint:      #7d8a83;
+      --paper:          #101512;
+      --surface:        #171d19;
+      --border:         #2a322c;
+      --border-strong:  #3a453d;
+      --accent:         #3987e5;
+      --accent-ink:     #061020;
+      --gain:           #d95926;
+      --good:           #1cbf1c;
+      --warn:           #c98500;
+      --bad:            #e66767;
+      --shadow:         0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+      --focus:          0 0 0 3px rgba(57,135,229,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ink:            #f2f4f0;
+    --ink-secondary:  #b9c4bd;
+    --ink-faint:      #7d8a83;
+    --paper:          #101512;
+    --surface:        #171d19;
+    --border:         #2a322c;
+    --border-strong:  #3a453d;
+    --accent:         #3987e5;
+    --accent-ink:     #061020;
+    --gain:           #d95926;
+    --good:           #1cbf1c;
+    --warn:           #c98500;
+    --bad:            #e66767;
+    --shadow:         0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+    --focus:          0 0 0 3px rgba(57,135,229,.4);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+  .num { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  h1, h2, h3, .display { font-family: "Fraunces", Georgia, serif; text-wrap: balance; }
+  a { color: inherit; }
+  button { font-family: inherit; }
+
+  .shell { max-width: 900px; margin: 0 auto; padding: 0 24px 96px; }
+
+  nav.topbar { border-bottom: 1px solid var(--border); background: var(--paper); position: sticky; top: 0; z-index: 20; }
+  .topbar-inner { max-width: 1080px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: 8px; font-size: 14px; color: var(--ink-faint); letter-spacing: .04em; text-transform: uppercase; }
+  .brand strong { color: var(--ink); font-weight: 600; letter-spacing: 0; text-transform: none; font-size: 15px; }
+  .site-nav { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .site-nav a.item, .site-nav span.item { font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid transparent; color: var(--ink-secondary); white-space: nowrap; text-decoration: none; }
+  .site-nav a.item:hover { color: var(--ink); }
+  .site-nav .item.active { background: var(--surface); border-color: var(--border-strong); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
+  .site-nav .item.soon { color: var(--ink-faint); border: 1px dashed var(--border-strong); display: flex; gap: 6px; align-items: center; }
+  .site-nav .item.soon .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-faint); }
+  .theme-toggle-btn {
+    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-secondary);
+    border-radius: 999px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; line-height: 1; cursor: pointer; padding: 0; font-family: inherit;
+  }
+  .theme-toggle-btn:hover { border-color: var(--border-strong); color: var(--ink); }
+  .theme-toggle-btn:focus-visible { outline: none; box-shadow: var(--focus); }
+
+  .segmented { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+  .segmented button { border: none; background: var(--surface); color: var(--ink-secondary); font-size: 12.5px; font-weight: 600; padding: 6px 11px; cursor: pointer; font-family: inherit; }
+  .segmented button + button { border-left: 1px solid var(--border-strong); }
+  .segmented button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .segmented button:focus-visible { outline: none; box-shadow: var(--focus); position: relative; z-index: 1; }
+
+  header.hero { padding: 44px 0 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 10px; }
+  header.hero h1 { font-size: clamp(26px, 4vw, 36px); font-weight: 600; margin: 0 0 12px; line-height: 1.15; }
+  header.hero p { font-size: 15.5px; color: var(--ink-secondary); max-width: 62ch; margin: 0; line-height: 1.55; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+
+  .company-picker { margin: 22px 0 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .company-picker .segmented button { padding: 9px 16px; font-size: 13px; }
+  .company-picker .picker-note { font-size: 12.5px; color: var(--ink-faint); }
+
+  .fiche { padding: 26px 26px 28px; margin-bottom: 20px; }
+  .fiche-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 6px; }
+  .fiche-id { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .fiche-id h2 { margin: 0; font-size: 22px; }
+  .ticker-badge {
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; font-weight: 600;
+    color: var(--ink-secondary); background: var(--paper); border: 1px solid var(--border-strong);
+    padding: 2px 8px; border-radius: 6px;
+  }
+  .sector-line { font-size: 12.5px; color: var(--ink-faint); margin: 4px 0 0; }
+  .update-badge {
+    font-size: 11px; color: var(--ink-faint); border: 1px dashed var(--border-strong); border-radius: 999px;
+    padding: 4px 10px; white-space: nowrap;
+  }
+
+  .overview-p { font-size: 14.5px; line-height: 1.65; color: var(--ink-secondary); margin: 16px 0 22px; }
+
+  .section-label { font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 10px; }
+  .section-label.risk { color: var(--bad); }
+  .section-label.catalyst { color: var(--good); }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 24px; }
+  .stat-tile { background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 12px 13px; }
+  .stat-tile .stat-label { font-size: 11px; color: var(--ink-faint); line-height: 1.35; margin: 0 0 5px; }
+  .stat-tile .stat-value { font-size: 17px; font-weight: 600; margin: 0; }
+  .stat-tile .stat-note { font-size: 11px; color: var(--ink-secondary); margin: 3px 0 0; }
+  .stat-tile .stat-note.up { color: var(--good); }
+  .stat-tile .stat-note.down { color: var(--bad); }
+
+  .bullets { list-style: none; margin: 0 0 24px; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .bullets li { font-size: 13.5px; line-height: 1.55; color: var(--ink-secondary); padding-left: 20px; position: relative; }
+  .bullets.catalyst li::before { content: "+"; position: absolute; left: 0; top: 0; color: var(--good); font-weight: 700; }
+  .bullets.risk li::before { content: "!"; position: absolute; left: 2px; top: 0; color: var(--bad); font-weight: 700; }
+
+  .conclusion-box {
+    background: color-mix(in srgb, var(--accent) 7%, var(--surface)); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; font-size: 13.5px; line-height: 1.6; color: var(--ink-secondary);
+  }
+  .conclusion-box strong { color: var(--ink); }
+
+  .sources-line { margin-top: 14px; font-size: 11.5px; color: var(--ink-faint); line-height: 1.6; }
+  .sources-line a { text-decoration: underline; text-decoration-color: var(--border-strong); }
+  .sources-line a:hover { color: var(--ink); }
+
+  footer.disclaimer { margin-top: 20px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; font-size: 12px; color: var(--ink-faint); line-height: 1.6; background: var(--surface); }
+  footer.disclaimer strong { color: var(--ink-secondary); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+</head>
+<body>
+<nav class="topbar">
+  <div class="topbar-inner">
+    <div class="brand" data-i18n-html="brand"></div>
+    <div class="site-nav">
+      <a class="item" href="/" data-i18n="nav_quiz"></a>
+      <a class="item" href="/simulateur.html" data-i18n="nav_sim"></a>
+      <a class="item" href="/broker.html" data-i18n="nav_broker"></a>
+      <a class="item" href="/etf.html" data-i18n="nav_etf"></a>
+      <span class="item active" data-i18n="nav_entreprises"></span>
+      <a class="item" href="/prochainement.html" data-i18n="nav_soon"></a>
+      <span class="item soon" data-i18n-html="nav_finances"></span>
+      <div class="segmented lang-toggle" id="langToggle">
+        <button type="button" data-lang="fr">FR</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <button type="button" class="theme-toggle-btn" id="themeToggle">🌙</button>
+    </div>
+  </div>
+</nav>
+
+<div class="shell">
+  <header class="hero">
+    <p class="eyebrow" data-i18n="eyebrow"></p>
+    <h1 data-i18n="heroH1"></h1>
+    <p data-i18n="heroP"></p>
+  </header>
+
+  <div class="company-picker">
+    <div class="segmented" id="companyGroup">
+      <button type="button" data-company="meta">Meta</button>
+      <button type="button" data-company="nvda">Nvidia</button>
+    </div>
+    <span class="picker-note" data-i18n="pickerNote"></span>
+  </div>
+
+  <div id="ficheWrap"></div>
+
+  <footer class="disclaimer" data-i18n-html="footer"></footer>
+</div>
+
+<script src="/i18n.js"></script>
+<script src="/theme.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var I18N = {
+    fr: {
+      pageTitle: "Entreprises",
+      brand: 'plateforme investissement <strong>· édition de travail</strong>',
+      nav_quiz: "Quiz",
+      nav_sim: "Simulateur",
+      nav_broker: "Broker",
+      nav_etf: "ETF",
+      nav_entreprises: "Entreprises",
+      nav_soon: "Prochainement",
+      nav_finances: '<span class="dot"></span>Mes finances',
+      eyebrow: "Nouveau · en construction",
+      heroH1: "Fiches d'analyse d'entreprises",
+      heroP: "Des repères factuels — chiffres, valorisation, catalyseurs et risques — pour t'aider à comprendre une entreprise avant d'investir dedans. Ce n'est pas un conseil d'achat ou de vente : à toi de te faire ton avis.",
+      pickerNote: "Version test avec 2 entreprises — d'autres viendront selon tes retours.",
+      updatePrefix: "Chiffres au",
+      secOverview: "Vue d'ensemble",
+      secFinancials: "Chiffres clés",
+      secValuation: "Valorisation",
+      secCatalysts: "Catalyseurs",
+      secRisks: "Risques",
+      secConclusion: "Comment lire ces chiffres",
+      sourcesPrefix: "Sources :",
+      footer: "<strong>À garder en tête :</strong> ces fiches sont une analyse éducative basée sur des données publiques, pas un conseil d'investissement personnalisé — je ne suis pas conseiller financier. Les chiffres datent de leur date de publication et peuvent avoir changé depuis. Fais toujours ta propre vérification avant de décider quoi que ce soit."
+    },
+    en: {
+      pageTitle: "Companies",
+      brand: 'investment platform <strong>· working edition</strong>',
+      nav_quiz: "Quiz",
+      nav_sim: "Simulator",
+      nav_broker: "Broker",
+      nav_etf: "ETF",
+      nav_entreprises: "Companies",
+      nav_soon: "Coming soon",
+      nav_finances: '<span class="dot"></span>My finances',
+      eyebrow: "New · work in progress",
+      heroH1: "Company analysis sheets",
+      heroP: "Factual reference points — figures, valuation, catalysts and risks — to help you understand a company before investing in it. This is not a buy or sell recommendation: forming your own view is up to you.",
+      pickerNote: "Test version with 2 companies — more will come based on your feedback.",
+      updatePrefix: "Figures as of",
+      secOverview: "Overview",
+      secFinancials: "Key figures",
+      secValuation: "Valuation",
+      secCatalysts: "Catalysts",
+      secRisks: "Risks",
+      secConclusion: "How to read these numbers",
+      sourcesPrefix: "Sources:",
+      footer: "<strong>Keep in mind:</strong> these sheets are educational analysis based on public data, not personalized investment advice — I'm not a financial advisor. Figures reflect their publication date and may have changed since. Always do your own check before deciding anything."
+    }
+  };
+
+  var COMPANIES = {
+    meta: {
+      name: "Meta Platforms",
+      ticker: "META · Nasdaq",
+      sector: { fr: "Réseaux sociaux, publicité digitale, IA", en: "Social media, digital advertising, AI" },
+      resultsAsOf: { fr: "résultats T2 2026, publiés le 30/07/2026", en: "Q2 2026 results, published 07/30/2026" },
+      valuationAsOf: "19/09/2026",
+      overview: {
+        fr: "Meta Platforms possède et exploite Facebook, Instagram, WhatsApp et Messenger. La quasi-totalité du chiffre d'affaires provient de la publicité digitale ciblée sur ces plateformes. Le groupe investit massivement dans l'intelligence artificielle, à la fois pour améliorer le ciblage publicitaire et les recommandations de contenu, et pour construire de nouveaux produits (Meta AI, agents pour les entreprises, réalité augmentée/virtuelle via Reality Labs).",
+        en: "Meta Platforms owns and operates Facebook, Instagram, WhatsApp and Messenger. Nearly all of its revenue comes from targeted digital advertising across these platforms. The company is investing heavily in artificial intelligence, both to improve ad targeting and content recommendations, and to build new products (Meta AI, business agents, augmented/virtual reality via Reality Labs)."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T2 2026)", en: "Revenue (Q2 2026)" }, value: "60,8 Md$", note: { fr: "+28 % sur un an", en: "+28% YoY" }, trend: "up" },
+        { label: { fr: "Revenus publicitaires", en: "Advertising revenue" }, value: "59,4 Md$", note: { fr: "+27 % sur un an — ~98 % du CA", en: "+27% YoY — ~98% of revenue" }, trend: "up" },
+        { label: { fr: "Résultat net", en: "Net income" }, value: "15,8 Md$", note: { fr: "-14 % sur un an", en: "-14% YoY" }, trend: "down" },
+        { label: { fr: "Marge opérationnelle", en: "Operating margin" }, value: "31 %", note: { fr: "vs 43 % un an plus tôt", en: "vs 43% a year earlier" }, trend: "down" },
+        { label: { fr: "Utilisateurs actifs/jour (DAP)", en: "Daily active people" }, value: "3,60 Md", note: { fr: "+3 % sur un an", en: "+3% YoY" }, trend: "up" },
+        { label: { fr: "Investissements prévus 2026", en: "2026 capex guidance" }, value: "130–145 Md$", note: { fr: "resserré depuis 125–145 Md$", en: "narrowed from $125–145B" }, trend: "" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "665,75 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "1,70 T$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "25,1x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "20,6x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "1,02" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "7,4x" }
+      ],
+      catalysts: {
+        fr: [
+          "La croissance publicitaire reste forte (+27 % sur un an) malgré la taille déjà considérable de l'entreprise.",
+          "L'IA améliore directement le cœur de métier : meilleur ciblage publicitaire, meilleures recommandations de contenu, nouveaux formats (Meta AI, agents pour les entreprises).",
+          "Un programme de rachat d'actions historiquement massif, qui réduit mécaniquement le nombre d'actions en circulation (plusieurs sources évoquent une pause récente — à confirmer au prochain trimestre)."
+        ],
+        en: [
+          "Ad revenue growth stays strong (+27% YoY) despite the company's already massive size.",
+          "AI directly improves the core business: better ad targeting, better content recommendations, new formats (Meta AI, business agents).",
+          "A historically large buyback program that mechanically reduces the share count (several sources point to a recent pause — worth confirming next quarter)."
+        ]
+      },
+      risks: {
+        fr: [
+          "Les investissements (capex) explosent — jusqu'à 145 Md$ prévus pour 2026 — et pèsent déjà sur la rentabilité : le résultat net a reculé de 14 % alors que le CA progressait de 28 %.",
+          "Le retour sur investissement de ces dépenses en IA reste incertain aux yeux de plusieurs analystes, qui ont dégradé leur recommandation pour cette raison.",
+          "Reality Labs (métavers/VR) continue de générer des pertes importantes depuis plusieurs années, sans horizon de rentabilité annoncé.",
+          "Dépendance quasi totale à un seul type de revenu (la publicité, ~98 % du CA) et exposition aux risques réglementaires, notamment en Europe (DMA)."
+        ],
+        en: [
+          "Capital spending is exploding — up to $145B planned for 2026 — and is already weighing on profitability: net income fell 14% while revenue grew 28%.",
+          "The return on these AI investments remains uncertain to several analysts, some of whom have downgraded the stock for that reason.",
+          "Reality Labs (metaverse/VR) has kept posting substantial losses for several years, with no announced path to profitability.",
+          "Near-total dependence on a single revenue type (advertising, ~98% of revenue) and exposure to regulatory risk, notably in Europe (DMA)."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : un PER de 25x avec un PEG proche de 1 suggère que le marché ne paie pas une prime démesurée par rapport à la croissance attendue — mais ce chiffre suppose que Meta transforme ses dépenses en IA en croissance future, ce qui n'est ni garanti ni immédiat.",
+        en: "Read this, don't just follow it: a P/E of 25x with a PEG near 1 suggests the market isn't paying an outsized premium relative to expected growth — but that assumes Meta actually converts its AI spending into future growth, which is neither guaranteed nor immediate."
+      },
+      sources: [
+        { label: "Meta — Résultats T2 2026 (communiqué officiel)", url: "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Second-Quarter-2026-Results/default.aspx" },
+        { label: "StockAnalysis.com — META, statistiques (19/09/2026)", url: "https://stockanalysis.com/stocks/meta/statistics/" }
+      ]
+    },
+    nvda: {
+      name: "Nvidia",
+      ticker: "NVDA · Nasdaq",
+      sector: { fr: "Semi-conducteurs, puces IA / data center", en: "Semiconductors, AI / data center chips" },
+      resultsAsOf: { fr: "résultats T2 exercice 2027, publiés le 26/08/2026", en: "Q2 FY2027 results, published 08/26/2026" },
+      valuationAsOf: "18/09/2026",
+      overview: {
+        fr: "Nvidia conçoit les puces graphiques (GPU) devenues la référence pour entraîner et exécuter les modèles d'intelligence artificielle. L'essentiel de son activité (le segment « Data Center ») consiste à vendre ces puces et les systèmes associés aux géants du cloud et de l'IA (Microsoft, Google, Amazon, Meta, OpenAI...), qui les utilisent pour construire leurs infrastructures d'IA.",
+        en: "Nvidia designs the graphics chips (GPUs) that have become the standard for training and running AI models. Most of its business (the \"Data Center\" segment) consists of selling these chips and related systems to cloud and AI giants (Microsoft, Google, Amazon, Meta, OpenAI...), who use them to build their AI infrastructure."
+      },
+      financials: [
+        { label: { fr: "Chiffre d'affaires (T2 FY27)", en: "Revenue (Q2 FY27)" }, value: "96,2 Md$", note: { fr: "+106 % sur un an, +18 % sur un trimestre", en: "+106% YoY, +18% QoQ" }, trend: "up" },
+        { label: { fr: "Revenus Data Center", en: "Data Center revenue" }, value: "89,0 Md$", note: { fr: "+117 % sur un an", en: "+117% YoY" }, trend: "up" },
+        { label: { fr: "Marge brute", en: "Gross margin" }, value: "75,0 %", note: { fr: "GAAP et non-GAAP", en: "GAAP and non-GAAP" }, trend: "" },
+        { label: { fr: "Résultat net (GAAP)", en: "Net income (GAAP)" }, value: "59,7 Md$", note: { fr: "54,0 Md$ en non-GAAP", en: "$54.0B non-GAAP" }, trend: "up" },
+        { label: { fr: "Guidance T3 (CA)", en: "Q3 guidance (revenue)" }, value: "108 Md$", note: { fr: "± 2 %, hors revenus Chine data center", en: "±2%, excludes China data center revenue" }, trend: "up" },
+        { label: { fr: "Croissance CA visée FY2028", en: "FY2028 revenue growth target" }, value: "+70 %", note: { fr: "annoncée par Jensen Huang (PDG)", en: "guided by CEO Jensen Huang" }, trend: "" }
+      ],
+      valuation: [
+        { label: { fr: "Cours de l'action", en: "Share price" }, value: "222,27 $" },
+        { label: { fr: "Capitalisation boursière", en: "Market cap" }, value: "5,37 T$" },
+        { label: { fr: "PER (12 derniers mois)", en: "P/E (TTM)" }, value: "28,1x" },
+        { label: { fr: "PER prévisionnel", en: "Forward P/E" }, value: "18,5x" },
+        { label: { fr: "PEG", en: "PEG ratio" }, value: "0,35" },
+        { label: { fr: "Prix / ventes", en: "Price / sales" }, value: "17,7x" }
+      ],
+      catalysts: {
+        fr: [
+          "La demande en IA continue d'exploser : le segment Data Center a progressé de 117 % sur un an, portant le CA total à 96,2 Md$ sur le seul dernier trimestre (+106 % sur un an).",
+          "La guidance du trimestre suivant est encore en hausse (108 Md$ attendus), et le PDG Jensen Huang a évoqué une croissance de 70 % du CA pour l'exercice 2028 — bien au-dessus des attentes du marché.",
+          "Un assouplissement partiel des restrictions d'exportation vers la Chine en 2026 pourrait ouvrir un relais de croissance additionnel si la situation se stabilise."
+        ],
+        en: [
+          "AI demand keeps exploding: the Data Center segment grew 117% YoY, pushing total revenue to $96.2B in the latest quarter alone (+106% YoY).",
+          "Guidance for the next quarter is still rising ($108B expected), and CEO Jensen Huang has pointed to 70% revenue growth for fiscal 2028 — well above market expectations.",
+          "A partial easing of export restrictions to China in 2026 could open an additional growth lever if the situation stabilizes."
+        ]
+      },
+      risks: {
+        fr: [
+          "Concentration extrême : la quasi-totalité de la croissance (et désormais du CA) dépend d'un seul segment, l'IA/data center — tout ralentissement des dépenses des géants du cloud aurait un impact démesuré.",
+          "Les plus gros clients de Nvidia (Google, Amazon, Microsoft, Meta) développent en parallèle leurs propres puces IA maison (TPU, Trainium, Maia, MTIA), ce qui pourrait réduire leur dépendance sur le long terme.",
+          "Les restrictions d'exportation vers la Chine restent politiquement instables ; la guidance actuelle n'inclut d'ailleurs aucun revenu data center chinois par prudence, et des concurrents chinois locaux montent en gamme sur ce marché fermé à Nvidia.",
+          "Valorisation absolue très élevée (5,37 T$ de capitalisation, la plus importante au monde), ce qui laisse peu de marge d'erreur si la croissance ralentit, même temporairement."
+        ],
+        en: [
+          "Extreme concentration: nearly all growth (and now revenue) depends on a single segment, AI/data center — any slowdown in cloud giants' spending would have an outsized impact.",
+          "Nvidia's biggest customers (Google, Amazon, Microsoft, Meta) are simultaneously developing their own in-house AI chips (TPU, Trainium, Maia, MTIA), which could reduce their reliance over the long run.",
+          "Export restrictions to China remain politically unstable; current guidance excludes any China data-center revenue as a precaution, and local Chinese competitors are moving upmarket in that market Nvidia can't access.",
+          "Very high absolute valuation ($5.37T market cap, the largest in the world), leaving little room for error if growth slows even temporarily."
+        ]
+      },
+      conclusion: {
+        fr: "À lire, pas à suivre : un PEG de 0,35 est très bas, ce qui indique que le marché anticipe une croissance nettement plus rapide que ce que suggère le PER seul — mais ce chiffre repose sur la poursuite d'une croissance déjà extraordinaire (+106 % en un an), qui ne peut pas durer indéfiniment au même rythme.",
+        en: "Read this, don't just follow it: a PEG of 0.35 is very low, indicating the market expects growth well above what the P/E alone suggests — but that figure relies on already extraordinary growth (+106% in a year) continuing, which can't last forever at the same pace."
+      },
+      sources: [
+        { label: "Nvidia — Résultats T2 exercice 2027 (communiqué officiel)", url: "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2027/default.aspx" },
+        { label: "StockAnalysis.com — NVDA, statistiques (18/09/2026)", url: "https://stockanalysis.com/stocks/nvda/statistics/" }
+      ]
+    }
+  };
+
+  var state = { company: "meta" };
+
+  function lang() { return window.SkizoI18n ? window.SkizoI18n.getLang() : "fr"; }
+
+  function updatePickerControls() {
+    var btns = document.querySelectorAll("#companyGroup button");
+    btns.forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-company") === state.company ? "true" : "false");
+    });
+  }
+
+  function statTile(item) {
+    var l = lang();
+    var noteClass = item.trend === "up" ? "up" : (item.trend === "down" ? "down" : "");
+    return '<div class="stat-tile">' +
+      '<p class="stat-label">' + item.label[l] + '</p>' +
+      '<p class="stat-value num">' + item.value + '</p>' +
+      (item.note ? '<p class="stat-note ' + noteClass + '">' + item.note[l] + '</p>' : '') +
+      '</div>';
+  }
+
+  function valTile(item) {
+    var l = lang();
+    return '<div class="stat-tile">' +
+      '<p class="stat-label">' + item.label[l] + '</p>' +
+      '<p class="stat-value num">' + item.value + '</p>' +
+      '</div>';
+  }
+
+  function render() {
+    var l = lang();
+    var ui = I18N[l];
+    var c = COMPANIES[state.company];
+
+    var financialsHtml = c.financials.map(statTile).join("");
+    var valuationHtml = c.valuation.map(valTile).join("");
+    var catalystsHtml = c.catalysts[l].map(function (t) { return "<li>" + t + "</li>"; }).join("");
+    var risksHtml = c.risks[l].map(function (t) { return "<li>" + t + "</li>"; }).join("");
+    var sourcesHtml = c.sources.map(function (s, i) {
+      return (i > 0 ? " · " : "") + '<a href="' + s.url + '" target="_blank" rel="noopener">' + s.label + "</a>";
+    }).join("");
+
+    document.getElementById("ficheWrap").innerHTML =
+      '<div class="card fiche">' +
+        '<div class="fiche-head">' +
+          '<div class="fiche-id">' +
+            "<h2>" + c.name + "</h2>" +
+            '<span class="ticker-badge">' + c.ticker + "</span>" +
+          "</div>" +
+          '<span class="update-badge">' + ui.updatePrefix + " " + c.valuationAsOf + " · " + c.resultsAsOf[l] + "</span>" +
+        "</div>" +
+        '<p class="sector-line">' + c.sector[l] + "</p>" +
+        '<p class="overview-p">' + c.overview[l] + "</p>" +
+
+        '<p class="section-label">' + ui.secFinancials + "</p>" +
+        '<div class="stat-grid">' + financialsHtml + "</div>" +
+
+        '<p class="section-label">' + ui.secValuation + "</p>" +
+        '<div class="stat-grid">' + valuationHtml + "</div>" +
+
+        '<p class="section-label catalyst">' + ui.secCatalysts + "</p>" +
+        '<ul class="bullets catalyst">' + catalystsHtml + "</ul>" +
+
+        '<p class="section-label risk">' + ui.secRisks + "</p>" +
+        '<ul class="bullets risk">' + risksHtml + "</ul>" +
+
+        '<p class="section-label">' + ui.secConclusion + "</p>" +
+        '<div class="conclusion-box"><strong>' + ui.secConclusion + " — </strong>" + c.conclusion[l] + "</div>" +
+
+        '<p class="sources-line">' + ui.sourcesPrefix + " " + sourcesHtml + "</p>" +
+      "</div>";
+
+    updatePickerControls();
+  }
+
+  document.getElementById("companyGroup").addEventListener("click", function (e) {
+    var btn = e.target.closest("button");
+    if (!btn) return;
+    state.company = btn.getAttribute("data-company");
+    render();
+  });
+
+  window.SkizoI18n.initToggle(I18N, function () {
+    render();
+    if (window.SkizoTheme) window.SkizoTheme.refreshLabel();
+  });
+  if (window.SkizoTheme) window.SkizoTheme.initToggle();
+})();
+</script>
+</body>
+</html>
