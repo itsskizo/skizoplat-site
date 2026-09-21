@@ -361,82 +361,84 @@
   // automatiquement d'un compte-titres ordinaire en parallèle (impossible de faire autrement),
   // et le compte doit être déclaré chaque année via le formulaire 3916 (compte à l'étranger).
   // IBKR fournit bien l'IFU pour ce PEA, contrairement à la majorité des courtiers étrangers.
+  // profiles : profils cibles déduits du champ profileFit existant (aucune nouvelle recherche).
+  // Utilisé par le sélecteur de profil (tri intra-tier, trio comparé, recommandation).
   var BROKERS = [
-    { id: "ibkr", name: "Interactive Brokers", tier: "splus", tierLabel: "S+", fr: true, lu: true, ma: true, pea: true },
-    { id: "saxo", name: "Saxo Banque", tier: "s", tierLabel: "S", fr: true, lu: true, ma: true, pea: true },
-    { id: "traderepublic", name: "Trade Republic", tier: "s", tierLabel: "S", fr: true, lu: true, ma: false, pea: true },
-    { id: "xtb", name: "XTB", tier: "a", tierLabel: "A", fr: true, lu: true, ma: true, pea: true },
-    { id: "shares", name: "Shares", tier: "a", tierLabel: "A", fr: null, lu: null, ma: null, pea: true },
-    { id: "degiro", name: "DEGIRO", tier: "a", tierLabel: "A", fr: true, lu: null, ma: false, pea: false },
-    { id: "fortuneo", name: "Fortuneo", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false, pea: true },
-    { id: "boursorama", name: "Boursorama", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false, pea: true },
-    { id: "boursedirect", name: "Bourse Direct", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false, pea: true },
-    { id: "revolut", name: "Revolut", tier: "c", tierLabel: "C", fr: true, lu: true, ma: null, pea: false },
-    { id: "trading212", name: "Trading 212", tier: "c", tierLabel: "C", fr: true, lu: true, ma: false, pea: false },
-    { id: "etoro", name: "eToro", tier: "d", tierLabel: "D", fr: true, lu: true, ma: false, pea: false }
+    { id: "ibkr", name: "Interactive Brokers", tier: "splus", tierLabel: "S+", fr: true, lu: true, ma: true, pea: true, profiles: ["actif", "gros"] },
+    { id: "saxo", name: "Saxo Banque", tier: "s", tierLabel: "S", fr: true, lu: true, ma: true, pea: true, profiles: ["actif", "gros"] },
+    { id: "traderepublic", name: "Trade Republic", tier: "s", tierLabel: "S", fr: true, lu: true, ma: false, pea: true, profiles: ["debutant"] },
+    { id: "xtb", name: "XTB", tier: "a", tierLabel: "A", fr: true, lu: true, ma: true, pea: true, profiles: ["debutant", "actif"] },
+    { id: "shares", name: "Shares", tier: "a", tierLabel: "A", fr: null, lu: null, ma: null, pea: true, profiles: ["debutant"] },
+    { id: "degiro", name: "DEGIRO", tier: "a", tierLabel: "A", fr: true, lu: null, ma: false, pea: false, profiles: ["actif"] },
+    { id: "fortuneo", name: "Fortuneo", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false, pea: true, profiles: [] },
+    { id: "boursorama", name: "Boursorama", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false, pea: true, profiles: [] },
+    { id: "boursedirect", name: "Bourse Direct", tier: "b", tierLabel: "B", fr: true, lu: false, ma: false, pea: true, profiles: ["actif"] },
+    { id: "revolut", name: "Revolut", tier: "c", tierLabel: "C", fr: true, lu: true, ma: null, pea: false, profiles: ["debutant"] },
+    { id: "trading212", name: "Trading 212", tier: "c", tierLabel: "C", fr: true, lu: true, ma: false, pea: false, profiles: ["debutant"] },
+    { id: "etoro", name: "eToro", tier: "d", tierLabel: "D", fr: true, lu: true, ma: false, pea: false, profiles: ["debutant"] }
   ];
 
   var TIER_ORDER = ["splus", "s", "a", "b", "c", "d"];
 
   var BROKER_TEXT = {
     fr: {
-      ibkr: { tag: "Investisseur confirmé", note: "Disponible dans les 3 pays d'après la liste officielle IBKR.",
+      ibkr: { tag: "Investisseur confirmé", note: "d'après la liste officielle ibkr.",
         fees: "0,005 $/action US (le plus bas) · 0,05 % EU · min. 1,25 $", markets: "135+ marchés · actions, ETF, options, futures, forex, obligations",
         perks: "4 %+ USD / 2 %+ EUR sur le cash non investi, sans PFOF", profileFit: "Investisseur confirmé — capital > 10-15k€, trading actif, marchés exotiques" },
-      saxo: { tag: "Multi-actifs", note: "Broker multi-juridictions, ouvert aux résidents marocains d'après nos recherches — vérifie le dépôt minimum selon ton pays.",
+      saxo: { tag: "Multi-actifs", note: { FR: "vérifie le dépôt minimum selon ton pays.", LU: "vérifie le dépôt minimum selon ton pays.", MA: "d'après nos recherches — vérifie le dépôt minimum selon ton pays." },
         fees: "Variable selon plan et volume", markets: "Actions, ETF, obligations, forex, futures — large gamme", perks: "Plateforme SaxoTraderGO, recherche & outils avancés", profileFit: "Investisseur qui veut une gamme large avec une seule interface" },
-      traderepublic: { tag: "Débutant / passif", note: "Licence bancaire européenne (UE/EEE uniquement) — non disponible pour les résidents marocains.",
+      traderepublic: { tag: "Débutant / passif", note: { FR: "licence bancaire européenne (ue/eee).", LU: "licence bancaire européenne (ue/eee).", MA: "licence bancaire européenne (ue/eee uniquement)." },
         fees: "1 € fixe/ordre · plans programmés gratuits", markets: "17 pays, 8 500+ titres · actions & ETF uniquement (pas d'options/futures)",
         perks: "2,75 %/an sur le cash · PEA disponible depuis janvier 2025", profileFit: "Débutant / investisseur passif qui veut la simplicité" },
-      xtb: { tag: "Actions & ETF", note: "Cité parmi les brokers disponibles pour les résidents marocains.",
+      xtb: { tag: "Actions & ETF", note: { FR: "", LU: "", MA: "d'après nos recherches." },
         fees: "0 commission jusqu'à 100k€/mois de volume (au-delà 0,2%)", markets: "Actions & ETF sur les principales places mondiales",
         perks: "Interface simple, bon service client", profileFit: "Débutant à intermédiaire" },
-      shares: { tag: "Ordres simplifiés", note: "Application encore peu répandue — disponibilité par pays non confirmée, à vérifier directement.",
+      shares: { tag: "Ordres simplifiés", note: "application encore peu répandue — vérifie directement sur leur site.",
         fees: "À vérifier", markets: "Actions & ETF", perks: "Application mobile simple", profileFit: "Débutant qui veut une app mobile épurée" },
-      degiro: { tag: "Multi-marchés", note: "Non disponible pour les résidents marocains d'après nos recherches. Disponibilité au Luxembourg non confirmée avec certitude — à vérifier.",
+      degiro: { tag: "Multi-marchés", note: { FR: "", LU: "disponibilité au luxembourg non confirmée avec certitude — vérifie directement sur le site du broker.", MA: "d'après nos recherches." },
         fees: "1 € fixe/ordre · sélection ETF gratuite (+1 € gestion) · hors sélection 2 €", markets: "50+ bourses · actions, ETF, options, futures, warrants",
         perks: "Aucun intérêt versé sur le cash · prêt de titres par défaut", profileFit: "Stock picker qui veut un accès mondial à prix serré" },
-      fortuneo: { tag: "PEA / CTO classique", note: "PEA réservé aux résidents fiscaux français. Le CTO est en général réservé aux ressortissants français, même expatriés — pas d'ouverture standard pour un non-résident non-français.",
+      fortuneo: { tag: "PEA / CTO classique", note: "pea réservé aux résidents fiscaux français ; le cto est en général réservé aux ressortissants français, même expatriés.",
         fees: "Faibles sur les valeurs françaises/européennes", markets: "Actions, ETF, PEA, PEA-PME", perks: "Banque en ligne établie", profileFit: "Résident fiscal français qui veut un PEA" },
-      boursorama: { tag: "Banque en ligne", note: "Pour un résident fiscal étranger, l'ouverture passe par un circuit spécifique (service commercial) — pas un parcours standard en ligne.",
+      boursorama: { tag: "Banque en ligne", note: "pour un résident fiscal étranger, l'ouverture passe par un circuit spécifique (service commercial) — pas un parcours standard en ligne.",
         fees: "Faibles sur les valeurs françaises/européennes", markets: "Actions, ETF, PEA", perks: "Grande banque en ligne, offre bancaire complète", profileFit: "Résident fiscal français qui veut tout chez le même acteur" },
-      boursedirect: { tag: "Courtier traditionnel FR", note: "Courtier français traditionnel — conditions de résidence similaires aux autres acteurs français, à confirmer directement.",
+      boursedirect: { tag: "Courtier traditionnel FR", note: "conditions de résidence similaires aux autres acteurs français, à confirmer directement.",
         fees: "Grille tarifaire par palier", markets: "Actions, ETF, PEA", perks: "Courtier historique, service client réputé", profileFit: "Résident fiscal français qui investit activement" },
-      revolut: { tag: "Généraliste", note: "L'app bancaire n'est pas confirmée disponible pour l'ouverture de compte au Maroc — à vérifier avant de compter dessus.",
+      revolut: { tag: "Généraliste", note: { FR: "", LU: "", MA: "ouverture de compte au maroc non confirmée — ne compte pas dessus sans vérifier." },
         fees: "Gratuit avec limites selon le forfait, puis commission", markets: "Actions & ETF, sélection plus restreinte", perks: "Intégré à l'app bancaire du quotidien", profileFit: "Qui veut investir depuis une app déjà utilisée au quotidien" },
-      trading212: { tag: "Débutant", note: "Le Maroc fait partie des pays où Trading 212 n'est pas disponible.",
+      trading212: { tag: "Débutant", note: { FR: "", LU: "", MA: "" },
         fees: "0 commission sur actions/ETF", markets: "Actions & ETF, CFD séparés", perks: "Interface très simple, versements programmés", profileFit: "Débutant qui veut du 0 commission" },
-      etoro: { tag: "Social trading", note: "N'accepte plus de nouvelles inscriptions depuis le Maroc (2026).", fees: "Spreads plus larges, 0 commission actions",
+      etoro: { tag: "Social trading", note: { FR: "", LU: "", MA: "n'accepte plus de nouvelles inscriptions depuis le maroc (2026)." }, fees: "Spreads plus larges, 0 commission actions",
         markets: "Actions, ETF, crypto, copy trading", perks: "Fonction de copie de portefeuille", profileFit: "Débutant curieux du copy trading (frais à surveiller)" }
     },
     en: {
-      ibkr: { tag: "Experienced investor", note: "Available in all 3 countries according to IBKR's official list.",
+      ibkr: { tag: "Experienced investor", note: "per ibkr's official country list.",
         fees: "$0.005/US share (the lowest) · 0.05% EU · min. $1.25", markets: "135+ markets · stocks, ETFs, options, futures, forex, bonds",
         perks: "4%+ USD / 2%+ EUR on uninvested cash, no PFOF", profileFit: "Experienced investor — capital > €10-15k, active trading, exotic markets" },
-      saxo: { tag: "Multi-asset", note: "Multi-jurisdiction broker, open to Moroccan residents according to our research — check the minimum deposit for your country.",
+      saxo: { tag: "Multi-asset", note: { FR: "check the minimum deposit for your country.", LU: "check the minimum deposit for your country.", MA: "according to our research — check the minimum deposit for your country." },
         fees: "Variable depending on plan and volume", markets: "Stocks, ETFs, bonds, forex, futures — wide range", perks: "SaxoTraderGO platform, advanced research & tools", profileFit: "Investor who wants a wide range through a single interface" },
-      traderepublic: { tag: "Beginner / passive", note: "European banking licence (EU/EEA only) — not available for Moroccan residents.",
+      traderepublic: { tag: "Beginner / passive", note: { FR: "european banking licence (eu/eea).", LU: "european banking licence (eu/eea).", MA: "european banking licence (eu/eea only)." },
         fees: "€1 flat/order · free recurring plans", markets: "17 countries, 8,500+ securities · stocks & ETFs only (no options/futures)",
         perks: "2.75%/year on cash · PEA available since January 2025", profileFit: "Beginner / passive investor who wants simplicity" },
-      xtb: { tag: "Stocks & ETFs", note: "Listed among the brokers available to Moroccan residents.",
+      xtb: { tag: "Stocks & ETFs", note: { FR: "", LU: "", MA: "according to our research." },
         fees: "0 commission up to €100k/month volume (0.2% beyond that)", markets: "Stocks & ETFs on the main global markets",
         perks: "Simple interface, good customer service", profileFit: "Beginner to intermediate" },
-      shares: { tag: "Simplified orders", note: "Still a fairly niche app — country availability not confirmed, check directly.",
+      shares: { tag: "Simplified orders", note: "still a fairly niche app — check directly on their site.",
         fees: "To check", markets: "Stocks & ETFs", perks: "Clean, simple mobile app", profileFit: "Beginner who wants a streamlined mobile app" },
-      degiro: { tag: "Multi-market", note: "Not available for Moroccan residents according to our research. Availability in Luxembourg not confirmed with certainty — check directly.",
+      degiro: { tag: "Multi-market", note: { FR: "", LU: "availability in luxembourg not confirmed with certainty — check directly on the broker's site.", MA: "according to our research." },
         fees: "€1 flat/order · free ETF selection (+€1 handling) · €2 outside selection", markets: "50+ exchanges · stocks, ETFs, options, futures, warrants",
         perks: "No interest paid on cash · securities lending by default", profileFit: "Stock picker who wants worldwide access at tight prices" },
-      fortuneo: { tag: "PEA / classic CTO", note: "PEA reserved for French tax residents. The CTO is generally reserved for French nationals too, even expats — no standard opening for a non-French non-resident.",
+      fortuneo: { tag: "PEA / classic CTO", note: "pea reserved for french tax residents; the cto is generally reserved for french nationals too, even expats.",
         fees: "Low on French/European securities", markets: "Stocks, ETFs, PEA, PEA-PME", perks: "Established online bank", profileFit: "French tax resident who wants a PEA" },
-      boursorama: { tag: "Online bank", note: "For a foreign tax resident, opening an account goes through a specific channel (sales team) — not a standard online process.",
+      boursorama: { tag: "Online bank", note: "for a foreign tax resident, opening goes through a specific channel (sales team) — not a standard online process.",
         fees: "Low on French/European securities", markets: "Stocks, ETFs, PEA", perks: "Major online bank, full banking offer", profileFit: "French tax resident who wants everything with the same provider" },
-      boursedirect: { tag: "Traditional FR broker", note: "Traditional French broker — residency conditions similar to other French providers, to confirm directly.",
+      boursedirect: { tag: "Traditional FR broker", note: "residency conditions similar to other french providers — confirm directly.",
         fees: "Tiered fee schedule", markets: "Stocks, ETFs, PEA", perks: "Long-established broker, well-regarded customer service", profileFit: "French tax resident who invests actively" },
-      revolut: { tag: "Generalist", note: "The banking app isn't confirmed as available for opening an account in Morocco — check before relying on it.",
+      revolut: { tag: "Generalist", note: { FR: "", LU: "", MA: "account opening in morocco not confirmed — don't rely on it without checking." },
         fees: "Free with plan limits, then a commission", markets: "Stocks & ETFs, more limited selection", perks: "Built into the everyday banking app", profileFit: "Anyone who wants to invest from an app they already use daily" },
-      trading212: { tag: "Beginner", note: "Morocco is among the countries where Trading 212 isn't available.",
+      trading212: { tag: "Beginner", note: { FR: "", LU: "", MA: "" },
         fees: "0 commission on stocks/ETFs", markets: "Stocks & ETFs, CFDs kept separate", perks: "Very simple interface, recurring investments", profileFit: "Beginner who wants zero commission" },
-      etoro: { tag: "Social trading", note: "No longer accepting new sign-ups from Morocco (2026).", fees: "Wider spreads, 0 commission on stocks",
+      etoro: { tag: "Social trading", note: { FR: "", LU: "", MA: "no longer accepting new sign-ups from morocco (2026)." }, fees: "Wider spreads, 0 commission on stocks",
         markets: "Stocks, ETFs, crypto, copy trading", perks: "Portfolio copy-trading feature", profileFit: "Beginner curious about copy trading (watch the fees)" }
     }
   };
@@ -460,6 +462,20 @@
       },
       LU: "In Luxembourg, <strong>Trade Republic</strong> is available and remains the simplest way to start. <strong>DEGIRO</strong> too, provided you check your exact eligibility when opening an account. No PEA from Luxembourg — you open a CTO directly. For full worldwide access or a large capital, <strong>Interactive Brokers</strong>.",
       MA: "In Morocco, <strong>Trade Republic</strong>, <strong>DEGIRO</strong> and <strong>Trading 212</strong> aren't available. The strongest, confirmed options are <strong>Interactive Brokers</strong>, <strong>XTB</strong> and <strong>Saxo Banque</strong> — all open to Moroccan residents according to our research. No PEA (reserved for French tax residents): you go through an equivalent brokerage account (CTO)."
+    }
+  };
+
+  // Phrase ajoutée à la recommandation selon le profil sélectionné.
+  var PROFILE_RECO = {
+    fr: {
+      debutant: "profil débutant : privilégie des frais simples et lisibles, et des versements programmés pour commencer sereinement.",
+      actif: "profil actif : compare le coût réel par ordre selon ton volume, et vérifie l'accès aux marchés et produits que tu utilises vraiment.",
+      gros: "profil gros capital : au-delà de 10-15k€, fais primer des frais fixes bas, l'accès multi-marchés et la solidité du courtier."
+    },
+    en: {
+      debutant: "beginner profile: favor simple, readable fees and recurring investments to start with peace of mind.",
+      actif: "active profile: compare the real cost per order at your volume, and check access to the markets and products you actually use.",
+      gros: "large-capital profile: beyond €10-15k, prioritize low flat fees, multi-market access and the broker's reliability."
     }
   };
 
@@ -685,6 +701,43 @@
     return "unknown";
   }
 
+  // Le sélecteur de profil doit changer la page : l'ordre intra-tier, le trio comparé
+  // et la recommandation suivent désormais le profil sélectionné.
+  var AVAIL_RANK = { yes: 0, unknown: 1, no: 2 };
+
+  function profileFirst(a, b) {
+    var pa = a.profiles.indexOf(state.profile) !== -1 ? 0 : 1;
+    var pb = b.profiles.indexOf(state.profile) !== -1 ? 0 : 1;
+    return pa - pb;
+  }
+
+  function trioForProfile() {
+    var matching = BROKERS.filter(function (b) { return b.profiles.indexOf(state.profile) !== -1; });
+    matching.sort(function (a, b) {
+      var d = AVAIL_RANK[availOf(a)] - AVAIL_RANK[availOf(b)];
+      if (d) return d;
+      return TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier);
+    });
+    var ids = matching.map(function (b) { return b.id; });
+    ["ibkr", "traderepublic", "degiro"].forEach(function (id) {
+      if (ids.indexOf(id) === -1) ids.push(id);
+    });
+    return ids.slice(0, 3);
+  }
+
+  // Infobulle de disponibilité adaptée au pays sélectionné : la phrase de statut
+  // ("disponible pour un résident …") + une nuance éventuelle propre au broker et au pays.
+  function tooltipFor(b, L) {
+    var ui = UI[L];
+    var bt = BROKER_TEXT[L][b.id];
+    var status = availOf(b);
+    var availText = status === "yes" ? ui.availYes : status === "no" ? ui.availNo : ui.availUnknown;
+    var base = ui.residentPhrase(availText, ui.adj[state.country]) + ".";
+    var n = bt.note;
+    var extra = (n && typeof n === "object") ? (n[state.country] || "") : (n || "");
+    return extra ? base + " " + extra : base;
+  }
+
   function renderTier() {
     var L = lang();
     var i = I18N[L];
@@ -700,6 +753,7 @@
     TIER_ORDER.forEach(function (t) {
       var list = byTier[t];
       if (!list.length) return;
+      list.sort(profileFirst);
       html += '<div class="tier-row"><div class="tier-badge ' + t + '">' + list[0].tierLabel + '</div><div class="tier-chips">';
       list.forEach(function (b) {
         var bt = text[b.id];
@@ -707,7 +761,7 @@
         var dim = status === "no" ? " dim" : "";
         var showPeaPill = !isPea && state.country === "FR" && b.pea;
         var peaPill = showPeaPill ? '<span class="pea-pill">' + i.peaPillLabel + '</span>' : "";
-        html += '<span class="chip' + dim + '" title="' + bt.note.replace(/"/g, "&quot;") + '">' +
+        html += '<span class="chip' + dim + '" title="' + tooltipFor(b, L).replace(/"/g, "&quot;") + '">' +
           '<span class="avail ' + status + '"></span>' +
           '<span class="name">' + b.name + '</span>' +
           '<span class="tag">' + bt.tag + '</span>' + peaPill +
@@ -726,7 +780,7 @@
     var text = BROKER_TEXT[L];
     var ui = UI[L];
     var isPea = state.envelope === "PEA";
-    var ids = isPea ? ["traderepublic", "fortuneo", "ibkr"] : ["ibkr", "traderepublic", "degiro"];
+    var ids = isPea ? ["traderepublic", "fortuneo", "ibkr"] : trioForProfile();
     els.trioHeadingText.textContent = isPea ? i.trioHeadingPea : i.trioHeading;
     els.trioSubText.textContent = isPea ? i.trioSubPea : i.trioSub;
     var html = "";
@@ -780,7 +834,7 @@
     var L = lang();
     updateEnvelopeControls();
     var recoRaw = RECO[L][state.country];
-    els.recoText.innerHTML = (recoRaw && typeof recoRaw === "object") ? recoRaw[state.envelope] : recoRaw;
+    els.recoText.innerHTML = ((recoRaw && typeof recoRaw === "object") ? recoRaw[state.envelope] : recoRaw) + " " + PROFILE_RECO[L][state.profile];
     els.peaNoteText.textContent = "";
     els.peaNote.classList.add("show");
     els.peaNoteText.innerHTML = PEA_NOTES[L][state.country];
